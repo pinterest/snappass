@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Send Password</title>
+    <link href="{{ config.STATIC_URL }}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">Send Password</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="/">Share</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% block content %}{% endblock %}
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ config.STATIC_URL }}/bootstrap/js/bootstrap.min.js"></script>
+    {% block js %}{% endblock %}
+  </body>
+</html>
