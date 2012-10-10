@@ -56,7 +56,8 @@ def index():
 def handle_password():
     ttl, password = clean_input()
     key = set_password(password, ttl)
-    return render_template('confirm.html', password_link=request.url_root+key)
+    link = request.url_root.replace("http://", "https://") + key
+    return render_template('confirm.html', password_link=link)
 
 @application.route('/<password_key>', methods=['GET'])
 def show_password(password_key):
