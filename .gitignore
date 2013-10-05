@@ -1,0 +1,5 @@
+.tox
+.coverage
+.project
+*.rdb
+junit*xml
