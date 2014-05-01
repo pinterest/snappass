@@ -5,12 +5,16 @@ import redis
 
 from flask import abort, Flask, render_template, request
 
+from mailer_thread import MailerThread
 
 NO_SSL = os.environ.get('NO_SSL', False)
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
+
+app.from_email = os.environ.get('SNAPPASS_SENDER', 'noreply@example.com')
+app.smtp_server = os.environ.get('SNAPPASS_SMTP', 'localhost')
 
 id_ = lambda: uuid.uuid4().hex
 redis_host = os.environ.get('REDIS_HOST', 'localhost')
@@ -35,6 +39,9 @@ def get_password(key):
     redis_client.delete(key)
     return password
 
+def email_url(url, email):
+    t = MailerThread(app, url, email)
+    t.start()
 
 def clean_input():
     """
@@ -63,12 +70,17 @@ def index():
 def handle_password():
     ttl, password = clean_input()
     key = set_password(password, ttl)
+    email = request.form['email'] or null
 
     if NO_SSL:
         base_url = request.url_root
     else:
         base_url = request.url_root.replace("http://", "https://")
     link = base_url + key
+
+    if email:
+      email_url(link, email)
+
     return render_template('confirm.html', password_link=link)
 
 
