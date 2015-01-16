@@ -3,3 +3,4 @@
 .project
 *.rdb
 junit*xml
+*.pyc
