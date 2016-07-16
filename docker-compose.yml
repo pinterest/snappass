@@ -1,0 +1,13 @@
+---
+snappass:
+    image: snappass
+    ports:
+        - "5000:5000"
+    links:
+        - "redis:redis"
+    environment:
+        - REDIS_HOST=redis
+        - NO_SSL=True
+
+redis:
+    image: "redis:latest"
