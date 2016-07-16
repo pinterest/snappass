@@ -59,3 +59,16 @@ be kept secret.  See the `Flask Documentation`_ for more information.
 need to change this.
 
 `NO_SSL` if you are not using SSL.
+
+Docker
+------
+
+Alternatively, you can use `Docker`_ to install and run SnapPass:
+.. _Docker: https://www.docker.com/
+
+::
+
+    $ docker build -t snappass .
+    $ docker-compose up -d
+
+This will pull all dependencies, i.e. Redis and appropriate Python version.
