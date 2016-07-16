@@ -1,0 +1,20 @@
+# Source
+.bumpversion.cfg
+.dockerignore
+.gitignore
+.travis.yml
+CONTRIBUTING.rst
+docker-compose.yml
+Dockerfile
+requirements.txt
+tests.py
+tox.ini
+
+# Generated
+.tox
+.coverage
+*.rdb
+junit*xml
+
+# Other
+.project
