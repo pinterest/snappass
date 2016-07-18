@@ -32,5 +32,6 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
+    zip_safe=False,
 )
 
