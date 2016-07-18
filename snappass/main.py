@@ -22,12 +22,8 @@ time_conversion = {
 }
 
 
-def _id():
-    return uuid.uuid4().hex
-
-
 def set_password(password, ttl):
-    key = _id()
+    key = uuid.uuid4().hex
     redis_client.set(key, password)
     redis_client.expire(key, ttl)
     return key
