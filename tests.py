@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from werkzeug.exceptions import ClientDisconnected
 
-#noinspection PyPep8Naming
+# noinspection PyPep8Naming
 import snappass.main as snappass
 
 __author__ = 'davedash'
@@ -45,7 +45,7 @@ class SnapPassTestCase(TestCase):
 
 
 class SnapPassRoutesTestCase(TestCase):
-    #noinspection PyPep8Naming
+    # noinspection PyPep8Naming
     def setUp(self):
         snappass.app.config['TESTING'] = True
         self.app = snappass.app.test_client()
@@ -59,4 +59,3 @@ class SnapPassRoutesTestCase(TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

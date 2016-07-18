@@ -12,7 +12,6 @@ app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
-id_ = lambda: uuid.uuid4().hex
 redis_host = os.environ.get('REDIS_HOST', 'localhost')
 redis_client = redis.StrictRedis(host=redis_host, port=6379, db=0)
 
@@ -23,8 +22,12 @@ time_conversion = {
 }
 
 
+def _id():
+    return uuid.uuid4().hex
+
+
 def set_password(password, ttl):
-    key = id_()
+    key = _id()
     redis_client.set(key, password)
     redis_client.expire(key, ttl)
     return key
@@ -41,14 +44,14 @@ def clean_input():
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if not 'password' in request.form:
+    if 'password' not in request.form:
         abort(400)
 
-    if not 'ttl' in request.form:
+    if 'ttl' not in request.form:
         abort(400)
 
     time_period = request.form['ttl'].lower()
-    if not time_period in time_conversion:
+    if time_period not in time_conversion:
         abort(400)
 
     return time_conversion[time_period], request.form['password']
