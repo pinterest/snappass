@@ -1,9 +1,9 @@
 import unittest
 from unittest import TestCase
 
-from werkzeug.exceptions import ClientDisconnected
+from werkzeug.exceptions import BadRequest
 
-#noinspection PyPep8Naming
+# noinspection PyPep8Naming
 import snappass.main as snappass
 
 __author__ = 'davedash'
@@ -27,17 +27,17 @@ class SnapPassTestCase(TestCase):
         # Test Bad Data
         with snappass.app.test_request_context(
                 "/", data={'password': 'foo', 'ttl': 'bar'}, method='POST'):
-            self.assertRaises(ClientDisconnected, snappass.clean_input)
+            self.assertRaises(BadRequest, snappass.clean_input)
 
         # No Password
         with snappass.app.test_request_context(
                 "/", method='POST'):
-            self.assertRaises(ClientDisconnected, snappass.clean_input)
+            self.assertRaises(BadRequest, snappass.clean_input)
 
         # No TTL
         with snappass.app.test_request_context(
                 "/", data={'password': 'foo'}, method='POST'):
-            self.assertRaises(ClientDisconnected, snappass.clean_input)
+            self.assertRaises(BadRequest, snappass.clean_input)
 
         with snappass.app.test_request_context(
                 "/", data={'password': 'foo', 'ttl': 'hour'}, method='POST'):
@@ -45,7 +45,7 @@ class SnapPassTestCase(TestCase):
 
 
 class SnapPassRoutesTestCase(TestCase):
-    #noinspection PyPep8Naming
+    # noinspection PyPep8Naming
     def setUp(self):
         snappass.app.config['TESTING'] = True
         self.app = snappass.app.test_client()
@@ -59,4 +59,3 @@ class SnapPassRoutesTestCase(TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
