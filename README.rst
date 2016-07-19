@@ -65,12 +65,13 @@ need to change this.
 Docker
 ------
 
-Alternatively, you can use `Docker`_ to install and run SnapPass:
-.. _Docker: https://www.docker.com/
+Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run SnapPass:
 
+.. _Docker: https://www.docker.com/
+.. _Docker Compose: https://docs.docker.com/compose/
 ::
 
     $ docker build -t snappass .
     $ docker-compose up -d
 
-This will pull all dependencies, i.e. Redis and appropriate Python version.
+This will pull all dependencies, i.e. Redis and appropriate Python version (3.3), then start up snappass and Redis server. SnapPass server is accessible at: http://localhost:5000
