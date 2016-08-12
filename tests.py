@@ -58,8 +58,8 @@ class SnapPassRoutesTestCase(TestCase):
     def test_show_password(self):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
-        rv = self.app.get('/{}'.format(key))
-        self.assertIn(password, rv.get_data(as_text=True))
+        rv = self.app.get('/{0}'.format(key))
+        self.assertTrue(password in rv.get_data(as_text=True))
 
 
 if __name__ == '__main__':
