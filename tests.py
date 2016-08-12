@@ -23,6 +23,11 @@ class SnapPassTestCase(TestCase):
         # Assert that we can't look this up a second time.
         self.assertEqual(None, snappass.get_password(key))
 
+    def test_password_is_decoded(self):
+        password = "correct horse battery staple"
+        key = snappass.set_password(password, 30)
+        self.assertFalse(isinstance(snappass.get_password(key), bytes))
+
     def test_clean_input(self):
         # Test Bad Data
         with snappass.app.test_request_context(
@@ -54,7 +59,7 @@ class SnapPassRoutesTestCase(TestCase):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
         rv = self.app.get('/{}'.format(key))
-        self.assertIn(password, rv.data)
+        self.assertIn(password, rv.get_data(as_text=True))
 
 
 if __name__ == '__main__':

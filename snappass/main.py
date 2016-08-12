@@ -31,6 +31,8 @@ def set_password(password, ttl):
 
 def get_password(key):
     password = redis_client.get(key)
+    if password is not None:
+        password = password.decode('utf-8')
     redis_client.delete(key)
     return password
 
