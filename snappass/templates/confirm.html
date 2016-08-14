@@ -4,7 +4,19 @@
 <div class="container">
   <section>
     <div class="page-header"><h1>Password stored!</h1></div>
-    <h4>{{ password_link }}</h4>
+    <div class="form-horizontal">
+      <input type="text" class="input-xxlarge readonly-text" id="password-link" value="{{ password_link }}" readonly="readonly">
+      <button title="Copy to clipboard" type="button" class="btn btn-secondary copy-clipboard-btn"
+              id="copy-clipboard-btn" data-clipboard-target="#password-link"
+              data-placement='bottom'>
+        <i class="fa fa-clipboard"></i>
+      </button>
+    </div>
   </section>
 </div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
+    <script src="{{ config.STATIC_URL }}/scripts/clipboard_button.js"></script>
 {% endblock %}

@@ -1,0 +1,4 @@
+input[readonly].readonly-text {
+    background-color: #fff;
+    cursor: text;
+}
