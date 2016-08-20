@@ -1,4 +1,4 @@
-FROM python:3.3
+FROM python:3.5
 
 ENV APP_DIR=/usr/src/snappass
 
