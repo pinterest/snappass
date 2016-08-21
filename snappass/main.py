@@ -1,7 +1,10 @@
 import os
+import sys
 import uuid
+import traceback
 
 import redis
+from redis.exceptions import ConnectionError
 
 from flask import abort, Flask, render_template, request
 
@@ -21,8 +24,19 @@ time_conversion = {
     'hour': 3600
 }
 
+def check_redis_alive(force_exit = False):
+    try:
+        redis_client.ping()
+    except (ConnectionError, TimeoutError) as e:
+        if force_exit:
+          print("{}".format(e))
+          sys.exit(0)
+        else:
+            abort(500)
+
 
 def set_password(password, ttl):
+    check_redis_alive()
     key = uuid.uuid4().hex
     redis_client.set(key, password)
     redis_client.expire(key, ttl)
@@ -30,6 +44,7 @@ def set_password(password, ttl):
 
 
 def get_password(key):
+    check_redis_alive()
     password = redis_client.get(key)
     if password is not None:
         password = password.decode('utf-8')
@@ -83,6 +98,7 @@ def show_password(password_key):
 
 
 def main():
+    check_redis_alive(force_exit=True)
     app.run(host='0.0.0.0', debug=True)
 
 
