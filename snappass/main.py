@@ -23,12 +23,12 @@ time_conversion = {
     'hour': 3600
 }
 
-def check_redis_alive(force_exit = False):
+def check_redis_alive(force_exit=False):
     try:
         redis_client.ping()
     except (ConnectionError, TimeoutError) as e:
         if force_exit:
-            print("{}".format(e))
+            print(e)
             sys.exit(0)
         else:
             abort(500)
