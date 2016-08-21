@@ -62,6 +62,10 @@ need to change this.
 
 `REDIS_HOST` this should be set by Redis, but you can override it if you want. Defaults to `"localhost"`
 
+`REDIS_PORT` is the port redis is serving on, defaults to 6379
+
+`SNAPPASS_REDIS_DB` is the database that you want to use on this redis server. Defaults to db 0
+
 Docker
 ------
 
