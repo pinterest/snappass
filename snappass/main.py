@@ -1,7 +1,6 @@
 import os
 import sys
 import uuid
-import traceback
 
 import redis
 from redis.exceptions import ConnectionError
@@ -29,8 +28,8 @@ def check_redis_alive(force_exit = False):
         redis_client.ping()
     except (ConnectionError, TimeoutError) as e:
         if force_exit:
-          print("{}".format(e))
-          sys.exit(0)
+            print("{}".format(e))
+            sys.exit(0)
         else:
             abort(500)
 
