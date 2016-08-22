@@ -3,7 +3,7 @@ import sys
 import uuid
 
 import redis
-from redis.exceptions import ConnectionError, TimeoutError
+from redis.exceptions import ConnectionError
 
 from flask import abort, Flask, render_template, request
 
@@ -28,7 +28,7 @@ def check_redis_alive(fn):
     def inner(*args, **kwargs):
         try:
             redis_client.ping()
-        except (ConnectionError, TimeoutError) as e:
+        except ConnectionError as e:
             print(e)
             if fn.__name__ == "main":
                 sys.exit(0)
