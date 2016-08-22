@@ -77,6 +77,7 @@ Here's how to set up `snappass` for local development.
     $ mkvirtualenv snappass
     $ cd snappass/
     $ python setup.py develop
+    $ pip install -r dev-requirements.txt
 
 4. Create a branch for local development::
 
