@@ -27,14 +27,15 @@ time_conversion = {
 def check_redis_alive(fn):
     def inner(*args, **kwargs):
         try:
-            redis_client.ping()
+            if fn.__name__ == 'main':
+                redis_client.ping()
+            return fn(*args, **kwargs)
         except ConnectionError as e:
-            print(e)
-            if fn.__name__ == "main":
+            print('Failed to connect to redis! %s' % e.message)
+            if fn.__name__ == 'main':
                 sys.exit(0)
             else:
                 return abort(500)
-        return fn(*args, **kwargs)
     return inner
 
 
