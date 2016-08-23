@@ -98,7 +98,7 @@ Here's how to set up `snappass` for local development.
 6. When you're done making changes, check that your changes pass the tests and
    flake8::
 
-    $ flake8 snappass tests
+    $ flake8 snappass tests.py setup.py
     $ tox
 
 7. Commit your changes and push your branch to GitHub::
