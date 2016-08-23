@@ -109,9 +109,9 @@ Here's how to set up `snappass` for local development.
 
 8. Check that the test coverage hasn't dropped::
 
-    coverage run --source snappass setup.py tests
-    coverage report -m
-    coverage html
+    $ coverage run --source snappass tests.py
+    $ coverage report -m
+    $ coverage html
 
 9. Submit a pull request through the GitHub website.
 
