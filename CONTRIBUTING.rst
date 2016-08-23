@@ -85,25 +85,35 @@ Here's how to set up `snappass` for local development.
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass the tests and
+5. You can test your changes in a development server with debug and autoreload::
+
+    $ docker run -d --name redis-server -p 6379:6379 redis
+    $ export FLASK_DEBUG=1 && \
+      export FLASK_APP=snappass.main && \
+      export NO_SSL=True
+    $ flask run
+
+  You now have a running instance on localhost:5000/
+
+6. When you're done making changes, check that your changes pass the tests and
    flake8::
 
     $ flake8 snappass tests
     $ tox
 
-6. Commit your changes and push your branch to GitHub::
+7. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Check that the test coverage hasn't dropped::
+8. Check that the test coverage hasn't dropped::
 
     coverage run --source snappass setup.py tests
     coverage report -m
     coverage html
 
-8. Submit a pull request through the GitHub website.
+9. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
