@@ -1,7 +1,9 @@
 import os
+import sys
 import uuid
 
 import redis
+from redis.exceptions import ConnectionError
 
 from flask import abort, Flask, render_template, request
 
@@ -22,6 +24,22 @@ time_conversion = {
 }
 
 
+def check_redis_alive(fn):
+    def inner(*args, **kwargs):
+        try:
+            if fn.__name__ == 'main':
+                redis_client.ping()
+            return fn(*args, **kwargs)
+        except ConnectionError as e:
+            print('Failed to connect to redis! %s' % e.message)
+            if fn.__name__ == 'main':
+                sys.exit(0)
+            else:
+                return abort(500)
+    return inner
+
+
+@check_redis_alive
 def set_password(password, ttl):
     key = uuid.uuid4().hex
     redis_client.set(key, password)
@@ -29,6 +47,7 @@ def set_password(password, ttl):
     return key
 
 
+@check_redis_alive
 def get_password(key):
     password = redis_client.get(key)
     if password is not None:
@@ -82,6 +101,7 @@ def show_password(password_key):
     return render_template('password.html', password=password)
 
 
+@check_redis_alive
 def main():
     app.run(host='0.0.0.0', debug=True)
 
