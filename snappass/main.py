@@ -15,7 +15,9 @@ app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
 redis_host = os.environ.get('REDIS_HOST', 'localhost')
-redis_client = redis.StrictRedis(host=redis_host, port=6379, db=0)
+redis_port = int(os.environ.get('REDIS_PORT', 6379))
+redis_db = int(os.environ.get('REDIS_DB', 0))
+redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
 
 time_conversion = {
     'week': 604800,

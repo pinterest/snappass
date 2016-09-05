@@ -50,6 +50,10 @@ Configuration
 
 You can configure the following via environment variables.
 
+`REDIS_HOST` and `REDIS_PORT` tell SnapPass how to connect to your Redis Server. Defaults to localhost on port 6379.
+
+`REDIS_DB` is the database that you want to use on that Redis server. Defaults to db 0.
+
 `SECRET_KEY` this should be a unique key that's used to sign key.  This should
 be kept secret.  See the `Flask Documentation`_ for more information.
 
