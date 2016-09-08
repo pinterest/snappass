@@ -66,6 +66,8 @@ need to change this.
 
 `SNAPPASS_REDIS_DB` is the database that you want to use on this redis server. Defaults to db 0
 
+`REDIS_URL` is optional and, if set, will be used instead of `REDIS_HOST`, `REDIS_PORT`, and `SNAPPASS_REDIS_DB` to configure the Redis client object. For example: redis://username:password@localhost:6379/0
+
 Docker
 ------
 
