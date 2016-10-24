@@ -48,8 +48,7 @@ def check_redis_alive(fn):
 @check_redis_alive
 def set_password(password, ttl):
     key = uuid.uuid4().hex
-    redis_client.set(key, password)
-    redis_client.expire(key, ttl)
+    redis_client.setex(key, ttl, password)
     return key
 
 
