@@ -1,3 +1,4 @@
+import time
 import unittest
 from unittest import TestCase
 
@@ -47,6 +48,17 @@ class SnapPassTestCase(TestCase):
         with snappass.app.test_request_context(
                 "/", data={'password': 'foo', 'ttl': 'hour'}, method='POST'):
             self.assertEqual((3600, 'foo'), snappass.clean_input())
+
+    def test_password_before_expiration(self):
+        password = 'fidelio'
+        key = snappass.set_password(password, 1)
+        self.assertEqual(password, snappass.get_password(key))
+
+    def test_password_after_expiration(self):
+        password = 'open sesame'
+        key = snappass.set_password(password, 1)
+        time.sleep(1.5)
+        self.assertEqual(None, snappass.get_password(key))
 
 
 class SnapPassRoutesTestCase(TestCase):
