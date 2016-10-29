@@ -77,7 +77,6 @@ Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run Sn
 .. _Docker Compose: https://docs.docker.com/compose/
 ::
 
-    $ docker build -t snappass .
     $ docker-compose up -d
 
 This will pull all dependencies, i.e. Redis and appropriate Python version (3.5), then start up snappass and Redis server. SnapPass server is accessible at: http://localhost:5000
