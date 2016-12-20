@@ -73,6 +73,24 @@ class SnapPassRoutesTestCase(TestCase):
         rv = self.app.get('/{0}'.format(key))
         self.assertTrue(password in rv.get_data(as_text=True))
 
+    def test_bots_denial(self):
+        """
+        Main known bots User-Agent should be denied access
+        """
+        password = "Bots can't access this"
+        key = snappass.set_password(password, 30)
+        a_few_sneaky_bots = [
+            "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)",
+            "facebookexternalhit/1.1",
+            "Twitterbot/1.0",
+            "_WhatsApp/2.12.81 (Windows NT 6.1; U; es-ES) Presto/2.9.181 Version/12.00",
+            "WhatsApp/2.16.6/i"
+        ]
+
+        for ua in a_few_sneaky_bots:
+            rv = self.app.get('/{0}'.format(key), headers={ 'User-Agent': ua })
+            self.assertEquals(rv.status_code, 404)
+
 
 if __name__ == '__main__':
     unittest.main()
