@@ -55,6 +55,12 @@ def set_password(password, ttl):
 
 
 @check_redis_alive
+def get_password_key(key):
+    password_key = redis_client.exists(key)
+    return password_key
+
+
+@check_redis_alive
 def get_password(key):
     password = redis_client.get(key)
     if password is not None:
@@ -100,6 +106,22 @@ def handle_password():
 
 
 @app.route('/<password_key>', methods=['GET'])
+def get_password_link(password_key):
+    key = get_password_key(password_key)
+    if not key:
+        abort(404)
+
+    key = password_key
+
+    if NO_SSL:
+        base_url = request.url_root
+    else:
+        base_url = request.url_root.replace("http://", "https://")
+    link = base_url + key + '/reveal'
+    return render_template('password_link.html', password_link=link)
+
+
+@app.route('/<password_key>/reveal', methods=['GET'])
 def show_password(password_key):
     password = get_password(password_key)
     if not password:
