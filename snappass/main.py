@@ -10,6 +10,8 @@ from flask import abort, Flask, render_template, request
 
 NO_SSL = os.environ.get('NO_SSL', False)
 app = Flask(__name__)
+if os.environ.get('DEBUG'):
+   app.debug = True
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
@@ -108,7 +110,7 @@ def show_password(password_key):
 
 @check_redis_alive
 def main():
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
 
 
 if __name__ == '__main__':
