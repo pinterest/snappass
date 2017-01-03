@@ -3,20 +3,26 @@
 {% block content %}
 <div class="container">
   <section>
-    <div class="page-header"><h1>Password stored!</h1></div>
-    <div class="form-horizontal">
-      <input type="text" class="input-xxlarge readonly-text" id="password-link" value="{{ password_link }}" readonly="readonly">
-      <button title="Copy to clipboard" type="button" class="btn btn-secondary copy-clipboard-btn"
+    <div class="page-header"><h1>Share Password Link</h1></div>
+    <p>The password has been temporarily saved. Send the following URL to your intended recipient.</p>
+    <div class="row">
+      <div class="col-sm-6 margin-bottom-10">
+        <input type="text" class="form-control" id="password-link" value="{{ password_link }}" readonly="readonly">
+      </div>
+
+      <div class="col-sm-6">
+        <button title="Copy to clipboard" type="button" class="btn btn-primary copy-clipboard-btn"
               id="copy-clipboard-btn" data-clipboard-target="#password-link"
               data-placement='bottom'>
-        <i class="fa fa-clipboard"></i>
-      </button>
+          <i class="fa fa-clipboard"></i>
+        </button>
+      </div>
     </div>
   </section>
 </div>
 {% endblock %}
 
 {% block js %}
-    <script src="{{ config.STATIC_URL }}/clipboardjs/clipboard.min.js"></script>
-    <script src="{{ config.STATIC_URL }}/snappass/scripts/clipboard_button.js"></script>
+<script src="{{ config.STATIC_URL }}/clipboardjs/clipboard.min.js"></script>
+<script src="{{ config.STATIC_URL }}/snappass/scripts/clipboard_button.js"></script>
 {% endblock %}
