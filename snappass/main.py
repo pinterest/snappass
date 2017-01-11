@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import uuid
 
@@ -8,6 +9,8 @@ from redis.exceptions import ConnectionError
 from flask import abort, Flask, render_template, request
 
 
+SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot', 'Facebot', 'WhatsApp')
+SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
@@ -80,6 +83,13 @@ def clean_input():
 
     return time_conversion[time_period], request.form['password']
 
+def request_is_valid(request):
+    """
+    Ensure the request validates the following:
+        - not made by some specific User-Agents (to avoid chat's preview feature issue)
+    """
+    return not SNEAKY_USER_AGENTS_RE.search(request.headers.get('User-Agent', ''))
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -101,6 +111,8 @@ def handle_password():
 
 @app.route('/<password_key>', methods=['GET'])
 def show_password(password_key):
+    if not request_is_valid(request):
+        abort(404)
     password = get_password(password_key)
     if not password:
         abort(404)
