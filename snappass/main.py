@@ -1,7 +1,7 @@
 import os
+import re
 import sys
 import uuid
-import re
 
 import redis
 from redis.exceptions import ConnectionError
@@ -9,6 +9,8 @@ from redis.exceptions import ConnectionError
 from flask import abort, Flask, render_template, request
 
 
+SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot', 'Facebot', 'WhatsApp')
+SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
@@ -84,9 +86,7 @@ def request_is_valid(request):
     Ensure the request validates the following:
         - not made by some specific User-Agents (to avoid chat's preview feature issue)
     """
-    known_sneaky_user_agents = ['Slackbot', 'facebookexternalhit', 'Twitterbot', 'Facebot', 'WhatsApp']
-    user_agents_regexp = "|".join(known_sneaky_user_agents)
-    return not re.search(user_agents_regexp, request.headers.get('User-Agent', ''))
+    return not SNEAKY_USER_AGENTS_RE.search(request.headers.get('User-Agent', ''))
 
 
 @app.route('/', methods=['GET'])

@@ -82,6 +82,7 @@ class SnapPassRoutesTestCase(TestCase):
         a_few_sneaky_bots = [
             "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)",
             "facebookexternalhit/1.1",
+            "Facebot/1.0",
             "Twitterbot/1.0",
             "_WhatsApp/2.12.81 (Windows NT 6.1; U; es-ES) Presto/2.9.181 Version/12.00",
             "WhatsApp/2.16.6/i"
