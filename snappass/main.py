@@ -74,6 +74,9 @@ def clean_input():
     if 'password' not in request.form:
         abort(400)
 
+    if not len(request.form['password']) > 0:
+        abort(400)
+
     if 'ttl' not in request.form:
         abort(400)
 
