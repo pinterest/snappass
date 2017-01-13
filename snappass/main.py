@@ -6,7 +6,7 @@ import uuid
 import redis
 from redis.exceptions import ConnectionError
 
-from flask import abort, Flask, render_template, request, jsonify
+from flask import abort, Flask, jsonify, make_response, render_template, request
 
 
 SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot', 'Facebot', 'WhatsApp')
@@ -83,6 +83,14 @@ def clean_input():
 
     return time_conversion[time_period], request.form['password']
 
+def make_base_url():
+    if NO_SSL:
+        base_url = request.url_root
+    else:
+        base_url = request.url_root.replace("http://", "https://")
+
+    return base_url
+
 def request_is_valid(request):
     """
     Ensure the request validates the following:
@@ -90,35 +98,29 @@ def request_is_valid(request):
     """
     return not SNEAKY_USER_AGENTS_RE.search(request.headers.get('User-Agent', ''))
 
-def not_found_api(error=None):
+def not_found_api():
     message = {
             'status': 404,
             'message': 'Not Found: ' + request.url,
     }
-    resp = jsonify(message)
-    resp.status_code = 404
 
-    return resp
+    return make_response(jsonify(message), 404)
 
-def unsupported_media_type_api(error=None):
+def unsupported_media_type_api():
     message = {
             'status': 415,
             'message': 'Unsupported Media Type',
     }
-    resp = jsonify(message)
-    resp.status_code = 415
 
-    return resp
+    return make_response(jsonify(message), 415)
 
-def bad_request_api(error=None):
+def bad_request_api():
     message = {
             'status': 400,
             'message': 'Bad Request',
     }
-    resp = jsonify(message)
-    resp.status_code = 400
 
-    return resp
+    return make_response(jsonify(message), 400)
 
 
 @app.route('/', methods=['GET'])
@@ -128,10 +130,7 @@ def index():
 
 @app.route('/api', methods=['GET'])
 def index_api():
-    if NO_SSL:
-        base_url = request.url_root
-    else:
-        base_url = request.url_root.replace("http://", "https://")
+    base_url = make_base_url()
 
     return "Generate a password share link with the following command: \n\n" \
            "curl -X POST -d \'{\"password\":\"password-here\",\"ttl\":\"week | day | hour\"}\' -H \"Content-Type:application/json\" " + base_url + "api\n"
@@ -142,10 +141,8 @@ def handle_password():
     ttl, password = clean_input()
     key = set_password(password, ttl)
 
-    if NO_SSL:
-        base_url = request.url_root
-    else:
-        base_url = request.url_root.replace("http://", "https://")
+    base_url = make_base_url()
+
     link = base_url + key
     return render_template('confirm.html', password_link=link)
 
@@ -177,10 +174,7 @@ def handle_password_api():
 
     key = set_password(password, ttl)
 
-    if NO_SSL:
-        base_url = request.url_root
-    else:
-        base_url = request.url_root.replace("http://", "https://")
+    base_url = make_base_url()
 
     link_web = base_url + key
     link_api = base_url + "api/" + key
@@ -190,10 +184,7 @@ def handle_password_api():
         'api' : link_api,
     }
 
-    resp = jsonify(data)
-    resp.status_code = 200
-
-    return resp
+    return jsonify(data)
 
 
 @app.route('/<password_key>', methods=['GET'])
@@ -213,19 +204,13 @@ def get_password_api(password_key):
     if not password:
         return not_found_api()
 
-    if NO_SSL:
-        base_url = request.url_root
-    else:
-        base_url = request.url_root.replace("http://", "https://")
+    base_url = make_base_url()
 
     data = {
         'password' : password
     }
 
-    resp = jsonify(data)
-    resp.status_code = 200
-
-    return resp
+    return jsonify(data)
 
 
 @check_redis_alive
