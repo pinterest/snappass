@@ -71,13 +71,10 @@ def clean_input():
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if 'password' not in request.form:
+    if empty(request.form.get('password', '')):
         abort(400)
 
-    if not len(request.form['password']) > 0:
-        abort(400)
-
-    if 'ttl' not in request.form:
+    if empty(request.form.get('ttl', '')):
         abort(400)
 
     time_period = request.form['ttl'].lower()
