@@ -65,6 +65,9 @@ def get_password(key):
     redis_client.delete(key)
     return password
 
+def empty(value):
+    if not value:
+        return True
 
 def clean_input():
     """
