@@ -1,13 +1,17 @@
----
-snappass:
-    image: snappass
-    ports:
-        - "5000:5000"
-    links:
-        - "redis:redis"
-    environment:
-        - REDIS_HOST=redis
-        - NO_SSL=True
+version: '2'
 
-redis:
-    image: "redis:latest"
+services:
+
+    snappass:
+        build: .
+        image: pinterest/snappass
+        ports:
+            - "5000:5000"
+        environment:
+            - REDIS_HOST=redis
+            - NO_SSL=True
+        depends_on:
+          - redis
+
+    redis:
+        image: "redis:latest"

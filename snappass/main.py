@@ -1,19 +1,32 @@
 import os
+import re
+import sys
 import uuid
 
 import redis
+from redis.exceptions import ConnectionError
 
 from flask import abort, Flask, render_template, request
 
 
+SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot', 'Facebot', 'WhatsApp')
+SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
 app = Flask(__name__)
+if os.environ.get('DEBUG'):
+   app.debug = True
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
-redis_host = os.environ.get('REDIS_HOST', 'localhost')
-redis_client = redis.StrictRedis(host=redis_host, port=6379, db=0)
+if os.environ.get('REDIS_URL'):
+    redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
+else:
+    redis_host = os.environ.get('REDIS_HOST', 'localhost')
+    redis_port = os.environ.get('REDIS_PORT', 6379)
+    redis_db = os.environ.get('SNAPPASS_REDIS_DB', 0)
+    redis_client = redis.StrictRedis(
+        host=redis_host, port=redis_port, db=redis_db)
 
 time_conversion = {
     'week': 604800,
@@ -22,15 +35,33 @@ time_conversion = {
 }
 
 
+def check_redis_alive(fn):
+    def inner(*args, **kwargs):
+        try:
+            if fn.__name__ == 'main':
+                redis_client.ping()
+            return fn(*args, **kwargs)
+        except ConnectionError as e:
+            print('Failed to connect to redis! %s' % e.message)
+            if fn.__name__ == 'main':
+                sys.exit(0)
+            else:
+                return abort(500)
+    return inner
+
+
+@check_redis_alive
 def set_password(password, ttl):
     key = uuid.uuid4().hex
-    redis_client.set(key, password)
-    redis_client.expire(key, ttl)
+    redis_client.setex(key, ttl, password)
     return key
 
 
+@check_redis_alive
 def get_password(key):
     password = redis_client.get(key)
+    if password is not None:
+        password = password.decode('utf-8')
     redis_client.delete(key)
     return password
 
@@ -51,6 +82,13 @@ def clean_input():
         abort(400)
 
     return time_conversion[time_period], request.form['password']
+
+def request_is_valid(request):
+    """
+    Ensure the request validates the following:
+        - not made by some specific User-Agents (to avoid chat's preview feature issue)
+    """
+    return not SNEAKY_USER_AGENTS_RE.search(request.headers.get('User-Agent', ''))
 
 
 @app.route('/', methods=['GET'])
@@ -73,6 +111,8 @@ def handle_password():
 
 @app.route('/<password_key>', methods=['GET'])
 def show_password(password_key):
+    if not request_is_valid(request):
+        abort(404)
     password = get_password(password_key)
     if not password:
         abort(404)
@@ -80,8 +120,9 @@ def show_password(password_key):
     return render_template('password.html', password=password)
 
 
+@check_redis_alive
 def main():
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
 
 
 if __name__ == '__main__':

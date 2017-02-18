@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
   <head>
-    <title>Send Password</title>
+    <title>Snappass - Share Secrets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link href="{{ config.STATIC_URL }}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{{ config.STATIC_URL }}/snappass/css/custom.css" rel="stylesheet">
   </head>
   <body>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="/">Send Password</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active"><a href="/">Share</a></li>
-            </ul>
-          </div>
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Share Secret</a>
         </div>
       </div>
-    </div>
+    </nav>
+
     {% block content %}{% endblock %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="{{ config.STATIC_URL }}/jquery/jquery-1.12.4.min.js"></script>
     <script src="{{ config.STATIC_URL }}/bootstrap/js/bootstrap.min.js"></script>
     {% block js %}{% endblock %}
   </body>

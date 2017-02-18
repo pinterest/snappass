@@ -24,12 +24,6 @@ If you are reporting a bug, please include:
   as much detail as you can. Questions to start a discussion about the issue
   are welcome.
 
-Python 3.3 Support
-~~~~~~~~~~~~~~~~~~
-
-We'd love for ``tox -e py33`` to work and would welcome anybody who can help
-make that a reality.
-
 Fix Bugs
 ~~~~~~~~
 
@@ -83,6 +77,7 @@ Here's how to set up `snappass` for local development.
     $ mkvirtualenv snappass
     $ cd snappass/
     $ python setup.py develop
+    $ pip install -r dev-requirements.txt
 
 4. Create a branch for local development::
 
@@ -90,25 +85,35 @@ Here's how to set up `snappass` for local development.
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass the tests and
+5. You can test your changes in a development server with debug and autoreload::
+
+    $ docker run -d --name redis-server -p 6379:6379 redis
+    $ export FLASK_DEBUG=1 && \
+      export FLASK_APP=snappass.main && \
+      export NO_SSL=True
+    $ flask run
+
+  You now have a running instance on localhost:5000/
+
+6. When you're done making changes, check that your changes pass the tests and
    flake8::
 
-    $ flake8 snappass tests
+    $ flake8 snappass tests.py setup.py
     $ tox
 
-6. Commit your changes and push your branch to GitHub::
+7. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Check that the test coverage hasn't dropped::
+8. Check that the test coverage hasn't dropped::
 
-    coverage run --source snappass setup.py tests
-    coverage report -m
-    coverage html
+    $ coverage run --source snappass tests.py
+    $ coverage report -m
+    $ coverage html
 
-8. Submit a pull request through the GitHub website.
+9. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
@@ -119,7 +124,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.7 and ideally 3.3. Check
+3. The pull request should work for Python 2.6, 2.7 and 3.3+. Check
    `Travis`_ and make sure that
    the tests pass for all supported Python versions.
 
