@@ -65,16 +65,19 @@ def get_password(key):
     redis_client.delete(key)
     return password
 
+def empty(value):
+    if not value:
+        return True
 
 def clean_input():
     """
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if 'password' not in request.form:
+    if empty(request.form.get('password', '')):
         abort(400)
 
-    if 'ttl' not in request.form:
+    if empty(request.form.get('ttl', '')):
         abort(400)
 
     time_period = request.form['ttl'].lower()
