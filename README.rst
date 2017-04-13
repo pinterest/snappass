@@ -2,7 +2,7 @@
 SnapPass
 ========
 
-.. image:: https://travis-ci.org/pinterest/snappass.png
+.. image:: https://travis-ci.org/pinterest/snappass.svg
 
 
 It's like SnapChat... for Passwords.
