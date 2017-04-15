@@ -53,7 +53,7 @@ You can configure the following via environment variables.
 `SECRET_KEY` this should be a unique key that's used to sign key.  This should
 be kept secret.  See the `Flask Documentation`_ for more information.
 
-`DEBUG` to run Flask web werver in debug mode.  See the `Flask Documentation`_ for more information.
+`DEBUG` to run Flask web server in debug mode.  See the `Flask Documentation`_ for more information.
 
 .. _Flask Documentation: http://flask.pocoo.org/docs/quickstart/#sessions
 
