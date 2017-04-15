@@ -77,6 +77,7 @@ Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run Sn
 
 .. _Docker: https://www.docker.com/
 .. _Docker Compose: https://docs.docker.com/compose/
+
 ::
 
     $ docker-compose up -d
