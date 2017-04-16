@@ -51,11 +51,13 @@ Configuration
 You can configure the following via environment variables.
 
 `SECRET_KEY` this should be a unique key that's used to sign key.  This should
-be kept secret.  See the `Flask Documentation`_ for more information.
+be kept secret.  See the `Flask Documentation`__ for more information.
 
-`DEBUG` to run Flask web werver in debug mode.  See the `Flask Documentation`_ for more information.
+.. __: http://flask.pocoo.org/docs/quickstart/#sessions
 
-.. _Flask Documentation: http://flask.pocoo.org/docs/quickstart/#sessions
+`DEBUG` to run Flask web server in debug mode.  See the `Flask Documentation`__ for more information.
+
+.. __: http://flask.pocoo.org/docs/quickstart/#debug-mode
 
 `STATIC_URL` this should be the location of your static assets.  You might not
 need to change this.
@@ -77,8 +79,9 @@ Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run Sn
 
 .. _Docker: https://www.docker.com/
 .. _Docker Compose: https://docs.docker.com/compose/
+
 ::
 
     $ docker-compose up -d
 
-This will pull all dependencies, i.e. Redis and appropriate Python version (3.6), then start up snappass and Redis server. SnapPass server is accessible at: http://localhost:5000
+This will pull all dependencies, i.e. Redis and appropriate Python version (3.6), then start up SnapPass and Redis server. SnapPass server is accessible at: http://localhost:5000

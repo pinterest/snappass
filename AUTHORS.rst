@@ -6,6 +6,7 @@ Credits
 It is currently maintained by Nicholas Charriere and Yongwen Xu from Pinterest.
 
 Thanks a lot for the contributions of:
+
 * Owen Coutts
 * Ryan Park
 * Yongwen Xu
