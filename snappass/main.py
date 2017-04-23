@@ -31,7 +31,7 @@ else:
     redis_client = redis.StrictRedis(
         host=redis_host, port=redis_port, db=redis_db)
 
-time_conversion = {'week': 604800, 'day': 86400, 'hour': 3600}
+TIME_CONVERSION = {'week': 604800, 'day': 86400, 'hour': 3600}
 
 
 def check_redis_alive(fn):
@@ -82,10 +82,10 @@ def clean_input():
         abort(400)
 
     time_period = request.form['ttl'].lower()
-    if time_period not in time_conversion:
+    if time_period not in TIME_CONVERSION:
         abort(400)
 
-    return time_conversion[time_period], request.form['password']
+    return TIME_CONVERSION[time_period], request.form['password']
 
 
 def request_is_valid(request):
