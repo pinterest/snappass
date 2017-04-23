@@ -9,12 +9,15 @@ from redis.exceptions import ConnectionError
 from flask import abort, Flask, render_template, request
 
 
-SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot', 'Facebot', 'WhatsApp', 'SkypeUriPreview')
+SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
+                      'Facebot', 'WhatsApp', 'SkypeUriPreview')
 SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
+
+
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
-   app.debug = True
+    app.debug = True
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
@@ -28,11 +31,7 @@ else:
     redis_client = redis.StrictRedis(
         host=redis_host, port=redis_port, db=redis_db)
 
-time_conversion = {
-    'week': 604800,
-    'day': 86400,
-    'hour': 3600
-}
+time_conversion = {'week': 604800, 'day': 86400, 'hour': 3600}
 
 
 def check_redis_alive(fn):
@@ -65,9 +64,11 @@ def get_password(key):
     redis_client.delete(key)
     return password
 
+
 def empty(value):
     if not value:
         return True
+
 
 def clean_input():
     """
@@ -85,6 +86,7 @@ def clean_input():
         abort(400)
 
     return time_conversion[time_period], request.form['password']
+
 
 def request_is_valid(request):
     """
