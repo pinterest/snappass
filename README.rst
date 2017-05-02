@@ -2,8 +2,15 @@
 SnapPass
 ========
 
-.. image:: https://travis-ci.org/pinterest/snappass.svg
+|pypi| |build|
 
+.. |pypi| image:: https://img.shields.io/pypi/v/snappass.svg
+    :target: https://pypi.python.org/pypi/snappass
+    :alt: Latest version released on PyPI
+
+.. |build| image:: https://travis-ci.org/pinterest/snappass.svg
+    :target: http://travis-ci.org/pinterest/snappass
+    :alt: Build status
 
 It's like SnapChat... for Passwords.
 
