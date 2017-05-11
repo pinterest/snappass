@@ -86,7 +86,8 @@ class SnapPassRoutesTestCase(TestCase):
             "Twitterbot/1.0",
             "_WhatsApp/2.12.81 (Windows NT 6.1; U; es-ES) Presto/2.9.181 Version/12.00",
             "WhatsApp/2.16.6/i",
-            "SkypeUriPreview Preview/0.5"
+            "SkypeUriPreview Preview/0.5",
+            "Iframely/0.8.5 (+http://iframely.com/;)",
         ]
 
         for ua in a_few_sneaky_bots:
