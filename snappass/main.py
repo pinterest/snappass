@@ -8,11 +8,14 @@ from redis.exceptions import ConnectionError
 
 from flask import abort, Flask, render_template, request
 
+from cryptography.fernet import Fernet
+
 
 SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
                       'Facebot', 'WhatsApp', 'SkypeUriPreview')
 SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
+TOKEN_SEPARATOR = '~'
 
 
 app = Flask(__name__)
@@ -49,20 +52,72 @@ def check_redis_alive(fn):
     return inner
 
 
+def encrypt(password):
+    """
+    Take a password string, encrypt it with Fernet symmetric encryption,
+    and return the result (bytes), with the decryption key (bytes)
+    """
+    encryption_key = Fernet.generate_key()
+    fernet = Fernet(encryption_key)
+    encrypted_password = fernet.encrypt(password.encode('utf-8'))
+    return encrypted_password, encryption_key
+
+
+def decrypt(password, decryption_key):
+    """
+    Decrypt a password (bytes) using the provided key (bytes),
+    and return the plain-text password (bytes).
+    """
+    fernet = Fernet(decryption_key)
+    return fernet.decrypt(password)
+
+
+def parse_token(token):
+    token_fragments = token.split(TOKEN_SEPARATOR, 1)  # Split once, not more.
+    storage_key = token_fragments[0]
+
+    try:
+        decryption_key = token_fragments[1].encode('utf-8')
+    except IndexError:
+        decryption_key = None
+
+    return storage_key, decryption_key
+
+
 @check_redis_alive
 def set_password(password, ttl):
-    key = uuid.uuid4().hex
-    redis_client.setex(key, ttl, password)
-    return key
+    """
+    Encrypt and store the password for the specified lifetime.
+
+    Returns a token comprised of the key where the encrypted password
+    is stored, and the decryption key.
+    """
+    storage_key = uuid.uuid4().hex
+    encrypted_password, encryption_key = encrypt(password)
+    redis_client.setex(storage_key, ttl, encrypted_password)
+    encryption_key = encryption_key.decode('utf-8')
+    token = TOKEN_SEPARATOR.join([storage_key, encryption_key])
+    return token
 
 
 @check_redis_alive
-def get_password(key):
-    password = redis_client.get(key)
+def get_password(token):
+    """
+    From a given token, return the initial password.
+
+    If the token is tilde-separated, we decrypt the password fetched from Redis.
+    If not, the password is simply returned as is.
+    """
+    storage_key, decryption_key = parse_token(token)
+    password = redis_client.get(storage_key)
+    redis_client.delete(storage_key)
+
     if password is not None:
-        password = password.decode('utf-8')
-    redis_client.delete(key)
-    return password
+
+        if decryption_key is not None:
+            password = decrypt(password, decryption_key)
+
+        return password.decode('utf-8')
 
 
 def empty(value):
@@ -104,13 +159,13 @@ def index():
 @app.route('/', methods=['POST'])
 def handle_password():
     ttl, password = clean_input()
-    key = set_password(password, ttl)
+    token = set_password(password, ttl)
 
     if NO_SSL:
         base_url = request.url_root
     else:
         base_url = request.url_root.replace("http://", "https://")
-    link = base_url + key
+    link = base_url + token
     return render_template('confirm.html', password_link=link)
 
 
