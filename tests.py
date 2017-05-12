@@ -124,7 +124,7 @@ class SnapPassRoutesTestCase(TestCase):
 
         for ua in a_few_sneaky_bots:
             rv = self.app.get('/{0}'.format(key), headers={ 'User-Agent': ua })
-            self.assertEquals(rv.status_code, 404)
+            self.assertEqual(rv.status_code, 404)
 
 
 if __name__ == '__main__':
