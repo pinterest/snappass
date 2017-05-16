@@ -37,7 +37,7 @@ trouble of writing it yourself, because maybe you are busy and have other things
 to do.  Enjoy.
 
 Security
-~~~~~~~~
+--------
 
 Passwords are encrypted using `Fernet`_ symmetric encryption, from the `cryptography`_ library.
 A random unique key is generated for each password, and is never stored;
