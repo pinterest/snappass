@@ -36,6 +36,17 @@ Anyway, this took us very little time to write, but we figure we'd save you the
 trouble of writing it yourself, because maybe you are busy and have other things
 to do.  Enjoy.
 
+Security
+--------
+
+Passwords are encrypted using `Fernet`_ symmetric encryption, from the `cryptography`_ library.
+A random unique key is generated for each password, and is never stored;
+it is rather sent as part of the password link.
+This means that even if someone has access to the Redis store, the passwords are still safe.
+
+.. _Fernet: https://cryptography.io/en/latest/fernet/
+.. _cryptography: https://cryptography.io/en/latest/
+
 Requirements
 ------------
 
