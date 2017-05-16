@@ -4,11 +4,10 @@ import sys
 import uuid
 
 import redis
-from redis.exceptions import ConnectionError
-
-from flask import abort, Flask, render_template, request
 
 from cryptography.fernet import Fernet
+from flask import abort, Flask, render_template, request
+from redis.exceptions import ConnectionError
 
 
 SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
