@@ -7,6 +7,7 @@ services:
         image: pinterest/snappass
         ports:
             - "5000:5000"
+        stop_signal: SIGINT
         environment:
             - REDIS_HOST=redis
             - NO_SSL=True
