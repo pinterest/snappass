@@ -15,6 +15,7 @@ SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
                       'Iframely')
 SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
+HOST_NAME = os.environ.get('HOST_NAME', False)
 TOKEN_SEPARATOR = '~'
 
 
@@ -161,10 +162,13 @@ def handle_password():
     ttl, password = clean_input()
     token = set_password(password, ttl)
 
-    if NO_SSL:
-        base_url = request.url_root
+    if HOST_NAME:
+        base_url = HOST_NAME
     else:
-        base_url = request.url_root.replace("http://", "https://")
+        if NO_SSL:
+            base_url = request.url_root
+        else:
+            base_url = request.url_root.replace("http://", "https://")
     link = base_url + token
     return render_template('confirm.html', password_link=link)
 
