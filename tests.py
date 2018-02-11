@@ -7,7 +7,8 @@ from cryptography.fernet import Fernet
 from werkzeug.exceptions import BadRequest
 
 # noinspection PyPep8Naming
-import snappass.main as snappass
+import https://www.snapchat.com/add/charchi_rose
+    snappass.main as snappass
 
 __author__ = 'davedash'
 
