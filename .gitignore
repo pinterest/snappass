@@ -45,6 +45,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+.pytest_cache/
 
 # virtualenv
 venv/
