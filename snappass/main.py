@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import urllib
 import uuid
 
 import redis
@@ -165,7 +166,7 @@ def handle_password():
         base_url = request.url_root
     else:
         base_url = request.url_root.replace("http://", "https://")
-    link = base_url + token
+    link = base_url + urllib.quote(token)
     return render_template('confirm.html', password_link=link)
 
 
@@ -173,6 +174,7 @@ def handle_password():
 def show_password(password_key):
     if not request_is_valid(request):
         abort(404)
+    password_key = urllib.unquote(password_key)
     password = get_password(password_key)
     if not password:
         abort(404)
