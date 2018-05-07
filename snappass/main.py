@@ -8,6 +8,8 @@ import redis
 from cryptography.fernet import Fernet
 from flask import abort, Flask, render_template, request
 from redis.exceptions import ConnectionError
+from werkzeug.urls import url_quote_plus
+from werkzeug.urls import url_unquote_plus
 
 
 SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
@@ -165,7 +167,7 @@ def handle_password():
         base_url = request.url_root
     else:
         base_url = request.url_root.replace("http://", "https://")
-    link = base_url + token
+    link = base_url + url_quote_plus(token)
     return render_template('confirm.html', password_link=link)
 
 
@@ -173,6 +175,7 @@ def handle_password():
 def show_password(password_key):
     if not request_is_valid(request):
         abort(404)
+    password_key = url_unquote_plus(password_key)
     password = get_password(password_key)
     if not password:
         abort(404)
