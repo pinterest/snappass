@@ -5,3 +5,4 @@ Werkzeug==0.9.4
 itsdangerous==0.23
 redis==2.8.0
 cryptography==1.8.1
+mock==1.0.1

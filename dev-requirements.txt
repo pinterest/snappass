@@ -1,3 +1,6 @@
+pytest==3.5.1
+pytest-cov==2.5.1
+mockredispy==2.9.3
 coverage==4.2
 flake8==3.0.4
-tox==2.3.1
+tox==3.0.0

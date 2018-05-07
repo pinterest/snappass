@@ -27,7 +27,10 @@ app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
-if os.environ.get('REDIS_URL'):
+if os.environ.get('MOCK_REDIS'):
+    from mockredis import mock_strict_redis_client
+    redis_client = mock_strict_redis_client()
+elif os.environ.get('REDIS_URL'):
     redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
 else:
     redis_host = os.environ.get('REDIS_HOST', 'localhost')
