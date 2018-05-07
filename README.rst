@@ -50,8 +50,8 @@ This means that even if someone has access to the Redis store, the passwords are
 Requirements
 ------------
 
-* Redis.
-* Python 2.6, 2.7 or 3.3+.
+* Redis
+* Python 2.7+ or 3.4+ (both included)
 
 Installation
 ------------
