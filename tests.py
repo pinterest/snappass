@@ -22,14 +22,14 @@ class SnapPassTestCase(TestCase):
         key = snappass.set_password(password, 30)
         self.assertEqual(password, snappass.get_password(key))
         # Assert that we can't look this up a second time.
-        self.assertEqual(None, snappass.get_password(key))
+        self.assertIsNone(snappass.get_password(key))
 
     def test_password_is_not_stored_in_plaintext(self):
         password = "trustno1"
         token = snappass.set_password(password, 30)
         redis_key = token.split(snappass.TOKEN_SEPARATOR)[0]
         stored_password_text = snappass.redis_client.get(redis_key).decode('utf-8')
-        self.assertFalse(password in stored_password_text)
+        self.assertNotIn(password, stored_password_text)
 
     def test_returned_token_format(self):
         password = "trustsome1"
@@ -97,7 +97,7 @@ class SnapPassTestCase(TestCase):
         # Expire functionality must be explicitly invoked using do_expire(time).
         # mockredis does not support automatic expiration at this time
         snappass.redis_client.do_expire()
-        self.assertEqual(None, snappass.get_password(key))
+        self.assertIsNone(snappass.get_password(key))
 
 
 class SnapPassRoutesTestCase(TestCase):
@@ -110,7 +110,7 @@ class SnapPassRoutesTestCase(TestCase):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
         rv = self.app.get('/{0}'.format(key))
-        self.assertTrue(password in rv.get_data(as_text=True))
+        self.assertIn(password, rv.get_data(as_text=True))
 
     def test_bots_denial(self):
         """
