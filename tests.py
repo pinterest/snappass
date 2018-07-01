@@ -37,7 +37,7 @@ class SnapPassTestCase(TestCase):
         token_fragments = token.split(snappass.TOKEN_SEPARATOR)
         self.assertEqual(2, len(token_fragments))
         redis_key, encryption_key = token_fragments
-        self.assertEqual(32, len(redis_key))
+        self.assertEqual(32 + len(snappass.REDIS_PREFIX), len(redis_key))
         try:
             Fernet(encryption_key.encode('utf-8'))
         except ValueError:
@@ -130,7 +130,7 @@ class SnapPassRoutesTestCase(TestCase):
         ]
 
         for ua in a_few_sneaky_bots:
-            rv = self.app.get('/{0}'.format(key), headers={ 'User-Agent': ua })
+            rv = self.app.get('/{0}'.format(key), headers={'User-Agent': ua})
             self.assertEqual(404, rv.status_code)
 
 
