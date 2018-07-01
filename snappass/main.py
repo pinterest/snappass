@@ -197,7 +197,7 @@ def index_api():
     base_url = make_base_url()
 
     return "Generate a password share link with the following command: \n\n" \
-           "curl -X POST -d \'{\"password\":\"password-here\",\"ttl\":\"week | day | hour\"}\' -H \"Content-Type:application/json\" " + base_url + "api\n"
+           'curl -X POST -H "Content-Type:application/json" -d \'{"password":"password-here","ttl":"week | day | hour"}\' ' + base_url + "api\n"
 
 
 @app.route('/', methods=['POST'])
@@ -218,30 +218,24 @@ def handle_password_api():
 
     payload = request.get_json()
 
-    if 'password' in payload:
-        password = payload['password']
+    password = payload.get('password', None)
 
-        if not len(password) > 0:
-            return bad_request_api()
-    else:
+    if not password:
         return bad_request_api()
 
-    if 'ttl' in payload:
-        time_period = payload['ttl'].lower()
-        if not time_period in time_conversion:
-            return bad_request_api()
+    time_period = payload.get('ttl', 'week').lower()
 
-        ttl = time_conversion[time_period]
-    else:
-        # Set ttl to one week if not specified in the JSON
-        ttl = 604800
+    if not time_period in TIME_CONVERSION:
+        return bad_request_api()
+
+    ttl = TIME_CONVERSION[time_period]
 
     key = set_password(password, ttl)
 
     base_url = make_base_url()
 
-    link_web = base_url + key
-    link_api = base_url + "api/" + key
+    link_web = base_url + url_quote_plus(key)
+    link_api = base_url + "api/" + url_quote_plus(key)
 
     data = {
         'web' : link_web,
@@ -265,6 +259,7 @@ def show_password(password_key):
 
 @app.route('/api/<password_key>', methods=['GET'])
 def get_password_api(password_key):
+    password_key = url_unquote_plus(password_key)
     password = get_password(password_key)
     if not password:
         return not_found_api()
