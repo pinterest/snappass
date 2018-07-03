@@ -13,13 +13,13 @@ from werkzeug.urls import url_unquote_plus
 
 
 SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
-                      'Facebot', 'WhatsApp', 'SkypeUriPreview',
-                      'Iframely')
+                      'Facebot', 'WhatsApp', 'SkypeUriPreview', 'Iframely')
 SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
 TOKEN_SEPARATOR = '~'
 
 
+# Initialize Flask Application
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
     app.debug = True
@@ -27,6 +27,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
+# Initialize Redis
 if os.environ.get('MOCK_REDIS'):
     from mockredis import mock_strict_redis_client
     redis_client = mock_strict_redis_client()
@@ -38,6 +39,7 @@ else:
     redis_db = os.environ.get('SNAPPASS_REDIS_DB', 0)
     redis_client = redis.StrictRedis(
         host=redis_host, port=redis_port, db=redis_db)
+REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'week': 604800, 'day': 86400, 'hour': 3600}
 
@@ -97,7 +99,7 @@ def set_password(password, ttl):
     Returns a token comprised of the key where the encrypted password
     is stored, and the decryption key.
     """
-    storage_key = uuid.uuid4().hex
+    storage_key = REDIS_PREFIX + uuid.uuid4().hex
     encrypted_password, encryption_key = encrypt(password)
     redis_client.setex(storage_key, ttl, encrypted_password)
     encryption_key = encryption_key.decode('utf-8')
