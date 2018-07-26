@@ -4,7 +4,7 @@ services:
 
     snappass:
         build: .
-        image: pinterest/snappass
+        image: "09bcea61bedc"
         ports:
             - "5000:5000"
         stop_signal: SIGINT
@@ -16,3 +16,7 @@ services:
 
     redis:
         image: "redis:latest"
+    nginx:
+        image: "0bfde7bc280d"
+        ports:
+            - "80:80"
