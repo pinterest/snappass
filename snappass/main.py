@@ -33,6 +33,13 @@ if os.environ.get('MOCK_REDIS'):
     redis_client = mock_strict_redis_client()
 elif os.environ.get('REDIS_URL'):
     redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
+elif os.environ.get('VCAP_SERVICES'):
+    import json
+    vcap_services = json.loads(os.environ.get('VCAP_SERVICES'))
+    redis_instance = vcap_services['redis'][0]['credentials']
+    redis_client = redis.StrictRedis(
+        host=redis_instance['host'], port=redis_instance['port'],
+        password=redis_instance['password'])
 else:
     redis_host = os.environ.get('REDIS_HOST', 'localhost')
     redis_port = os.environ.get('REDIS_PORT', 6379)

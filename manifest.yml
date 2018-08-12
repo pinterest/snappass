@@ -1,0 +1,14 @@
+applications:
+- name: snappass
+  path: .
+  memory: 128M
+  disk_quota: 256M
+  instances: 1
+  host: snappass
+  timeout: 180
+  buildpack: python_buildpack
+  env:
+    SECRET_KEY: "<put-here-something-random-like-32-characters-long>" # See: http://flask.pocoo.org/docs/1.0/quickstart/#sessions
+
+  services:
+    - snappass-db # some redis instance
