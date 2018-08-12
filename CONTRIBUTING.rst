@@ -63,9 +63,9 @@ If you are proposing a feature:
 Setting Up the Code for Local Development
 -----------------------------------------
 
-Here's how to set up `snappass` for local development.
+Here's how to set up ``snappass`` for local development.
 
-1. Fork the `snappass` repo on GitHub.
+1. Fork the ``snappass`` repo on GitHub.
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/snappass.git
