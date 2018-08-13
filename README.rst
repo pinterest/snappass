@@ -106,6 +106,20 @@ Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run Sn
 
 This will pull all dependencies, i.e. Redis and appropriate Python version (3.7), then start up SnapPass and Redis server. SnapPass server is accessible at: http://localhost:5000
 
+Cloud Foundry
+-------------
+
+Modify the example ``manifest.yml`` to match your own requirements, and then
+push the app to Cloud Foundry with ``cf push``. For more control, see the
+complete list of available properties in the documentation for manifests_.
+
+.. _manifests: https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html
+
+If you want to pin a specific Python version, then add a ``runtime.txt`` file
+as `explained in the documentation`_.
+
+.. __: https://docs.cloudfoundry.org/buildpacks/python/index.html#runtime
+
 We're Hiring!
 -------------
 
