@@ -68,29 +68,29 @@ Configuration
 
 You can configure the following via environment variables.
 
-`SECRET_KEY` unique key that's used to sign key. This should
+``SECRET_KEY``: unique key that's used to sign key. This should
 be kept secret.  See the `Flask Documentation`__ for more information.
 
 .. __: http://flask.pocoo.org/docs/quickstart/#sessions
 
-`DEBUG` to run Flask web server in debug mode.  See the `Flask Documentation`__ for more information.
+``DEBUG``: to run Flask web server in debug mode.  See the `Flask Documentation`__ for more information.
 
 .. __: http://flask.pocoo.org/docs/quickstart/#debug-mode
 
-`STATIC_URL` this should be the location of your static assets.  You might not
+``STATIC_URL``: this should be the location of your static assets.  You might not
 need to change this.
 
-`NO_SSL` if you are not using SSL.
+``NO_SSL``: if you are not using SSL.
 
-`REDIS_HOST` this should be set by Redis, but you can override it if you want. Defaults to `"localhost"`
+``REDIS_HOST``: this should be set by Redis, but you can override it if you want. Defaults to ``"localhost"``
 
-`REDIS_PORT` is the port redis is serving on, defaults to 6379
+``REDIS_PORT``: is the port redis is serving on, defaults to 6379
 
-`SNAPPASS_REDIS_DB` is the database that you want to use on this redis server. Defaults to db 0
+``SNAPPASS_REDIS_DB``: is the database that you want to use on this redis server. Defaults to db 0
 
-`REDIS_URL` (optional) will be used instead of `REDIS_HOST`, `REDIS_PORT`, and `SNAPPASS_REDIS_DB` to configure the Redis client object. For example: redis://username:password@localhost:6379/0
+``REDIS_URL``: (optional) will be used instead of ``REDIS_HOST``, ``REDIS_PORT``, and ``SNAPPASS_REDIS_DB`` to configure the Redis client object. For example: redis://username:password@localhost:6379/0
 
-`REDIS_PREFIX` (optional, defaults to `"snappass"`) prefix used on redis keys to prevent collisions with other potential clients
+``REDIS_PREFIX``: (optional, defaults to ``"snappass"``) prefix used on redis keys to prevent collisions with other potential clients
 
 Docker
 ------
