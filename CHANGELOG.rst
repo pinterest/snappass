@@ -1,3 +1,8 @@
+Version 1.4.1
+-------------
+ * Upgraded cryptography to 2.3.1 (for CVE-2018-10903, although snappass is
+   unaffected because it doesn't use the vulnerable ``finalize_with_tag`` API)
+
 Version 1.4.0
 -------------
 *You will lose stored passwords during the upgrade to this version*

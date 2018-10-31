@@ -4,5 +4,5 @@ MarkupSafe==1.0
 Werkzeug==0.14.1
 itsdangerous==0.24
 redis==2.10.6
-cryptography==2.2.2
+cryptography==2.3.1
 mock==2.0.0
