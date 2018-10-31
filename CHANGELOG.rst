@@ -1,5 +1,6 @@
 Version 1.4.1
 -------------
+ * Switch to local (non-CDN) Font Awesome assets
  * Upgraded cryptography to 2.3.1 (for CVE-2018-10903, although snappass is
    unaffected because it doesn't use the vulnerable ``finalize_with_tag`` API)
 
