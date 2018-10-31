@@ -1,11 +1,18 @@
+branches:
+  only:
+    - "master"
 language: python
 python:
   - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
-  # - "3.7"  # TODO: Re-enable after https://github.com/travis-ci/travis-ci/issues/9815 is fixed
-sudo: false
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
+cache: pip
 install:
   - pip install tox-travis
 script:
