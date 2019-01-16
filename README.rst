@@ -12,19 +12,19 @@ SnapPass
     :target: http://travis-ci.org/pinterest/snappass
     :alt: Build status
 
-It's like SnapChat... for Passwords.
+It's like SnapChat... for passwords.
 
-This is a webapp that lets you share passwords securely.
+This is a web app that lets you share passwords securely.
 
 Let's say you have a password.  You want to give it to your coworker, Jane.
 You could email it to her, but then it's in her email, which might be backed up,
 and probably is in some storage device controlled by the NSA.
 
 You could send it to her over chat, but chances are Jane logs all her messages
-because she uses Google Talk, and Google Talk logs everything.
+because she uses Google Hangouts Chat, and Google Hangouts Chat might log everything.
 
 You could write it down, but you can't find a pen, and there's way too many
-characters because your Security Person, Paul, is paranoid.
+characters because your security person, Paul, is paranoid.
 
 So we built SnapPass.  It's not that complicated, it does one thing.  If
 Jane gets a link to the password and never looks at it, the password goes away.
@@ -110,4 +110,6 @@ We're Hiring!
 -------------
 
 Are you really excited about open-source and great software engineering?
-Pinterest is [hiring](https://careers.pinterest.com/)!
+Pinterest is `hiring`__!
+
+.. __: https://careers.pinterest.com
