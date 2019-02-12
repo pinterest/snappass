@@ -106,32 +106,17 @@ class SnapPassRoutesTestCase(TestCase):
         snappass.app.config['TESTING'] = True
         self.app = snappass.app.test_client()
 
-    def test_show_password(self):
+    def test_preview_password(self):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
         rv = self.app.get('/{0}'.format(key))
-        self.assertIn(password, rv.get_data(as_text=True))
+        self.assertNotIn(password, rv.get_data(as_text=True))
 
-    def test_bots_denial(self):
-        """
-        Main known bots User-Agent should be denied access
-        """
-        password = "Bots can't access this"
+    def test_show_password(self):
+        password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
-        a_few_sneaky_bots = [
-            "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)",
-            "facebookexternalhit/1.1",
-            "Facebot/1.0",
-            "Twitterbot/1.0",
-            "_WhatsApp/2.12.81 (Windows NT 6.1; U; es-ES) Presto/2.9.181 Version/12.00",
-            "WhatsApp/2.16.6/i",
-            "SkypeUriPreview Preview/0.5",
-            "Iframely/0.8.5 (+http://iframely.com/;)",
-        ]
-
-        for ua in a_few_sneaky_bots:
-            rv = self.app.get('/{0}'.format(key), headers={'User-Agent': ua})
-            self.assertEqual(404, rv.status_code)
+        rv = self.app.post('/{0}'.format(key))
+        self.assertIn(password, rv.get_data(as_text=True))
 
 
 if __name__ == '__main__':
