@@ -126,8 +126,7 @@ def get_password(token):
 @check_redis_alive
 def password_exists(token):
     storage_key, decryption_key = parse_token(token)
-    exists = redis_client.exists(storage_key)
-    return exists
+    return redis_client.exists(storage_key)
 
 def empty(value):
     if not value:
@@ -173,8 +172,7 @@ def handle_password():
 @app.route('/<password_key>', methods=['GET'])
 def preview_password(password_key):
     password_key = url_unquote_plus(password_key)
-    password = password_exists(password_key)
-    if not password:
+    if not password_exists(password_key):
         abort(404)
 
     return render_template('preview.html')
