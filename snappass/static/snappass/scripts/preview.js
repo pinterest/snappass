@@ -1,8 +1,8 @@
 (function () {
 
-  $('#viewSecret').click(function () {
+  $('#revealSecret').click(function () {
     var form = $('<form/>')
-      .attr('id', 'viewSecretForm')
+      .attr('id', 'revealSecretForm')
       .attr('method', 'post');
     form.appendTo($('body'));
     form.submit();
