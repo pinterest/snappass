@@ -11,10 +11,6 @@ from redis.exceptions import ConnectionError
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
 
-
-SNEAKY_USER_AGENTS = ('Slackbot', 'facebookexternalhit', 'Twitterbot',
-                      'Facebot', 'WhatsApp', 'SkypeUriPreview', 'Iframely')
-SNEAKY_USER_AGENTS_RE = re.compile('|'.join(SNEAKY_USER_AGENTS))
 NO_SSL = os.environ.get('NO_SSL', False)
 TOKEN_SEPARATOR = '~'
 
@@ -127,6 +123,11 @@ def get_password(token):
         return password.decode('utf-8')
 
 
+@check_redis_alive
+def password_exists(token):
+    storage_key, decryption_key = parse_token(token)
+    return redis_client.exists(storage_key)
+
 def empty(value):
     if not value:
         return True
@@ -150,14 +151,6 @@ def clean_input():
     return TIME_CONVERSION[time_period], request.form['password']
 
 
-def request_is_valid(request):
-    """
-    Ensure the request validates the following:
-        - not made by some specific User-Agents (to avoid chat's preview feature issue)
-    """
-    return not SNEAKY_USER_AGENTS_RE.search(request.headers.get('User-Agent', ''))
-
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('set_password.html')
@@ -177,9 +170,16 @@ def handle_password():
 
 
 @app.route('/<password_key>', methods=['GET'])
-def show_password(password_key):
-    if not request_is_valid(request):
+def preview_password(password_key):
+    password_key = url_unquote_plus(password_key)
+    if not password_exists(password_key):
         abort(404)
+
+    return render_template('preview.html')
+
+
+@app.route('/<password_key>', methods=['POST'])
+def show_password(password_key):
     password_key = url_unquote_plus(password_key)
     password = get_password(password_key)
     if not password:

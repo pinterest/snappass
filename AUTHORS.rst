@@ -19,3 +19,4 @@ Thanks a lot for the contributions of:
 * Donny Winston
 * James Barclay
 * Thomas Decaux
+* Lauri Lubi
