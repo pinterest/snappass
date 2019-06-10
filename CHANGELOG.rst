@@ -1,3 +1,9 @@
+Version 1.4.2
+-------------
+ * Various minor README and documentation improvements
+ * Upgrade to Jinja 2.10.1
+ * Fix autocomplete bug where hitting "back" would allow to autocomplete the password
+
 Version 1.4.1
 -------------
  * Switch to local (non-CDN) Font Awesome assets
