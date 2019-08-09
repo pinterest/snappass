@@ -115,6 +115,11 @@ class SnapPassRoutesTestCase(TestCase):
         rv = self.app.post('/{0}'.format(key))
         self.assertIn(password, rv.get_data(as_text=True))
 
+    def test_url_prefix(self):
+        password = "I like novelty kitten statues!"
+        snappass.URL_PREFIX="/test/prefix"
+        rv = self.app.post('/', data={'password': password, 'ttl': 'hour'})
+        self.assertIn("localhost/test/prefix/", rv.get_data(as_text=True))
 
 if __name__ == '__main__':
     unittest.main()

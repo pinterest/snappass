@@ -82,6 +82,8 @@ need to change this.
 
 ``NO_SSL``: if you are not using SSL.
 
+``URL_PREFIX``: useful when running snappass behind a reverse proxy like `nginx`. Example: ``"/some/path/"``, Defaults to ``None``
+
 ``REDIS_HOST``: this should be set by Redis, but you can override it if you want. Defaults to ``"localhost"``
 
 ``REDIS_PORT``: is the port redis is serving on, defaults to 6379
