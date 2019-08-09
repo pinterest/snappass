@@ -25,8 +25,8 @@ app.config.update(
 
 # Initialize Redis
 if os.environ.get('MOCK_REDIS'):
-    from mockredis import mock_strict_redis_client
-    redis_client = mock_strict_redis_client()
+    from fakeredis import FakeStrictRedis
+    redis_client = FakeStrictRedis()
 elif os.environ.get('REDIS_URL'):
     redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
 else:
