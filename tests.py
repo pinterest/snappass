@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from cryptography.fernet import Fernet
 from werkzeug.exceptions import BadRequest
-from mockredis import mock_strict_redis_client
+from fakeredis import FakeStrictRedis
 
 # noinspection PyPep8Naming
 import snappass.main as snappass
@@ -16,7 +16,7 @@ __author__ = 'davedash'
 
 class SnapPassTestCase(TestCase):
 
-    @patch('redis.client.StrictRedis', mock_strict_redis_client)
+    @patch('redis.client.StrictRedis', FakeStrictRedis)
     def test_get_password(self):
         password = "melatonin overdose 1337!$"
         key = snappass.set_password(password, 30)
@@ -94,9 +94,6 @@ class SnapPassTestCase(TestCase):
         password = 'open sesame'
         key = snappass.set_password(password, 1)
         time.sleep(1.5)
-        # Expire functionality must be explicitly invoked using do_expire(time).
-        # mockredis does not support automatic expiration at this time
-        snappass.redis_client.do_expire()
         self.assertIsNone(snappass.get_password(key))
 
 
