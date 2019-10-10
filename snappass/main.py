@@ -20,11 +20,17 @@ TOKEN_SEPARATOR = '~'
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
     app.debug = True
+
+if os.environ.get('ABUSE_ORG') or os.environ.get('ABUSE_EMAIL'):
+    app.config.update(
+        dict(ABUSE_MESSAGE=True,
+            ABUSE_ORG=os.environ.get('ABUSE_ORG','Information Security'),
+            ABUSE_EMAIL=os.environ.get('ABUSE_EMAIL','')))
+
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
+
 app.config.update(
-    dict(STATIC_URL=os.environ.get('STATIC_URL', 'static'),
-        ABUSE_ORG=os.environ.get('ABUSE_ORG','Information Security'),
-        ABUSE_EMAIL=os.environ.get('ABUSE_EMAIL','')))
+    dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
 # Initialize Redis
 if os.environ.get('MOCK_REDIS'):

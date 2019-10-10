@@ -23,8 +23,10 @@
     <script src="{{ config.STATIC_URL }}/bootstrap/js/bootstrap.min.js"></script>
     {% block js %}{% endblock %}
 
-<div class=container>
+    {% if config.ABUSE_MESSAGE %}
+    <div class=container>
     Please report abuse to {% if config.ABUSE_EMAIL %}<a href="mailto:{{ config.ABUSE_EMAIL }}">{{ config.ABUSE_ORG }}</a>{% else %}{{ config.ABUSE_ORG }}{% endif %}.
-</div>
+    </div>
+    {% endif %}
   </body>
 </html>
