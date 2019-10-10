@@ -24,8 +24,8 @@ if os.environ.get('DEBUG'):
 if os.environ.get('ABUSE_ORG') or os.environ.get('ABUSE_EMAIL'):
     app.config.update(
         dict(ABUSE_MESSAGE=True,
-            ABUSE_ORG=os.environ.get('ABUSE_ORG','Information Security'),
-            ABUSE_EMAIL=os.environ.get('ABUSE_EMAIL','')))
+            ABUSE_ORG=os.environ.get('ABUSE_ORG', 'Information Security'),
+            ABUSE_EMAIL=os.environ.get('ABUSE_EMAIL', '')))
 
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 
@@ -201,9 +201,9 @@ def show_password(password_key):
 @app.errorhandler(404)
 def page_not_found(e):
     if request.path.startswith("/snappass"):
-        return render_template('404snap.html'),404
+        return render_template('404snap.html'), 404
     else:
-        return render_template('404.html',path=request.path),404
+        return render_template('404.html'), 404
 
 @check_redis_alive
 def main():
