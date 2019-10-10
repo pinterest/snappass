@@ -22,5 +22,9 @@
     <script src="{{ config.STATIC_URL }}/jquery/jquery-1.12.4.min.js"></script>
     <script src="{{ config.STATIC_URL }}/bootstrap/js/bootstrap.min.js"></script>
     {% block js %}{% endblock %}
+
+<div class=container>
+    Please report abuse to {% if config.ABUSE_EMAIL %}<a href="mailto:{{ config.ABUSE_EMAIL }}">{{ config.ABUSE_ORG }}</a>{% else %}{{ config.ABUSE_ORG }}{% endif %}.
+</div>
   </body>
 </html>

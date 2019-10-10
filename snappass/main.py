@@ -22,7 +22,9 @@ if os.environ.get('DEBUG'):
     app.debug = True
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
-    dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
+    dict(STATIC_URL=os.environ.get('STATIC_URL', 'static'),
+        ABUSE_ORG=os.environ.get('ABUSE_ORG','Information Security'),
+        ABUSE_EMAIL=os.environ.get('ABUSE_EMAIL','')))
 
 # Initialize Redis
 if os.environ.get('MOCK_REDIS'):
@@ -190,6 +192,12 @@ def show_password(password_key):
 
     return render_template('password.html', password=password)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    if request.path.startswith("/snappass"):
+        return render_template('404snap.html'),404
+    else:
+        return render_template('404.html',path=request.path),404
 
 @check_redis_alive
 def main():
