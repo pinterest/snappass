@@ -3,6 +3,7 @@ Version 1.5.0 (in development)
 * The ``URL_PREFIX`` environment variable can be used to add a prefix to URLs,
   which is useful when running behind a reverse proxy like nginx.
 * Replaced mockredis with fakeredis in the unit test environment.
+* Added support for Python 3.8.
 
 Version 1.4.2
 -------------
