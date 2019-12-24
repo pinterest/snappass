@@ -6,3 +6,4 @@ adds your information to this file.
 
 - [Pinterest](https://www.pinterest.com/)
 - [Ookla/Speedtest.net](https://www.ookla.com/)
+- [VSHN](https://www.vshn.ch/)
