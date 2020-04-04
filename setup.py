@@ -14,7 +14,7 @@ setup(
     packages=['snappass'],
     entry_points={
         'console_scripts': [
-            'snappass = snappass.main:main',
+            'snappass = snappass',
         ],
     },
     include_package_data=True,

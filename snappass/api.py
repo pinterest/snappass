@@ -2,43 +2,47 @@ import os
 import re
 import sys
 import uuid
+from flask import abort, Flask, render_template, request, jsonify
 
-import redis
-
-from cryptography.fernet import Fernet
-from flask import abort, Flask, render_template, request
-from redis.exceptions import ConnectionError
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
+from functools import wraps
 
-NO_SSL = os.environ.get('NO_SSL', False)
-URL_PREFIX = os.environ.get('URL_PREFIX', None)
-TOKEN_SEPARATOR = '~'
-
+from .encryption_utils import encrypt, decrypt, make_token, parse_token
+from .redis_provider import redis_client, make_redis_storage_key
 
 # Initialize Flask Application
 app = Flask(__name__)
+
 if os.environ.get('DEBUG'):
     app.debug = True
-app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
+app.secret_key = os.environ.get('SECRET_KEY', uuid.uuid4().hex)
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
-# Initialize Redis
-if os.environ.get('MOCK_REDIS'):
-    from fakeredis import FakeStrictRedis
-    redis_client = FakeStrictRedis()
-elif os.environ.get('REDIS_URL'):
-    redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
-else:
-    redis_host = os.environ.get('REDIS_HOST', 'localhost')
-    redis_port = os.environ.get('REDIS_PORT', 6379)
-    redis_db = os.environ.get('SNAPPASS_REDIS_DB', 0)
-    redis_client = redis.StrictRedis(
-        host=redis_host, port=redis_port, db=redis_db)
-REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'week': 604800, 'day': 86400, 'hour': 3600}
+
+
+def apify(func):
+    def wrapped(*args, **kwargs):
+        is_api = request.args.get('api', default=0, type=int)
+        template_name, result, *rest = func(*args, **kwargs)
+        if is_api:
+            return jsonify(result)
+        else:
+            return render_template(template_name, **result)
+    # for flask function mapping we restore the name of the original function
+    wrapped.__name__ = func.__name__
+    return wrapped
+
+
+def is_redis_alive():
+    try:
+        redis_client.ping()
+        return True
+    except:
+        return False
 
 
 def check_redis_alive(fn):
@@ -56,38 +60,6 @@ def check_redis_alive(fn):
     return inner
 
 
-def encrypt(password):
-    """
-    Take a password string, encrypt it with Fernet symmetric encryption,
-    and return the result (bytes), with the decryption key (bytes)
-    """
-    encryption_key = Fernet.generate_key()
-    fernet = Fernet(encryption_key)
-    encrypted_password = fernet.encrypt(password.encode('utf-8'))
-    return encrypted_password, encryption_key
-
-
-def decrypt(password, decryption_key):
-    """
-    Decrypt a password (bytes) using the provided key (bytes),
-    and return the plain-text password (bytes).
-    """
-    fernet = Fernet(decryption_key)
-    return fernet.decrypt(password)
-
-
-def parse_token(token):
-    token_fragments = token.split(TOKEN_SEPARATOR, 1)  # Split once, not more.
-    storage_key = token_fragments[0]
-
-    try:
-        decryption_key = token_fragments[1].encode('utf-8')
-    except IndexError:
-        decryption_key = None
-
-    return storage_key, decryption_key
-
-
 @check_redis_alive
 def set_password(password, ttl):
     """
@@ -96,12 +68,10 @@ def set_password(password, ttl):
     Returns a token comprised of the key where the encrypted password
     is stored, and the decryption key.
     """
-    storage_key = REDIS_PREFIX + uuid.uuid4().hex
+    storage_key = make_redis_storage_key()
     encrypted_password, encryption_key = encrypt(password)
     redis_client.setex(storage_key, ttl, encrypted_password)
-    encryption_key = encryption_key.decode('utf-8')
-    token = TOKEN_SEPARATOR.join([storage_key, encryption_key])
-    return token
+    return make_token(storage_key, encryption_key.decode('utf-8'))
 
 
 @check_redis_alive
@@ -122,16 +92,17 @@ def get_password(token):
             password = decrypt(password, decryption_key)
 
         return password.decode('utf-8')
+    return None
 
 
 @check_redis_alive
 def password_exists(token):
-    storage_key, decryption_key = parse_token(token)
+    storage_key, _ = parse_token(token)
     return redis_client.exists(storage_key)
 
-def empty(value):
-    if not value:
-        return True
+
+def empty(*values):
+    return not all(values)
 
 
 def clean_input():
@@ -139,15 +110,12 @@ def clean_input():
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if empty(request.form.get('password', '')):
+    if empty(request.form.get('password')):
         abort(400)
 
-    if empty(request.form.get('ttl', '')):
-        abort(400)
-
-    time_period = request.form['ttl'].lower()
+    time_period = request.form.get('ttl', '').lower()
     if time_period not in TIME_CONVERSION:
-        abort(400)
+        abort(404)
 
     return TIME_CONVERSION[time_period], request.form['password']
 
@@ -158,18 +126,12 @@ def index():
 
 
 @app.route('/', methods=['POST'])
+@apify
 def handle_password():
     ttl, password = clean_input()
     token = set_password(password, ttl)
-
-    if NO_SSL:
-        base_url = request.url_root
-    else:
-        base_url = request.url_root.replace("http://", "https://")
-    if URL_PREFIX:
-        base_url = base_url + URL_PREFIX.strip("/") + "/"
-    link = base_url + url_quote_plus(token)
-    return render_template('confirm.html', password_link=link)
+    link = url_quote_plus(token)
+    return 'confirm.html', dict(token=token)
 
 
 @app.route('/<password_key>', methods=['GET'])
@@ -177,24 +139,20 @@ def preview_password(password_key):
     password_key = url_unquote_plus(password_key)
     if not password_exists(password_key):
         abort(404)
-
     return render_template('preview.html')
 
 
 @app.route('/<password_key>', methods=['POST'])
+@apify
 def show_password(password_key):
     password_key = url_unquote_plus(password_key)
     password = get_password(password_key)
-    if not password:
+    if password is None:
         abort(404)
 
-    return render_template('password.html', password=password)
+    return 'password.html', dict(password=password)
 
 
 @check_redis_alive
-def main():
+def main(port):
     app.run(host='0.0.0.0')
-
-
-if __name__ == '__main__':
-    main()
