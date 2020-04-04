@@ -115,6 +115,7 @@ def clean_input():
     else:
         abort(400)
 
+
 @app.route('/', methods=['GET'])
 def index():
     return render_template('set_password.html')
