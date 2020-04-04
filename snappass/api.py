@@ -6,7 +6,6 @@ from flask import abort, Flask, render_template, request, jsonify
 
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
-from functools import wraps
 
 from .encryption_utils import encrypt, decrypt, make_token, parse_token
 from .redis_provider import redis_client, make_redis_storage_key
@@ -154,5 +153,5 @@ def show_password(password_key):
 
 
 @check_redis_alive
-def main(port):
+def main():
     app.run(host='0.0.0.0')
