@@ -2,13 +2,12 @@ import os
 import re
 import sys
 import uuid
-from flask import abort, Flask, render_template, request, jsonify
 
-from werkzeug.urls import url_quote_plus
-from werkzeug.urls import url_unquote_plus
+from flask import Flask, abort, jsonify, render_template, request
+from werkzeug.urls import url_quote_plus, url_unquote_plus
 
-from .encryption_utils import encrypt, decrypt, make_token, parse_token
-from .redis_provider import redis_client, make_redis_storage_key
+from .encryption_utils import decrypt, encrypt, make_token, parse_token
+from .redis_provider import make_redis_storage_key, redis_client
 
 # Initialize Flask Application
 app = Flask(__name__)
