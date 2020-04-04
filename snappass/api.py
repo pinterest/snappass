@@ -20,9 +20,6 @@ app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
 
-TIME_CONVERSION = {'week': 604800, 'day': 86400, 'hour': 3600}
-
-
 def apify(func):
     def wrapped(*args, **kwargs):
         is_api = request.args.get('api', default=0, type=int)
@@ -109,15 +106,14 @@ def clean_input():
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if empty(request.form.get('password')):
+    if empty(request.form.get('password'), request.form.get('ttl')):
         abort(400)
 
-    time_period = request.form.get('ttl', '').lower()
-    if time_period not in TIME_CONVERSION:
-        abort(404)
-
-    return TIME_CONVERSION[time_period], request.form['password']
-
+    time_period = int(request.form['ttl'])
+    if time_period > 0:
+        return time_period, request.form['password']
+    else:
+        abort(400)
 
 @app.route('/', methods=['GET'])
 def index():
