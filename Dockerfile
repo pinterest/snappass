@@ -1,6 +1,6 @@
-FROM python:3.8-slim
+FROM python:3.7.2-slim
 
-ENV APP_DIR=/usr/src/snappass
+ARG APP_DIR=/usr/src/snappass
 
 RUN groupadd -r snappass && \
     useradd -r -g snappass snappass && \
@@ -8,11 +8,13 @@ RUN groupadd -r snappass && \
 
 WORKDIR $APP_DIR
 
-COPY ["setup.py", "MANIFEST.in", "README.rst", "AUTHORS.rst", "$APP_DIR/"]
-COPY ["./snappass", "$APP_DIR/snappass"]
+COPY ./requirements.txt .
 
-RUN python setup.py install && \
-    chown -R snappass $APP_DIR && \
+RUN pip install -r requirements.txt
+
+COPY ./snappass $APP_DIR
+
+RUN chown -R snappass $APP_DIR && \
     chgrp -R snappass $APP_DIR
 
 USER snappass
@@ -20,4 +22,5 @@ USER snappass
 # Default Flask port
 EXPOSE 5000
 
-CMD ["snappass"]
+
+CMD ["python3.7", "/usr/src/snappass", "5000"]
