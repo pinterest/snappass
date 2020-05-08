@@ -1,10 +1,13 @@
 from mock import patch
+import re
 import time
 import unittest
 import uuid
 from unittest import TestCase
+from urllib.parse import unquote
 
 from cryptography.fernet import Fernet
+from freezegun import freeze_time
 from werkzeug.exceptions import BadRequest
 from fakeredis import FakeStrictRedis
 
@@ -117,9 +120,25 @@ class SnapPassRoutesTestCase(TestCase):
 
     def test_url_prefix(self):
         password = "I like novelty kitten statues!"
-        snappass.URL_PREFIX="/test/prefix"
+        snappass.URL_PREFIX = "/test/prefix"
         rv = self.app.post('/', data={'password': password, 'ttl': 'hour'})
         self.assertIn("localhost/test/prefix/", rv.get_data(as_text=True))
+
+    def test_set_password(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post('/', data={'password': password, 'ttl': 'two weeks'})
+
+            html_content = rv.data.decode("ascii")
+            key = re.search(r'id="password-link" value="https://localhost/([^"]+)', html_content).group(1)
+            key = unquote(key)
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
+
 
 if __name__ == '__main__':
     unittest.main()
