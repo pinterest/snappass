@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 import uuid
 
@@ -38,7 +37,7 @@ else:
         host=redis_host, port=redis_port, db=redis_db)
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
-TIME_CONVERSION = {'week': 604800, 'day': 86400, 'hour': 3600}
+TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400, 'hour': 3600}
 
 
 def check_redis_alive(fn):
@@ -128,6 +127,7 @@ def get_password(token):
 def password_exists(token):
     storage_key, decryption_key = parse_token(token)
     return redis_client.exists(storage_key)
+
 
 def empty(value):
     if not value:
