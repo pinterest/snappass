@@ -1,3 +1,5 @@
+.PHONY: dev prod run test
+
 dev: dev-requirements.txt
 	pip install -r dev-requirements.txt
 
