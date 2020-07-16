@@ -17,8 +17,6 @@ spec:
     spec:
       containers:
       - env:
-        - name: NO_SSL
-          value: "True"
         - name: REDIS_HOST
           value: localhost
         image: us.gcr.io/pliancy-primary/pliancy-snappass:0.0.1
