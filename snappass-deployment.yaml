@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pliancy-snappass
+  labels:
+    app: pliancy-snappass
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pliancy-snappass
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: pliancy-snappass
+    spec:
+      containers:
+      - env:
+        - name: NO_SSL
+          value: "True"
+        - name: REDIS_HOST
+          value: localhost
+        image: us.gcr.io/pliancy-primary/pliancy-snappass:0.0.1
+        name: snappass
+        ports:
+        - containerPort: 5000
+        resources: {}
+      - image: redis:latest
+        name: redis
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+status: {}
