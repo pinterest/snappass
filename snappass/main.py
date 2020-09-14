@@ -9,8 +9,9 @@ from flask import abort, Flask, render_template, request
 from redis.exceptions import ConnectionError
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
+from distutils.util import strtobool
 
-NO_SSL = os.environ.get('NO_SSL', False)
+NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
 TOKEN_SEPARATOR = '~'
 
