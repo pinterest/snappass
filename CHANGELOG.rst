@@ -1,7 +1,10 @@
-Version 1.5.0 (in development)
-------------------------------
+Version 1.5.0
+-------------
+* Added support for "2 week" secret lifetimes.
+* The ``NO_SSL`` environment variable is now propertly parsed.
 * The ``URL_PREFIX`` environment variable can be used to add a prefix to URLs,
   which is useful when running behind a reverse proxy like nginx.
+* Prevent prefetching bots from destroying secrets.
 * Replaced mockredis with fakeredis in the unit test environment.
 * Added support for Python 3.8.
 
