@@ -1,12 +1,15 @@
 from mock import patch
+import re
 import time
 import unittest
 import uuid
 from unittest import TestCase
 
 from cryptography.fernet import Fernet
+from freezegun import freeze_time
 from werkzeug.exceptions import BadRequest
-from mockredis import mock_strict_redis_client
+from fakeredis import FakeStrictRedis
+from six.moves.urllib.parse import unquote
 
 # noinspection PyPep8Naming
 import snappass.main as snappass
@@ -16,7 +19,7 @@ __author__ = 'davedash'
 
 class SnapPassTestCase(TestCase):
 
-    @patch('redis.client.StrictRedis', mock_strict_redis_client)
+    @patch('redis.client.StrictRedis', FakeStrictRedis)
     def test_get_password(self):
         password = "melatonin overdose 1337!$"
         key = snappass.set_password(password, 30)
@@ -94,9 +97,6 @@ class SnapPassTestCase(TestCase):
         password = 'open sesame'
         key = snappass.set_password(password, 1)
         time.sleep(1.5)
-        # Expire functionality must be explicitly invoked using do_expire(time).
-        # mockredis does not support automatic expiration at this time
-        snappass.redis_client.do_expire()
         self.assertIsNone(snappass.get_password(key))
 
 
@@ -117,6 +117,27 @@ class SnapPassRoutesTestCase(TestCase):
         key = snappass.set_password(password, 30)
         rv = self.app.post('/{0}'.format(key))
         self.assertIn(password, rv.get_data(as_text=True))
+
+    def test_url_prefix(self):
+        password = "I like novelty kitten statues!"
+        snappass.URL_PREFIX = "/test/prefix"
+        rv = self.app.post('/', data={'password': password, 'ttl': 'hour'})
+        self.assertIn("localhost/test/prefix/", rv.get_data(as_text=True))
+
+    def test_set_password(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post('/', data={'password': password, 'ttl': 'two weeks'})
+
+            html_content = rv.data.decode("ascii")
+            key = re.search(r'id="password-link" value="https://localhost/([^"]+)', html_content).group(1)
+            key = unquote(key)
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
 
 
 if __name__ == '__main__':

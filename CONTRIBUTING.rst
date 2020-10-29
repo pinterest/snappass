@@ -77,7 +77,7 @@ Here's how to set up ``snappass`` for local development.
     $ mkvirtualenv snappass
     $ cd snappass/
     $ python setup.py develop
-    $ pip install -r dev-requirements.txt
+    $ make dev
 
 4. Create a branch for local development::
 
@@ -85,27 +85,22 @@ Here's how to set up ``snappass`` for local development.
 
    Now you can make your changes locally.
 
-5. You can test your changes in a development server with debug and autoreload::
+5. You run a development server with debug and autoreload to manually verify::
 
     $ docker run -d --name redis-server -p 6379:6379 redis
-    $ export FLASK_DEBUG=1 && \
-      export FLASK_APP=snappass.main && \
-      export NO_SSL=True
-    $ flask run
+    $ make run
 
   You now have a running instance on localhost:5000/
 
-6. When you're done making changes, check that your changes pass the tests and
+6. Please add some tests to tests.py and run tests::
+
+    $ make test
+
+7. When you're done making changes, check that your changes pass the tests and
    flake8::
 
     $ flake8 snappass tests.py setup.py
     $ tox
-
-7. Commit your changes and push your branch to GitHub::
-
-    $ git add .
-    $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
 
 8. Check that the test coverage hasn't dropped::
 
@@ -113,7 +108,13 @@ Here's how to set up ``snappass`` for local development.
     $ coverage report -m
     $ coverage html
 
-9. Submit a pull request through the GitHub website.
+9. Commit your changes and push your branch to GitHub::
+
+    $ git add .
+    $ git commit -m "Your detailed description of your changes."
+    $ git push origin name-of-your-bugfix-or-feature
+
+10. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------

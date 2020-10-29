@@ -9,7 +9,7 @@ SnapPass
     :alt: Latest version released on PyPI
 
 .. |build| image:: https://travis-ci.org/pinterest/snappass.svg
-    :target: http://travis-ci.org/pinterest/snappass
+    :target: https://travis-ci.org/pinterest/snappass
     :alt: Build status
 
 It's like SnapChat... for passwords.
@@ -82,6 +82,8 @@ need to change this.
 
 ``NO_SSL``: if you are not using SSL.
 
+``URL_PREFIX``: useful when running snappass behind a reverse proxy like `nginx`. Example: ``"/some/path/"``, Defaults to ``None``
+
 ``REDIS_HOST``: this should be set by Redis, but you can override it if you want. Defaults to ``"localhost"``
 
 ``REDIS_PORT``: is the port redis is serving on, defaults to 6379
@@ -106,10 +108,15 @@ Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run Sn
 
 This will pull all dependencies, i.e. Redis and appropriate Python version (3.7), then start up SnapPass and Redis server. SnapPass server is accessible at: http://localhost:5000
 
+Similar Tools
+-------------
+
+- `Snappass.NET <https://github.com/generateui/Snappass.NET>`_ is a .NET
+  (ASP.NET Core) port of SnapPass.
+
+
 We're Hiring!
 -------------
 
 Are you really excited about open-source and great software engineering?
-Pinterest is `hiring`__!
-
-.. __: https://careers.pinterest.com
+`Pinterest is hiring <https://careers.pinterest.com>`_!

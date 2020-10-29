@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 import uuid
 
@@ -10,8 +9,10 @@ from flask import abort, Flask, render_template, request
 from redis.exceptions import ConnectionError
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
+from distutils.util import strtobool
 
-NO_SSL = os.environ.get('NO_SSL', False)
+NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
+URL_PREFIX = os.environ.get('URL_PREFIX', None)
 TOKEN_SEPARATOR = '~'
 
 
@@ -25,8 +26,8 @@ app.config.update(
 
 # Initialize Redis
 if os.environ.get('MOCK_REDIS'):
-    from mockredis import mock_strict_redis_client
-    redis_client = mock_strict_redis_client()
+    from fakeredis import FakeStrictRedis
+    redis_client = FakeStrictRedis()
 elif os.environ.get('REDIS_URL'):
     redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
 else:
@@ -37,7 +38,7 @@ else:
         host=redis_host, port=redis_port, db=redis_db)
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
-TIME_CONVERSION = {'week': 604800, 'day': 86400, 'hour': 3600}
+TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400, 'hour': 3600}
 
 
 def check_redis_alive(fn):
@@ -128,6 +129,7 @@ def password_exists(token):
     storage_key, decryption_key = parse_token(token)
     return redis_client.exists(storage_key)
 
+
 def empty(value):
     if not value:
         return True
@@ -165,6 +167,8 @@ def handle_password():
         base_url = request.url_root
     else:
         base_url = request.url_root.replace("http://", "https://")
+    if URL_PREFIX:
+        base_url = base_url + URL_PREFIX.strip("/") + "/"
     link = base_url + url_quote_plus(token)
     return render_template('confirm.html', password_link=link)
 
