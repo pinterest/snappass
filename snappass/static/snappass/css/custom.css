@@ -15,3 +15,33 @@ input[readonly].readonly-text {
     background-color: #fff;
     cursor: text;
 }
+
+h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 38.4px;
+    letter-spacing: -1.92px;
+    margin-bottom: 8px;
+}
+
+p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    margin-bottom: 16px;
+}
+
+.navbar-fios {
+    background-color: #172d35;
+    border-color: #183c47;
+}
+
+.navbar-brand {
+    float: left;
+    height: 100%;
+    padding: 30px;
+    font-size: 18px;
+    line-height: 20px;
+}
