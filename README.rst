@@ -50,8 +50,10 @@ This means that even if someone has access to the Redis store, the passwords are
 Requirements
 ------------
 
-* [Redis](https://redis.io/)
+* `Redis`_
 * Python 2.7+ or 3.5+
+
+.. _Redis: https://redis.io/
 
 Installation
 ------------
@@ -66,7 +68,9 @@ Installation
 Configuration
 -------------
 
-You can configure the following via environment variables.
+Start by ensuring that Redis is up and running.
+
+Then, you can configure the following via environment variables.
 
 ``SECRET_KEY``: unique key that's used to sign key. This should
 be kept secret.  See the `Flask Documentation`__ for more information.
