@@ -71,7 +71,7 @@ class SnapPassTestCase(TestCase):
     def test_clean_input(self):
         # Test Bad Data
         with snappass.app.test_request_context(
-                "/", data={'password': 'foo', 'ttl': 'bar'}, method='POST'):
+                "/", data={'password': 'foo', 'ttl': 'bar', 'duplicate': 'baz'}, method='POST'):
             self.assertRaises(BadRequest, snappass.clean_input)
 
         # No Password
@@ -84,9 +84,14 @@ class SnapPassTestCase(TestCase):
                 "/", data={'password': 'foo'}, method='POST'):
             self.assertRaises(BadRequest, snappass.clean_input)
 
+        # No Duplicate
         with snappass.app.test_request_context(
-                "/", data={'password': 'foo', 'ttl': 'hour'}, method='POST'):
-            self.assertEqual((3600, 'foo'), snappass.clean_input())
+                "/", data={'password': 'foo', 'ttl': 'hour' }, method='POST'):
+            self.assertRaises(BadRequest, snappass.clean_input)
+
+        with snappass.app.test_request_context(
+                "/", data={'password': 'foo', 'ttl': 'hour', 'duplicate': '1'}, method='POST'):
+            self.assertEqual((3600, 'foo', 1), snappass.clean_input())
 
     def test_password_before_expiration(self):
         password = 'fidelio'
@@ -121,16 +126,16 @@ class SnapPassRoutesTestCase(TestCase):
     def test_url_prefix(self):
         password = "I like novelty kitten statues!"
         snappass.URL_PREFIX = "/test/prefix"
-        rv = self.app.post('/', data={'password': password, 'ttl': 'hour'})
+        rv = self.app.post('/', data={'password': password, 'ttl': 'hour', 'duplicate': '1'})
         self.assertIn("localhost/test/prefix/", rv.get_data(as_text=True))
 
     def test_set_password(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
             password = 'my name is my passport. verify me.'
-            rv = self.app.post('/', data={'password': password, 'ttl': 'two weeks'})
+            rv = self.app.post('/', data={'password': password, 'ttl': 'two weeks', 'duplicate': '1'})
 
             html_content = rv.data.decode("ascii")
-            key = re.search(r'id="password-link" value="https://localhost/([^"]+)', html_content).group(1)
+            key = re.search(r'id="password-link" value="https?://localhost/([^"]+)', html_content).group(1)
             key = unquote(key)
 
             frozen_time.move_to("2020-05-22 11:59:59")

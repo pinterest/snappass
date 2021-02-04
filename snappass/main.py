@@ -149,7 +149,10 @@ def clean_input():
     if empty(request.form.get('duplicate', '')):
         abort(400)
 
-    duplicate = int(request.form['duplicate'])
+    try:
+        duplicate = int(request.form['duplicate'])
+    except ValueError:
+        duplicate = 1
     duplicate = 1 if duplicate < 1 else MAX_DUPLICATE if duplicate > MAX_DUPLICATE else duplicate
 
     time_period = request.form['ttl'].lower()
