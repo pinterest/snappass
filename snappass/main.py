@@ -14,6 +14,7 @@ from distutils.util import strtobool
 NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
 TOKEN_SEPARATOR = '~'
+MAX_DUPLICATE = os.environ.get('MAX_DUPLICATE', 10)
 
 
 # Initialize Flask Application
@@ -39,7 +40,6 @@ else:
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400, 'hour': 3600}
-MAX_DUPLICATE = 10
 
 def check_redis_alive(fn):
     def inner(*args, **kwargs):
