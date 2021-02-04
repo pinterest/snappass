@@ -39,7 +39,7 @@ else:
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400, 'hour': 3600}
-
+MAX_DUPLICATE = 10
 
 def check_redis_alive(fn):
     def inner(*args, **kwargs):
@@ -146,11 +146,17 @@ def clean_input():
     if empty(request.form.get('ttl', '')):
         abort(400)
 
+    if empty(request.form.get('duplicate', '')):
+        abort(400)
+
+    duplicate = int(request.form['duplicate'])
+    duplicate = 1 if duplicate < 1 else MAX_DUPLICATE if duplicate > MAX_DUPLICATE else duplicate
+
     time_period = request.form['ttl'].lower()
     if time_period not in TIME_CONVERSION:
         abort(400)
 
-    return TIME_CONVERSION[time_period], request.form['password']
+    return TIME_CONVERSION[time_period], request.form['password'], duplicate
 
 
 @app.route('/', methods=['GET'])
@@ -160,8 +166,12 @@ def index():
 
 @app.route('/', methods=['POST'])
 def handle_password():
-    ttl, password = clean_input()
-    token = set_password(password, ttl)
+    token = []
+    link = []
+
+    ttl, password, duplicate = clean_input()
+    for i in range(duplicate):
+        token.append(set_password(password, ttl))
 
     if NO_SSL:
         base_url = request.url_root
@@ -169,7 +179,10 @@ def handle_password():
         base_url = request.url_root.replace("http://", "https://")
     if URL_PREFIX:
         base_url = base_url + URL_PREFIX.strip("/") + "/"
-    link = base_url + url_quote_plus(token)
+
+    for i in range(duplicate):
+        link.append(base_url + url_quote_plus(token[i]))
+
     return render_template('confirm.html', password_link=link)
 
 
