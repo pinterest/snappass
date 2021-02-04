@@ -88,6 +88,8 @@ need to change this.
 
 ``URL_PREFIX``: useful when running snappass behind a reverse proxy like `nginx`. Example: ``"/some/path/"``, Defaults to ``None``
 
+``MAX_DUPLICATE``: maximum number accepted by "# of links" for each secret. Default to 10
+
 ``REDIS_HOST``: this should be set by Redis, but you can override it if you want. Defaults to ``"localhost"``
 
 ``REDIS_PORT``: is the port redis is serving on, defaults to 6379
