@@ -5,7 +5,7 @@ cryptography==3.3.2
 Flask==1.0.2
 idna==2.9
 itsdangerous==0.24
-Jinja2==2.10.1
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 pycparser==2.20
 redis==2.10.6
