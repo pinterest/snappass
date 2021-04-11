@@ -84,6 +84,8 @@ be kept secret.  See the `Flask Documentation`__ for more information.
 ``STATIC_URL``: this should be the location of your static assets.  You might not
 need to change this.
 
+``HOST``: allows you to overwrite the host displayed on the Share Secret Link page. Example: ``example.org``.  
+
 ``NO_SSL``: if you are not using SSL.
 
 ``URL_PREFIX``: useful when running snappass behind a reverse proxy like `nginx`. Example: ``"/some/path/"``, Defaults to ``None``

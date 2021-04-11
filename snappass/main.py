@@ -13,6 +13,7 @@ from distutils.util import strtobool
 
 NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
+HOST = os.environ.get('HOST', None)
 TOKEN_SEPARATOR = '~'
 
 
@@ -163,10 +164,14 @@ def handle_password():
     ttl, password = clean_input()
     token = set_password(password, ttl)
 
-    if NO_SSL:
-        base_url = request.url_root
+    if HOST:
+        base_url = "http://" + HOST + '/'
     else:
-        base_url = request.url_root.replace("http://", "https://")
+        base_url = request.url_root
+    if NO_SSL:
+        base_url = base_url
+    else:
+        base_url = base_url.replace("http://", "https://")
     if URL_PREFIX:
         base_url = base_url + URL_PREFIX.strip("/") + "/"
     link = base_url + url_quote_plus(token)
