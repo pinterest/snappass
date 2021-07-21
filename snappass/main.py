@@ -187,8 +187,8 @@ def handle_password():
     else:
         base_url = request.url_root.replace("http://", "https://")
     if URL_PREFIX:
-        base_url = base_url + URL_PREFIX.strip("/") + "/u/"
-    link = base_url + url_quote_plus(hash_token)
+        base_url = base_url + URL_PREFIX.strip("/") + "/"
+    link = base_url + "u/" + url_quote_plus(hash_token)
     return render_template('confirm.html', password_link=link)
 
 @app.route('/u/<hash_token>', methods=['GET'])
