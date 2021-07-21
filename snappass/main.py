@@ -1,3 +1,4 @@
+from hashlib import sha256
 import os
 import sys
 import uuid
@@ -5,7 +6,7 @@ import uuid
 import redis
 
 from cryptography.fernet import Fernet
-from flask import abort, Flask, render_template, request
+from flask import abort, Flask, redirect, render_template, request
 from redis.exceptions import ConnectionError
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
@@ -105,6 +106,23 @@ def set_password(password, ttl):
 
 
 @check_redis_alive
+def create_alias(token):
+     """
+     From a generated token return a sha256 hash to use for URL shorterning
+     """
+     token_hash = sha256(token.encode('utf-8'))
+     redis_client.set(token_hash.hexdigest(), token)
+     return token_hash.hexdigest()
+
+@check_redis_alive
+def get_alias_token(token_hash):
+    encrypted_token = redis_client.get(token_hash)
+    if encrypted_token:
+        return str(encrypted_token.decode('utf-8'))
+    else:
+        return False
+    
+@check_redis_alive
 def get_password(token):
     """
     From a given token, return the initial password.
@@ -115,7 +133,8 @@ def get_password(token):
     storage_key, decryption_key = parse_token(token)
     password = redis_client.get(storage_key)
     redis_client.delete(storage_key)
-
+    encoded_token = sha256(storage_key.encode('utf-8'))
+    redis_client.delete(encoded_token.hexdigest())
     if password is not None:
 
         if decryption_key is not None:
@@ -162,17 +181,30 @@ def index():
 def handle_password():
     ttl, password = clean_input()
     token = set_password(password, ttl)
-
+    hash_token = create_alias(token)
     if NO_SSL:
         base_url = request.url_root
     else:
         base_url = request.url_root.replace("http://", "https://")
     if URL_PREFIX:
-        base_url = base_url + URL_PREFIX.strip("/") + "/"
-    link = base_url + url_quote_plus(token)
+        base_url = base_url + URL_PREFIX.strip("/") + "/u/"
+    link = base_url + url_quote_plus(hash_token)
     return render_template('confirm.html', password_link=link)
 
-
+@app.route('/u/<hash_token>', methods=['GET'])
+def get_hash_token(hash_token):
+    redirect_token = get_alias_token(hash_token)
+    if redirect_token:
+       if NO_SSL:
+          base_url = request.url_root
+       else:
+          base_url = request.url_root.replace("http://", "https://")
+       if URL_PREFIX:
+         base_url = base_url + URL_PREFIX.strip("/") + "/"
+       return redirect(base_url + redirect_token, code=302)
+    else:
+        abort(404)
+        
 @app.route('/<password_key>', methods=['GET'])
 def preview_password(password_key):
     password_key = url_unquote_plus(password_key)
