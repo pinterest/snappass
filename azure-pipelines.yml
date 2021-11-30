@@ -37,7 +37,7 @@ stages:
       displayName: Build and push the docker image
       inputs:
         containerRegistry: 'Docker Hub'
-        repository: 'trackabout/snappass'
+        repository: 'snappass'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: |
