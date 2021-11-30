@@ -4,7 +4,7 @@ services:
 
     snappass:
         build: .
-        image: trackabout/snappass
+        image: tacontainerreg.azurecr.io/trackaboutsnappass:latest
         ports:
             - "5000:5000"
         stop_signal: SIGINT
