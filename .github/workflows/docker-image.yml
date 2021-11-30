@@ -33,19 +33,19 @@ jobs:
           tags: tacontainerreg.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}/trackaboutsnappass:${{ github.sha }}
           file: ./Dockerfile
 
-    deploy:
-      runs-on: ubuntu-latest
-      needs: build
-      environment:
-        name: 'production'
-        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-      steps:
-        - name: Deploy to Azure Web App
-          id: deploy-to-webapp
-          uses: azure/webapps-deploy@v2
-          with:
-            app-name: 'trackabout-snappass'
-            slot-name: 'production'
-            publish-profile: ${{ secrets.AzureAppService_PublishProfile_e1b83c8013474921a49235e7be3f39c8 }}
-            images: 'tacontainerreg.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}/trackaboutsnappass:${{ github.sha }}'
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'trackabout-snappass'
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_e1b83c8013474921a49235e7be3f39c8 }}
+          images: 'tacontainerreg.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}/trackaboutsnappass:${{ github.sha }}'
