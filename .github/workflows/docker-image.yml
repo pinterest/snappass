@@ -31,8 +31,8 @@ jobs:
         with:
           push: true
           tags: |
-            - tacontainerreg.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}/trackaboutsnappass:${{ github.sha }}
-            - tacontainerreg.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}/trackaboutsnappass:latest
+            tacontainerreg.azurecr.io/trackaboutsnappass:${{ github.sha }}
+            tacontainerreg.azurecr.io/trackaboutsnappass:latest
           file: ./Dockerfile
 
   deploy:
@@ -50,4 +50,4 @@ jobs:
           app-name: 'trackabout-snappass'
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_e1b83c8013474921a49235e7be3f39c8 }}
-          images: 'tacontainerreg.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}/trackaboutsnappass:latest'
+          images: 'tacontainerreg.azurecr.io/trackaboutsnappass:latest'
