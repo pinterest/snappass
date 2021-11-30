@@ -50,8 +50,10 @@ This means that even if someone has access to the Redis store, the passwords are
 Requirements
 ------------
 
-* Redis
-* Python 2.7+ or 3.4+ (both included)
+* `Redis`_
+* Python 2.7+ or 3.5+
+
+.. _Redis: https://redis.io/
 
 Installation
 ------------
@@ -66,7 +68,9 @@ Installation
 Configuration
 -------------
 
-You can configure the following via environment variables.
+Start by ensuring that Redis is up and running.
+
+Then, you can configure the following via environment variables.
 
 ``SECRET_KEY``: unique key that's used to sign key. This should
 be kept secret.  See the `Flask Documentation`__ for more information.
@@ -93,6 +97,8 @@ need to change this.
 ``REDIS_URL``: (optional) will be used instead of ``REDIS_HOST``, ``REDIS_PORT``, and ``SNAPPASS_REDIS_DB`` to configure the Redis client object. For example: redis://username:password@localhost:6379/0
 
 ``REDIS_PREFIX``: (optional, defaults to ``"snappass"``) prefix used on redis keys to prevent collisions with other potential clients
+
+``HOST_OVERRIDE``: (optional) Used to override the base URL if the app is unaware. Useful when running behind reverse proxies like an identity-aware SSO. Example: ``sub.domain.com``
 
 Docker
 ------
