@@ -6,48 +6,76 @@ name: Build and deploy container app to Azure Web App - trackabout-snappass
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - 'main'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out the repo
       - uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log in to container registry
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
-          registry: https://tacontainerreg.azurecr.io/
-          username: ${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}
-          password: ${{ secrets.AzureAppService_ContainerPassword_d5fb56f42fec42259520eb3a1e3420ad }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_KEY }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: trackabout/snappass
+
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v1
+
+      # - name: Log in to container registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: https://tacontainerreg.azurecr.io/
+      #     username: ${{ secrets.AzureAppService_ContainerUsername_2e4abbdb0070400ba5a5168b21fc02b6 }}
+      #     password: ${{ secrets.AzureAppService_ContainerPassword_d5fb56f42fec42259520eb3a1e3420ad }}
+
+      # - name: Build and push container image to registry
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: |
+      #       tacontainerreg.azurecr.io/trackaboutsnappass:${{ github.sha }}
+      #       tacontainerreg.azurecr.io/trackaboutsnappass:latest
+      #     file: ./Dockerfile
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v2
         with:
-          push: true
-          tags: |
-            tacontainerreg.azurecr.io/trackaboutsnappass:${{ github.sha }}
-            tacontainerreg.azurecr.io/trackaboutsnappass:latest
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           file: ./Dockerfile
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   environment:
+  #     name: 'production'
+  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-    steps:
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'trackabout-snappass'
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_e1b83c8013474921a49235e7be3f39c8 }}
-          images: 'tacontainerreg.azurecr.io/trackaboutsnappass:latest'
+    # steps:
+    #   - name: Deploy to Azure Web App
+    #     id: deploy-to-webapp
+    #     uses: azure/webapps-deploy@v2
+    #     with:
+    #       app-name: 'trackabout-snappass'
+    #       slot-name: 'production'
+    #       publish-profile: ${{ secrets.AzureAppService_PublishProfile_e1b83c8013474921a49235e7be3f39c8 }}
+    #       images: 'tacontainerreg.azurecr.io/trackaboutsnappass:latest'
