@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy container app to Azure Web App - trackabout-snappass
+name: trackabout/snappass build and publish image
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
         with:
           images: trackabout/snappass
 
-      - name: Build and push container image to registry
+      - name: Build container image, publish if not a PR
         uses: docker/build-push-action@v2
         with:
           context: .
