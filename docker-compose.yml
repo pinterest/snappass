@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
 
@@ -12,7 +12,11 @@ services:
             - REDIS_HOST=redis
             - NO_SSL=False
         depends_on:
-          - redis
-
+            - redis
     redis:
-        image: "redis:latest"
+        image: redis:latest
+        container_name: redis
+        environment:
+            ALLOW_EMPTY_PASSWORD: "yes"
+        ports:
+            - "6379:6379"
