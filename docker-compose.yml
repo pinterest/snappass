@@ -20,3 +20,7 @@ services:
             ALLOW_EMPTY_PASSWORD: "yes"
         ports:
             - "6379:6379"
+        volumes:
+            - redis_data:/data
+volumes:
+    redis_data:
