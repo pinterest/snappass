@@ -184,7 +184,7 @@ def handle_password():
 def preview_password(password_key):
     password_key = url_unquote_plus(password_key)
     if not password_exists(password_key):
-        abort(404)
+        return render_template('expired.html'), 404
 
     return render_template('preview.html')
 
@@ -194,7 +194,7 @@ def show_password(password_key):
     password_key = url_unquote_plus(password_key)
     password = get_password(password_key)
     if not password:
-        abort(404)
+        return render_template('expired.html'), 404
 
     return render_template('password.html', password=password)
 
