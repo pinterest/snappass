@@ -1,0 +1,3 @@
+{% block content -%}
+{"snappass":{"link":"{{ password_link }}","ttl":"{{ ttl }}"}}
+{% endblock %}
