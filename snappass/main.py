@@ -5,7 +5,7 @@ import uuid
 import redis
 
 from cryptography.fernet import Fernet
-from flask import abort, Flask, render_template, request
+from flask import abort, Flask, render_template, request, jsonify
 from redis.exceptions import ConnectionError
 from werkzeug.urls import url_quote_plus
 from werkzeug.urls import url_unquote_plus
@@ -179,7 +179,7 @@ def handle_password():
         base_url = base_url + URL_PREFIX.strip("/") + "/"
     link = base_url + url_quote_plus(token)
     if json:
-        return render_template('confirm.json', password_link=link, ttl=ttl)
+        return jsonify(link=link, ttl=ttl)
     else:
         return render_template('confirm.html', password_link=link)
 
