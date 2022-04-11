@@ -3,6 +3,7 @@ import re
 import time
 import unittest
 import uuid
+import json
 from unittest import TestCase
 
 from cryptography.fernet import Fernet
@@ -131,6 +132,21 @@ class SnapPassRoutesTestCase(TestCase):
 
             html_content = rv.data.decode("ascii")
             key = re.search(r'id="password-link" value="https://localhost/([^"]+)', html_content).group(1)
+            key = unquote(key)
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
+    
+    def test_set_password_json(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post('/', headers={'Accept': 'application/json'}, data={'password': password, 'ttl': 'two weeks'})
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
             key = unquote(key)
 
             frozen_time.move_to("2020-05-22 11:59:59")
