@@ -162,7 +162,6 @@ def index():
 @app.route('/', methods=['POST'])
 def handle_password():
     ttl, password = clean_input()
-    json = request.form.get('json',False,type=bool)
     token = set_password(password, ttl)
 
     if NO_SSL:
@@ -178,7 +177,7 @@ def handle_password():
     if URL_PREFIX:
         base_url = base_url + URL_PREFIX.strip("/") + "/"
     link = base_url + url_quote_plus(token)
-    if json:
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
         return jsonify(link=link, ttl=ttl)
     else:
         return render_template('confirm.html', password_link=link)
