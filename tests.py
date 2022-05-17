@@ -1,10 +1,10 @@
-from mock import patch
 import re
 import time
 import unittest
 import uuid
 import json
 from unittest import TestCase
+from unittest import mock
 
 from cryptography.fernet import Fernet
 from freezegun import freeze_time
@@ -20,7 +20,7 @@ __author__ = 'davedash'
 
 class SnapPassTestCase(TestCase):
 
-    @patch('redis.client.StrictRedis', FakeStrictRedis)
+    @mock.patch('redis.client.StrictRedis', FakeStrictRedis)
     def test_get_password(self):
         password = "melatonin overdose 1337!$"
         key = snappass.set_password(password, 30)
