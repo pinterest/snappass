@@ -47,7 +47,7 @@ Requirements
 ------------
 
 * `Redis`_
-* Python 2.7+ or 3.5+
+* Python 3.7+
 
 .. _Redis: https://redis.io/
 
