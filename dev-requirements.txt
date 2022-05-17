@@ -3,5 +3,5 @@ fakeredis==0.7.0
 flake8==4.0.1
 freezegun==0.3.15
 pytest-cov==2.5.1
-pytest==3.6.3
+pytest==7.1.2
 tox==3.1.2
