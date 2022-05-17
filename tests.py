@@ -5,12 +5,12 @@ import uuid
 import json
 from unittest import TestCase
 from unittest import mock
+from urllib.parse import unquote
 
 from cryptography.fernet import Fernet
 from freezegun import freeze_time
 from werkzeug.exceptions import BadRequest
 from fakeredis import FakeStrictRedis
-from six.moves.urllib.parse import unquote
 
 # noinspection PyPep8Naming
 import snappass.main as snappass
