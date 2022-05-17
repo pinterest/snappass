@@ -9,5 +9,5 @@ Jinja2==2.11.3
 MarkupSafe==1.1.1
 pycparser==2.20
 redis==2.10.6
-six==1.14.0
+six==1.16.0
 Werkzeug==0.15.6
