@@ -2,7 +2,6 @@ import re
 import time
 import unittest
 import uuid
-import json
 from unittest import TestCase
 from unittest import mock
 from urllib.parse import unquote
@@ -139,11 +138,15 @@ class SnapPassRoutesTestCase(TestCase):
 
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
-    
+
     def test_set_password_json(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
             password = 'my name is my passport. verify me.'
-            rv = self.app.post('/', headers={'Accept': 'application/json'}, data={'password': password, 'ttl': 'two weeks'})
+            rv = self.app.post(
+                '/',
+                headers={'Accept': 'application/json'},
+                data={'password': password, 'ttl': 'two weeks'},
+            )
 
             json_content = rv.get_json()
             key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
