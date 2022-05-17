@@ -1,3 +1,7 @@
+Version 1.6.0
+-------------
+* Drop support for officially unsupported Python versions (< Python 3.7)
+
 Version 1.5.1
 -------------
 * The ``HOST_OVERRIDE`` environment variable can be used to override the base URL. Useful when behind a reverseproxy.
