@@ -3,7 +3,7 @@ cffi==1.14.0
 click==7.1.2
 cryptography==37.0.2
 Flask==1.0.2
-idna==2.9
+idna==3.3
 itsdangerous==0.24
 Jinja2==2.11.3
 MarkupSafe==1.1.1
