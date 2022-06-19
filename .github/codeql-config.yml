@@ -1,0 +1,8 @@
+name: "CodeQL config"
+
+paths-ignore: 
+  - tests.py
+  - 'snappass/static/bootstrap/**'
+  - 'snappass/static/clipboardjs/**'
+  - 'snappass/static/fontawesome/**'
+  - 'snappass/static/jquery/**'
