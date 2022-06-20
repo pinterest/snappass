@@ -8,6 +8,7 @@ on:
     branches: [ "master" ]
     # Skip the workflow if PR only contains changes to files matching the following path patterns
     paths-ignore:
+      - tests.py
       - '**/*.md'
       - '**/*.rst'
       - 'snappass/static/bootstrap/**'
