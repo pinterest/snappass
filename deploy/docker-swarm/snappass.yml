@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+
+  snappass:
+    image: ${IMAGE}
+    stop_signal: SIGINT
+    environment:
+      - REDIS_HOST=redis.local
+      - NO_SSL=False
+      # TODO: use a real secret for this?
+      - SECRET_KEY=${SECRET_KEY}
+    networks:
+      traefik-public: {}
+      snappass: {}
+    deploy:
+      update_config:
+        order: start-first
+        parallelism: 1
+      rollback_config:
+        order: start-first
+        parallelism: 1
+      mode: replicated
+      replicas: 1
+      placement:
+        preferences:
+          - spread: node.labels.host
+      labels:
+        - "traefik.docker.network=traefik-public"
+        # use virtual IP in docker swarm for load balancing so we don't get interruptions
+        # in services quality while doing an upgrade
+        - "traefik.docker.lbswarm=true"
+        
+        - "traefik.enable=true"
+
+        # no password required to get the password
+        - 'traefik.http.routers.snappass-access-frontend.rule=Host(`${DOMAIN}`) && (PathPrefix(`/snappass`) || PathPrefix(`/static`))'
+        - 'traefik.http.routers.snappass-access-frontend.entrypoints=http'
+        - 'traefik.http.services.snappass-access-frontend.loadbalancer.server.port=5000'
+        - 'traefik.http.routers.snappass-access-frontend.service=snappass-access-frontend'
+        - "traefik.http.middlewares.snappass-access-auth.basicauth.users=${USERS}"
+        - "traefik.http.routers.snappass-access-frontend.middlewares=snappass-access-https-header"
+        - "traefik.http.middlewares.snappass-access-https-header.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+        - 'traefik.http.routers.snappass-frontend.rule=Host(`${DOMAIN}`)'
+        - 'traefik.http.routers.snappass-frontend.entrypoints=http'
+        - 'traefik.http.services.snappass-frontend.loadbalancer.server.port=5000'
+        - 'traefik.http.routers.snappass-frontend.service=snappass-frontend'
+        - "traefik.http.middlewares.snappass-auth.basicauth.users=${USERS}"
+        - "traefik.http.routers.snappass-frontend.middlewares=snappass-https-header,snappass-auth"
+        - "traefik.http.middlewares.snappass-https-header.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+
+        - "traefik.constraint-label=traefik-public"
+
+  redis:
+    image: redis
+    networks:
+      snappass:
+        aliases:
+          - redis.local
+    volumes:
+      - redis:/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      # For some volumes it is relevant to pin the location
+      # You can use Docker Node labels for this
+      # placement:
+      #   constraints: 
+      #     - node.labels.some_label == some_label_value
+  
+secrets: {}
+
+networks:
+  traefik-public:
+    external: true
+  snappass:
+    driver: overlay
+    attachable: true
+    driver_opts:
+      encrypted: ""
+
+volumes:
+  redis:
+    # to use a custom driver, e.g. hetzner volumes:
+    # driver: hetzner-volume
+    # driver_opts:
+    #   size: '10'
+    #   fstype: ext4
