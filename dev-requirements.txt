@@ -1,4 +1,4 @@
-coverage==6.3.3
+coverage==6.4.1
 fakeredis==1.7.5
 flake8==4.0.1
 freezegun==1.2.1
