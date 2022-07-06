@@ -1,0 +1,86 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  DEPLOYMENT_NAME: pliancy-snappass
+  DEPLOYMENT_URL: https://share.pliancy.com
+  PROJECT_ID: pliancyprod-bb06f973
+  GKE_CLUSTER: kube-prod
+  GKE_ZONE: us-west1-b
+  CONTAINER_REPO: snappass
+  CURRENT_VERSION: 1.6.0
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Create Github Deployment to track deployment to development environment
+      - name: Create Github Deployment
+        uses: bobheadxi/deployments@master
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: Production
+
+      # Setup gcloud CLI
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          version: 'latest'
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      # Prep Environment Variables
+      - name: Prep Environment Variables
+        run: |-
+          SHORT_SHA=$(git rev-parse --short ${GITHUB_SHA})
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "IMAGE_NAME=us-central1-docker.pkg.dev/$PROJECT_ID/$CONTAINER_REPO/$CURRENT_VERSION:$SHORT_SHA" >> $GITHUB_ENV
+          echo "MONTH=$(date +%m)" >> $GITHUB_ENV
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - name: Configure Docker Auth
+        run: |-
+          gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: |-
+          docker build --tag $IMAGE_NAME .
+
+      # Push the Docker image to Google Container Registry
+      - name: Publish Image to GCP Container Registry
+        run: |-
+          docker push $IMAGE_NAME
+
+      # Deploy the Docker image to the GKE cluster and poll for deployment status updates
+      - name: Deploy to Kubernetes
+        run: |-
+          kubectl patch deployment $DEPLOYMENT_NAME \
+          -p '{"spec":{"template":{"spec":{"containers":[{"name":"'"$DEPLOYMENT_NAME"'","image":"'$IMAGE_NAME'"}]}}}}'
+          kubectl rollout status deployment/$DEPLOYMENT_NAME --watch=true | tail -n 1
+
+      # Update Github Deployments status
+      - name: Update Github Deployment Status
+        uses: bobheadxi/deployments@master
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ env.DEPLOYMENT_URL }}
+          env: Production
