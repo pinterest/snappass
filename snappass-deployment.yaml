@@ -1,4 +1,3 @@
-# deprecated
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,17 +16,17 @@ spec:
         app: pliancy-snappass
     spec:
       containers:
-      - env:
-        - name: REDIS_HOST
-          value: localhost
-        image: us.gcr.io/pliancy-primary/pliancy-snappass:1.6.0
-        name: snappass
-        ports:
-        - containerPort: 5000
-        resources: {}
-      - image: redis:latest
-        name: redis
-        resources: {}
+        - env:
+            - name: REDIS_HOST
+              value: localhost
+          image: us.gcr.io/pliancy-primary/pliancy-snappass:1.6.0
+          name: snappass
+          ports:
+            - containerPort: 5000
+          resources: {}
+        - image: redis:latest
+          name: redis
+          resources: {}
       restartPolicy: Always
       serviceAccountName: ""
 status: {}
