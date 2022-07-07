@@ -1,7 +1,22 @@
-Version 1.5.0 (in development)
-------------------------------
+Version 1.6.0
+-------------
+* Drop support for officially unsupported Python versions (< Python 3.7)
+
+Version 1.5.1
+-------------
+* The ``HOST_OVERRIDE`` environment variable can be used to override the base URL. Useful when behind a reverseproxy.
+* Upgrade to Jinja 2.11.3
+* Upgrade to cryptography 3.3.2
+* Returning json if request-mimetype is "application/json"
+* Return template if password is expired (instead of 404)
+
+Version 1.5.0
+-------------
+* Added support for "2 week" secret lifetimes.
+* The ``NO_SSL`` environment variable is now propertly parsed.
 * The ``URL_PREFIX`` environment variable can be used to add a prefix to URLs,
   which is useful when running behind a reverse proxy like nginx.
+* Prevent prefetching bots from destroying secrets.
 * Replaced mockredis with fakeredis in the unit test environment.
 * Added support for Python 3.8.
 
