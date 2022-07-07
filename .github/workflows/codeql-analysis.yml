@@ -2,8 +2,11 @@ name: "CodeQL"
 
 on:
   push:
-    branches-ignore:
-      - master
+    branches: [ "master" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "master" ]
+    # Skip the workflow if PR only contains changes to files matching the following path patterns
     paths-ignore:
       - tests.py
       - '**/*.md'
@@ -12,6 +15,7 @@ on:
       - 'snappass/static/clipboardjs/**'
       - 'snappass/static/fontawesome/**'
       - 'snappass/static/jquery/**'
+
 
 jobs:
   analyze:

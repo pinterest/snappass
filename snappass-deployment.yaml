@@ -1,3 +1,4 @@
+# deprecated
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,7 +20,7 @@ spec:
       - env:
         - name: REDIS_HOST
           value: localhost
-        image: us.gcr.io/pliancy-primary/pliancy-snappass:0.0.1
+        image: us.gcr.io/pliancy-primary/pliancy-snappass:1.6.0
         name: snappass
         ports:
         - containerPort: 5000
