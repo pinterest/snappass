@@ -38,7 +38,6 @@ services:
         - 'traefik.http.routers.snappass-access-frontend.entrypoints=http'
         - 'traefik.http.services.snappass-access-frontend.loadbalancer.server.port=5000'
         - 'traefik.http.routers.snappass-access-frontend.service=snappass-access-frontend'
-        - "traefik.http.middlewares.snappass-access-auth.basicauth.users=${USERS}"
         - "traefik.http.routers.snappass-access-frontend.middlewares=snappass-access-https-header"
         - "traefik.http.middlewares.snappass-access-https-header.headers.customrequestheaders.X-Forwarded-Proto=https"
 
