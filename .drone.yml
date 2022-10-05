@@ -1,0 +1,32 @@
+# Drone CI File!
+
+kind: pipeline
+type: kubernetes
+name: default
+
+metadata:
+  namespace: builds
+
+node_selector:
+  doks.digitalocean.com/node-pool: josa-cloud-np
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: josaorg/safepass
+      tags:
+        - ${DRONE_COMMIT_SHA}
+        - stable
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+  - name: notify
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: slack_webhook
+      channel: heartbeat
+    depends_on:
+      - build
