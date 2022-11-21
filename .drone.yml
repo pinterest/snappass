@@ -17,7 +17,7 @@ steps:
       repo: josaorg/safepass
       tags:
         - ${DRONE_COMMIT_SHA}
-        - stable
+        - latest
       username:
         from_secret: docker_username
       password:
