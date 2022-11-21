@@ -1,0 +1,15 @@
+# .pre-commit-config.yaml
+default_stages: [commit]
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.15.0
+    hooks:
+      - id: gitleaks
+        name: detect hardcoded secrets
