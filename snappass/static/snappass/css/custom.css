@@ -1,8 +1,18 @@
+:root {
+    --faq-bg: #E8E8E8;
+    --faq-display: none;
+}
+
 html {
     position: relative;
     min-height: 100%;
 }
-
+h2 {
+    font-weight: 800;
+}
+section {
+    margin-bottom: 5rem !important;
+}
 .break-word {
     word-wrap: break-word;
 }
@@ -14,4 +24,120 @@ html {
 input[readonly].readonly-text {
     background-color: #fff;
     cursor: text;
+}
+
+/* TODO: to be reimplemented using Bootstrap */
+
+.text-blue {
+    color: #3180F4;
+}
+.bg-light-gray {
+    background-color: #E8E8E8;
+}
+.mb-n3 {
+    margin-bottom: -1.25rem;
+}
+.mb-n-custom {
+    margin-bottom: -0.18rem;
+}
+.border-red-custom {
+    border-color: #FC2F00 !important;
+}
+.shadow-left {
+    box-shadow: -10px 10px 5px 0px #FF7E69;
+}
+.bg-red-custom {
+    background-color: #FC2F00 !important;
+}
+.w-60vw {
+    width: 60vw;
+}
+.rounded-top-3 {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+.card {
+    width: 240px;
+    height: 330px;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: #fff;
+}
+.card::before {
+    display: inline-flex;
+    content: '';
+    background-size: 96px 96px;
+    height: 96px;
+    width:96px;
+    margin-top: -3rem;
+    margin-left: -3rem;
+}
+.card.c1 {
+    background-color: #FF6D33;
+}
+.card.c1::before {
+    background-image: url('../../images/clock_icon.svg');
+}
+.card.c2 {
+    background-color: #3180F4;
+}
+.card.c2::before {
+    background-image: url('../../images/lock_icon.svg');
+}
+.card.c3 {
+    background-color: #EAC300;
+}
+.card.c3::before {
+    background-image: url('../../images/time_icon.svg');
+}
+.card.c4 {
+    background-color: #F43749;
+}
+.card.c4::before {
+    background-image: url('../../images/folder_icon.svg');
+}
+/* .card.c4::after {
+    max-width: 200px;
+    color: black;
+    font-size: 1rem;
+    margin-bottom: -9rem;
+    content: 'Secrets expire either when the URL was opened or when "Time to live" achieved';
+} */
+.faq-single {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.faq-question {
+    background-color: #E8E8E8;
+    border-radius: 1rem;
+    width: 100%;
+    height: 92px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+}
+.faq-question > p {
+    margin: 0;
+    padding: 0;
+    font-size: 1.5rem;
+}
+.faq-answer {
+    width: 80%;
+    height: auto;
+    padding: 1rem;
+    background-color: #E8E8E8;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+.faq-arrow {
+    background-image: url('../../images/arrowhead_down.svg');
+    background-size: 30px 30px;
+    height: 30px;
+    width:30px;
 }
