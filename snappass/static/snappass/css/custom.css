@@ -41,8 +41,14 @@ input[readonly].readonly-text {
 .text-green {
     color: var(--green);
 }
+.text-red-2 {
+    color: var(--red-2);
+}
 .bg-light-gray {
     background-color: var(--light-grey);
+}
+.bg-blue {
+    background-color: var(--blue);
 }
 .mb-n3 {
     margin-bottom: -1.3rem;
@@ -51,7 +57,7 @@ input[readonly].readonly-text {
     margin-bottom: -0.18rem;
 }
 .ms-9 {
-    margin-left: 15rem;
+    margin-left: 12rem;
 }
 .border-red-custom {
     border-color: var(--red-1) !important;
@@ -105,6 +111,10 @@ input[readonly].readonly-text {
 }
 .info-title {
     font-weight: 600;
+}
+.secret-info-list {
+    margin-top: 2rem;
+    list-style-image: url('../../images/asterisk.png');
 }
 @media (max-width: 600px) {
     .w-password-container {
