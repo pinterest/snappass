@@ -3,27 +3,44 @@
 {% block content %}
 <div class="container">
   <section>
-    <div class="page-header mb-5 d-flex flex-row flex-wrap">
-      <h2 class="fst-italic">A secret is shared with you</h2>
+    <div class="page-header d-flex flex-column flex-md-row justify-content-around gap-4">
+      <h2 class="fst-italic d-inline">A secret is shared with you</h2>
       <div>
         <p class="info-title">What is Safepass</p>
-        <p>Shred all toilet paper and spread around the house.
-          Stretch cattt catt cattty cat being a cat lick
-          yarn hanging out of own butt but destroy dog i
-          like big cats and i can not lie.
+        <p>
+          An open-source tool created by Jordan Open Source Association (JOSA) to share passwords or secrets safely and securely
         </p>
       </div>
     </div>
   </section>
 
   <section>
-    <p class="lead">You can only reveal the secret once!</p>
-    <div class="d-flex flex-row justify-content-center">
-      <div class="col-sm-6 margin-bottom-10">
-        <button id="revealSecret" type="button"
-            class="btn btn-lg btn-primary bg-red-custom text-white">
-          Reveal secret
-        </button>
+    <div class="d-flex flex-row justify-content-center align-items-center">
+      <div class="lock-icon"></div>
+      <button id="revealSecret" type="button"
+          class="btn btn-lg btn-primary bg-red-custom text-white fs-2 w-75-custom h-btn-custom fw-bold">
+        <img src="../static/images/eye_icon.svg"> Reveal secret
+      </button>
+    </div>
+  </section>
+
+  <!-- Why Safepass section -->
+  <section>
+    <div class="w-100 d-flex flex-row flex-wrap justify-content-around fs-3">
+      <div>
+        <p class="info-title">Why use Safepass?</p>
+        <ul>
+          <li>reason #1</li>
+          <li>reason #2</li>
+        </ul>
+      </div>
+      <div class="d-flex flex-row">
+        <a href="/" class="align-self-end">
+          <button type="button"
+              class="btn btn-primary btn-lg rounded-custom-2 p-3">
+              Share secrets <img class="btn-icon-sm" src="../static/images/arrowhead_right.svg">
+          </button>
+        </a>
       </div>
     </div>
   </section>
