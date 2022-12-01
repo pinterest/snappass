@@ -1,5 +1,11 @@
 :root {
-    --faq-bg: #E8E8E8;
+    --green: #18C652;
+    --blue: #3180F4;
+    --red-1: #FC2F00;
+    --red-2: #F43749;
+    --yellow: #EAC300;
+    --orange: #FF6D33;
+    --light-grey: #E8E8E8;
     --faq-display: none;
 }
 
