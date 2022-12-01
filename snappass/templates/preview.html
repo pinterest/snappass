@@ -3,15 +3,34 @@
 {% block content %}
 <div class="container">
   <section>
-    <div class="page-header">
-      <h1>Secret</h1>
-    </div>
-    <p class="lead">You can only reveal the secret once!</p>
-    <div class="row">
-      <div class="col-sm-6 margin-bottom-10">
-        <button id="revealSecret" type="button" class="btn-lg btn-primary">Reveal secret</button>
+    <div class="page-header mb-5 d-flex flex-row flex-wrap">
+      <h2 class="fst-italic">A secret is shared with you</h2>
+      <div>
+        <p class="info-title">What is Safepass</p>
+        <p>Shred all toilet paper and spread around the house.
+          Stretch cattt catt cattty cat being a cat lick
+          yarn hanging out of own butt but destroy dog i
+          like big cats and i can not lie.
+        </p>
       </div>
     </div>
+  </section>
+
+  <section>
+    <p class="lead">You can only reveal the secret once!</p>
+    <div class="d-flex flex-row justify-content-center">
+      <div class="col-sm-6 margin-bottom-10">
+        <button id="revealSecret" type="button"
+            class="btn btn-lg btn-primary bg-red-custom text-white">
+          Reveal secret
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works section -->
+  <section>
+    {% include 'info_cards.html' %}
   </section>
 </div>
 {% endblock %}
