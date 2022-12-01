@@ -45,7 +45,7 @@ input[readonly].readonly-text {
     background-color: var(--light-grey);
 }
 .mb-n3 {
-    margin-bottom: -1.25rem;
+    margin-bottom: -1.3rem;
 }
 .mb-n-custom {
     margin-bottom: -0.18rem;
@@ -68,16 +68,55 @@ input[readonly].readonly-text {
 .w-password-container {
     width: 70%;
 }
+.h-btn-custom {
+    height: 80px;
+}
+.rounded-top-custom-1 {
+    border-top-left-radius: 27px;
+    border-top-right-radius: 27px;
+}
+.rounded-custom-1 {
+    border-radius: 27px;
+}
+.rounded-custom-2 {
+    border-radius: 10px;
+}
+
+.secret-input::before {
+    content: '';
+    background-size: 294px 174px;
+    height: 171px;
+    width:212px;
+    margin-left: -13rem;
+    margin-top: -1rem;
+    background-image: url('../../images/lock_icon.svg');
+}
+.lock-icon {
+    content: '';
+    background-size: cover;
+    height: 170px;
+    width:148px;
+    margin-right: -2rem;
+    background-image: url('../../images/lock_checkmark_icon.svg');
+}
+.btn-icon-sm {
+    width: 25px;
+    height: 25px;
+}
+.info-title {
+    font-weight: 600;
+}
 @media (max-width: 600px) {
     .w-password-container {
         width: 90%;
     }
 }
-
-.rounded-top-3 {
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
+@media (max-width: 991px) {
+    .secret-input::before {
+        display: none;
+    }
 }
+
 .card {
     width: 240px;
     height: 330px;
