@@ -8,6 +8,8 @@ services:
             - "5000:5000"
         stop_signal: SIGINT
         environment:
+            - MATOMO_SITE_ID=14
+            - MATOMO_URL=https://track.josa.ngo/
             - REDIS_HOST=redis
             - NO_SSL=True
         depends_on:
