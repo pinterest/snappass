@@ -3,9 +3,24 @@
 {% block content %}
 <div class="container">
   <section>
-    <div class="page-header"><h1>Secret not found</h1></div>
-    <p class="lead">The requested URL was not found on the server. This could be because this URL never contained a secret, or because it expired or was revealed earlier.</p>
-    <p class="lead">If this URL was sent to you by someone, make sure to check your spelling or ask the person who sent it to you to send a new secret.</p>
+    <div class="d-flex flex-column justify-content-start gap-5 align-items-center">
+      <img class="w-50" src="../static/images/error.png">
+      <p>The requested URL was permanently deleted from the system for the possible reasons:
+        <ul>
+          <li>URL never contained a secret</li>
+          <li>Secret was revealed earlier</li>
+          <li>or because secret lifetime expired</li>
+        </ul>
+      </p>
+    </div>
   </section>
+</div>
+<div class="w-100 p-4 my-4 bg-blue d-flex flex-row justify-content-center align-items-center">
+  <a href="/" class="align-self-end">
+    <button type="button"
+        class="btn btn-primary btn-lg rounded-custom-2 p-3 bg-white text-blue fw-bold">
+        Share secrets <img class="btn-icon-sm" src="../static/images/arrowhead_right.svg">
+    </button>
+    </a>
 </div>
 {% endblock %}
