@@ -16,6 +16,13 @@ URL_PREFIX = os.environ.get('URL_PREFIX', None)
 HOST_OVERRIDE = os.environ.get('HOST_OVERRIDE', None)
 TOKEN_SEPARATOR = '~'
 
+# environment variables for matomo
+MATOMO_URL = os.environ.get('MATOMO_URL', None)
+SITE_ID = os.environ.get('SITE_ID', None)
+MATOMO_DATA = {
+    'matomo_url': MATOMO_URL,
+    'site_id': SITE_ID
+}
 
 # Initialize Flask Application
 app = Flask(__name__)
