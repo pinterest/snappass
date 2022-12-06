@@ -1,5 +1,9 @@
 FROM python:3.8-slim
 
+ARG MATOMO_SITE_ID=14 MATOMO_URL=https://track.josa.ngo/
+ENV MATOMO_SITE_ID=$MATOMO_SITE_ID
+ENV MATOMO_URL=$MATOMO_URL
+
 ENV APP_DIR=/usr/src/snappass
 
 RUN groupadd -r snappass && \

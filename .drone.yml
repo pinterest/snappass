@@ -13,6 +13,9 @@ node_selector:
 steps:
   - name: build
     image: plugins/docker
+    environment:
+      MATOMO_SITE_ID: 14
+      MATOMO_URL: https://track.josa.ngo/
     settings:
       repo: josaorg/safepass
       tags:
