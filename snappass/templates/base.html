@@ -10,14 +10,14 @@
     <link href="{{ config.STATIC_URL }}/snappass/css/custom.css" rel="stylesheet">
     <!-- Matomo -->
     <script>
-      var _paq = window._paq = window._paq || [];
+      let _paq = window._paq = window._paq || [];
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       (function() {
-        var u = "{{matomo_url}}"
+        const u = "{{matomo_url}}"
         _paq.push(['setTrackerUrl', u+'matomo.php']);
         _paq.push(['setSiteId', '{{site_id}}']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        let d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
         g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
