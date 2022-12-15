@@ -167,6 +167,16 @@ input[readonly].readonly-text {
 .info-cards > div {
     grid-row-start: 2;
 }
+.copy-secret-section {
+    grid-template-columns: repeat(16, 2fr);
+    grid-template-rows: 100px;
+    column-gap: 0;
+}
+.copy-secret-section > div {
+    grid-column-start: 3;
+    grid-column-end: 15;
+}
+
 .card {
     width: 200px;
     height: 330px;

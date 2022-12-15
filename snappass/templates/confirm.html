@@ -2,24 +2,22 @@
 
 {% block content %}
 <div class="container">
-  <div class="page-header d-flex flex-row justify-content-center fst-italic mb-4">
-    <h2><span class="text-green">Share</span> your secret</h2>
-  </div>
+  <section class="header-section confirm mt-5">
+    <h2 class="fst-italic"><span class="text-green fw-bold">Share</span> your secret</h2>
+  </section>
 
   <!-- Copy password section -->
-  <section>
-    <div class="w-100 d-flex flex-row justify-content-center">
-      <div class="lock-icon me-0"></div>
-      <div class="p-4 w-password-container d-flex flex-row flex-wrap justify-content-center align-items-center gap-4 border border-4 rounded-custom-1 border-red-custom shadow-left">
-          <input type="text" class="form-control w-password-container border-0 rounded-custom-2 bg-light-gray p-4"
-              id="password-link" value="{{ password_link }}" readonly="readonly">
-          <button title="Copy to clipboard" type="button"
-              class="btn btn-primary copy-clipboard-btn rounded-custom-2"
-              id="copy-clipboard-btn" data-clipboard-target="#password-link"
-              data-placement='bottom'>
-            <i class="fa fa-clipboard"></i> Copy link
-          </button>
-      </div>
+  <section class="copy-secret-section">
+    <!-- <div class="lock-icon me-0"></div> -->
+    <div class="p-4 w-password-container d-flex flex-row flex-wrap justify-content-center align-items-center gap-4 border border-4 rounded-custom-1 border-red-custom shadow-left">
+      <input type="text" class="form-control w-password-container border-0 rounded-custom-2 bg-light-gray p-4"
+          id="password-link" value="{{ password_link }}" readonly="readonly">
+      <button title="Copy to clipboard" type="button"
+          class="btn btn-primary copy-clipboard-btn rounded-custom-2"
+          id="copy-clipboard-btn" data-clipboard-target="#password-link"
+          data-placement='bottom'>
+        <i class="fa fa-clipboard"></i> Copy link
+      </button>
     </div>
   </section>
 </div>
