@@ -16,8 +16,14 @@ html {
     min-height: 100%;
 }
 h2 {
-    font-weight: 800;
+    font-weight: 500;
     font-size: 3rem;
+}
+.page-header > h2 {
+    font-size: 4rem;
+}
+p, li {
+    font-weight: 200;
 }
 section {
     margin-bottom: 5rem !important;
@@ -169,6 +175,9 @@ input[readonly].readonly-text {
     margin-bottom: 1rem;
     font-size: 1.25rem;
     color: #fff;
+}
+.card-body p {
+    font-weight: 400;
 }
 .card::before {
     display: inline-flex;
