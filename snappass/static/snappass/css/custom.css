@@ -2,6 +2,7 @@
 
 :root {
     --green: #18C652;
+    --green-2: #2C865A;
     --blue: #3180F4;
     --red-1: #FC2F00;
     --red-2: #F43749;
@@ -68,7 +69,7 @@ input[readonly].readonly-text {
     margin-bottom: -0.18rem;
 }
 .ms-9 {
-    margin-left: 12rem;
+    margin-left: 9rem;
 }
 .border-red-custom {
     border-color: var(--red-1) !important;
@@ -99,7 +100,7 @@ input[readonly].readonly-text {
     border-radius: 10px;
 }
 
-.secret-input::before {
+/* .secret-input::before {
     content: '';
     background-size: 294px 174px;
     height: 171px;
@@ -107,7 +108,7 @@ input[readonly].readonly-text {
     margin-left: -13rem;
     margin-top: -1rem;
     background-image: url('../../images/lock_icon.svg');
-}
+} */
 .lock-icon {
     content: '';
     background-size: cover;
@@ -166,15 +167,14 @@ input[readonly].readonly-text {
 .info-cards > div {
     grid-row-start: 2;
 }
-
 .card {
-    width: 240px;
+    width: 200px;
     height: 330px;
     border-radius: 1rem;
     padding: 1rem;
     margin-bottom: 1rem;
     font-size: 1.25rem;
-    color: #fff;
+    color: #fff;   
 }
 .card-body p {
     font-weight: 400;
@@ -201,9 +201,15 @@ input[readonly].readonly-text {
 }
 .card.c2::before {
     background-image: url('../../images/lock_icon.svg');
+    background-size: 128px 128px;
+    height: 128px;
+    width: 128px;
+    margin-top: -5rem;
+    margin-left: -4rem;
 }
 .card.c3 {
-    background-color: var(--yellow);
+    background-color: var(--green-2);
+    grid-column: 5 / 6;
 }
 .card.c3::before {
     background-image: url('../../images/time_icon.svg');
@@ -257,4 +263,15 @@ input[readonly].readonly-text {
     background-size: 30px 30px;
     height: 30px;
     width:30px;
+}
+
+@media (max-width: 600px) {
+    .w-password-container {
+        width: 90%;
+    }
+}
+@media (max-width: 991px) {
+    .secret-input::before {
+        display: none;
+    }
 }
