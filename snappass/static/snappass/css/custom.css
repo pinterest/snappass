@@ -156,15 +156,15 @@ input[readonly].readonly-text {
     grid-column-start: 3;
     grid-column-end: 15;
 }
-.info-cards {
+.info-cards-section {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: 1fr 2fr;
 }
-.info-cards > h2 {
+.info-cards-section > h2 {
     grid-column-start: 5;
     grid-column-end: 8;
 }
-.info-cards > div {
+.info-cards-section > div {
     grid-row-start: 2;
 }
 .copy-secret-section {
