@@ -20,7 +20,7 @@ h2 {
     font-weight: 500;
     font-size: 3rem;
 }
-.page-header > h2 {
+.header-section > h2 {
     font-size: 4rem;
 }
 p, li {
@@ -132,8 +132,8 @@ input[readonly].readonly-text {
     grid-column-start: 1;
     grid-column-end: 9;
 }
-.header-section > .page-header {
-    grid-row-start: 1;
+.header-section.confirm > h2 {
+    grid-column-start: 3;
 }
 .header-section > .info-container {
     display: grid;
