@@ -2,18 +2,16 @@
 
 {% block content %}
 <div class="container">
-  <section>
-    <div class="d-flex flex-column justify-content-start gap-5 align-items-center">
-      <img class="w-50" src="../static/images/error.png">
-      <p>The requested URL was permanently deleted from the system for the possible reasons:
-        <ul>
-          <li>URL never contained a secret</li>
-          <li>Secret was revealed earlier</li>
-          <li>or because secret lifetime expired</li>
-        </ul>
-      </p>
-    </div>
-  </section>
+  <div class="d-flex flex-column justify-content-start gap-5 align-items-center">
+    <img class="w-50" src="../static/images/error.png">
+    <p>The requested URL was permanently deleted from the system for the possible reasons:
+      <ul>
+        <li>URL never contained a secret</li>
+        <li>Secret was revealed earlier</li>
+        <li>or because secret lifetime expired</li>
+      </ul>
+    </p>
+  </div>
 </div>
 <div class="w-100 p-4 my-4 bg-blue d-flex flex-row justify-content-center align-items-center">
   <a href="/" class="align-self-end">
