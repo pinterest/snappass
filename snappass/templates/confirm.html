@@ -8,17 +8,21 @@
 
   <!-- Copy password section -->
   <section class="copy-secret-section">
-    <!-- <div class="lock-icon me-0"></div> -->
-    <div class="p-4 w-password-container d-flex flex-row flex-wrap justify-content-center align-items-center gap-4 border border-4 rounded-custom-1 border-red-custom shadow-left">
-      <input type="text" class="form-control w-password-container border-0 rounded-custom-2 bg-light-gray p-4"
+    <div class="lock-icon"></div>
+    <div class="share-container p-4 d-flex flex-row justify-content-center align-items-center gap-4 border border-4 rounded-custom-1 border-red-custom shadow-left bg-white">
+      <input type="text" class="form-control h-50 border-0 rounded-custom-2 bg-light-gray text-decoration-underline fw-light"
           id="password-link" value="{{ password_link }}" readonly="readonly">
       <button title="Copy to clipboard" type="button"
           class="btn btn-primary copy-clipboard-btn rounded-custom-2"
           id="copy-clipboard-btn" data-clipboard-target="#password-link"
           data-placement='bottom'>
-        <i class="fa fa-clipboard"></i> Copy link
+        <i class="clipboard-icon"></i> Copy link
       </button>
     </div>
+  </section>
+  
+  <section>
+    {% include 'secret_info_list.html' %}
   </section>
 </div>
 {% endblock %}
