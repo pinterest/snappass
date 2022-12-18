@@ -75,7 +75,7 @@ input[readonly].readonly-text {
     border-color: var(--red-1) !important;
 }
 .shadow-left {
-    box-shadow: -10px 10px 5px 0px #FF7E69;
+    box-shadow: -5px 5px 5px 0px #FF7E6960;
 }
 .bg-red-custom {
     background-color: var(--red-1) !important;
@@ -220,6 +220,7 @@ input[readonly].readonly-text {
 .card.c1 {
     background-color: var(--orange);
     grid-column: 1 / 2;
+    box-shadow: -5px 5px 5px 0px #FF6D3360;
 }
 .card.c1::before {
     background-image: url('../../images/clock_icon.svg');
@@ -227,6 +228,7 @@ input[readonly].readonly-text {
 .card.c2 {
     background-color: var(--blue);
     grid-column: 3 / 4;
+    box-shadow: -5px 5px 5px 0px #3180F460;
 }
 .card.c2::before {
     background-image: url('../../images/lock_icon.svg');
@@ -239,6 +241,7 @@ input[readonly].readonly-text {
 .card.c3 {
     background-color: var(--green-2);
     grid-column: 5 / 6;
+    box-shadow: -5px 5px 5px 0px #2C865A60;
 }
 .card.c3::before {
     background-image: url('../../images/time_icon.svg');
@@ -246,6 +249,7 @@ input[readonly].readonly-text {
 .card.c4 {
     background-color: var(--red-2);
     grid-column: 7 / 8;
+    box-shadow: -5px 5px 5px 0px #F4374960;
 }
 .card.c4::before {
     background-image: url('../../images/folder_icon.svg');
