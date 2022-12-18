@@ -145,6 +145,36 @@ input[readonly].readonly-text {
     grid-template-columns: repeat(8, 1fr);
     column-gap: 30px;
 }
+.header-section.preview > h2 {
+    grid-column: 2/6
+}
+.header-section.preview > div {
+    grid-column-start: 6;
+}
+.reveal-section {
+    grid-template-columns: repeat(16, 1fr);
+    column-gap: 30px;
+    align-items: center;
+}
+.reveal-section > .lock-icon {
+    grid-column-start: 3;
+    margin-top: -3rem;
+    margin-right: -4rem;
+}
+#revealSecret {
+    grid-column: 4/15;
+    height: 4rem;
+}
+#revealSecret > img {
+    width: 50px;
+}
+.why-safepass-section > div {
+    grid-column: 2/6;
+}
+.why-safepass-section > a {
+    grid-column: 6/8;
+    justify-self: end;
+}
 .info-container > p {
     grid-column-start: 1;
     grid-column-end: 5;

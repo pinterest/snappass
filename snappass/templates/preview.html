@@ -2,28 +2,30 @@
 
 {% block content %}
 <div class="container">
-  <section>
+  <section class="header-section preview">
     {% include 'info_header.html' %}
   </section>
 
+  <section class="reveal-section">
+    <div class="lock-icon"></div>
+    <button id="revealSecret" type="button"
+        class="btn btn-lg btn-primary bg-red-custom text-white fs-2 h-btn-custom fw-semibold">
+      <img src="../static/images/eye_icon.svg"> Reveal secret
+    </button>
+  </section>
+
   <section>
-    <div class="d-flex flex-row justify-content-center align-items-center">
-      <div class="lock-icon"></div>
-      <button id="revealSecret" type="button"
-          class="btn btn-lg btn-primary bg-red-custom text-white fs-2 w-75-custom h-btn-custom fw-bold">
-        <img src="../static/images/eye_icon.svg"> Reveal secret
-      </button>
-    </div>
     {% include 'secret_info_list.html' %}
   </section>
 
   <!-- Why Safepass section -->
-  <section>
+  <section class="why-safepass-section">
     {% include 'why_safepass.html' %}
   </section>
 
   <!-- How it works section -->
-  <section>
+  <section class="info-cards-section">
+    <h2 class="fw-semibold"><span class="text-blue fw-bold">How</span> Safepass functions</h2>
     {% include 'info_cards.html' %}
   </section>
 </div>
