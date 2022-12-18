@@ -69,9 +69,6 @@ input[readonly].readonly-text {
 .mb-n-custom {
     margin-bottom: -0.18rem;
 }
-.ms-9 {
-    margin-left: 9rem;
-}
 .border-red-custom {
     border-color: var(--red-1) !important;
 }
@@ -80,12 +77,6 @@ input[readonly].readonly-text {
 }
 .bg-red-custom {
     background-color: var(--red-1) !important;
-}
-.w-75-custom {
-    width: 75%;
-}
-.w-password-container {
-    width: 70%;
 }
 .h-btn-custom {
     height: 80px;
@@ -169,6 +160,13 @@ input[readonly].readonly-text {
 #revealSecret > img {
     width: 50px;
 }
+.reveal-section.password .lock-icon {
+    grid-column-start: 3;
+    margin-top: -21rem;
+}
+.reveal-section.password div:last-child {
+    grid-column: 4/8;
+}
 .why-safepass-section > div {
     grid-column: 2/6;
 }
@@ -188,19 +186,6 @@ input[readonly].readonly-text {
 }
 .input-section form {
     grid-column: 3/15;
-}
-.info-cards-section {
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: 1fr 2fr;
-}
-.info-cards-section > h2 {
-    grid-column: 1/6;
-}
-.info-cards-section.mainpage > h2 {
-    grid-column: 5/8
-}
-.info-cards-section > div {
-    grid-row-start: 2;
 }
 .copy-secret-section {
     grid-template-columns: repeat(16, 2fr);
@@ -226,25 +211,38 @@ input[readonly].readonly-text {
     height: 3rem;
     font-weight: 500;
 }
+.info-cards-section {
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: 1fr 2fr;
+}
+.info-cards-section > h2 {
+    grid-column: 1/6;
+}
+.info-cards-section.mainpage > h2 {
+    grid-column: 5/8
+}
+.info-cards-section > div {
+    grid-row-start: 2;
+}
 .card {
-    width: 200px;
-    height: 330px;
+    width: 150px;
+    height: 247.5px;
     border-radius: 1rem;
     padding: 1rem;
     margin-bottom: 1rem;
-    font-size: 1.25rem;
     color: #fff;   
 }
 .card-body p {
     font-weight: 400;
+    font-size: 1.25rem !important;
 }
 .card::before {
     display: inline-flex;
     content: '';
-    background-size: 96px 96px;
-    height: 96px;
-    width:96px;
-    margin-top: -3rem;
+    background-size: 72px 72px;
+    height: 72px;
+    width:72px;
+    margin-top: -4rem;
     margin-left: -3rem;
 }
 .card.c1 {
@@ -262,9 +260,9 @@ input[readonly].readonly-text {
 }
 .card.c2::before {
     background-image: url('../../images/lock_icon.svg');
-    background-size: 128px 128px;
-    height: 128px;
-    width: 128px;
+    background-size: 96px 96px;
+    height: 96px;
+    width: 96px;
     margin-top: -5rem;
     margin-left: -4rem;
 }
@@ -327,14 +325,61 @@ input[readonly].readonly-text {
     height: 30px;
     width:30px;
 }
+.margin-left-custom {
+    margin-left: 2rem;
+}
 
 @media (max-width: 600px) {
-    .w-password-container {
-        width: 90%;
-    }
+    /*  */
 }
 @media (max-width: 991px) {
     .secret-input::before {
         display: none;
+    }
+    .info-cards-section {
+        grid-template-rows: 1fr 2fr 2fr;
+    }
+    .card.c1 {
+        grid-column: 1 / 4;
+    }
+    .card.c2 {
+        grid-column: 5 / 9;
+    }
+    .card.c3 {
+        grid-row-start: 3;
+        grid-column: 1 / 4;
+    }
+    .card.c4 {
+        grid-row-start: 3;
+        grid-column: 5 / 9;
+    }
+    .info-cards-section.mainpage > h2 {
+        grid-column: 1/6;
+    }
+}
+@media (min-width: 1200px) {
+    .margin-left-custom {
+        margin-left: 6rem;
+    }
+    .card {
+        width: 200px;
+        height: 330px;
+    }
+    .card::before {
+        background-size: 96px 96px;
+        height: 96px;
+        width:96px;
+        margin-top: -3rem;
+    }
+    .card.c2::before {
+        background-size: 128px 128px;
+        height: 128px;
+        width: 128px;
+        margin-top: -4rem;
+    }
+}
+@media (min-width: 1400px) {
+    .margin-left-custom {
+        margin-left: 10rem;
     }
 }
