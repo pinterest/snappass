@@ -336,7 +336,24 @@ input[readonly].readonly-text {
 .margin-left-custom {
     margin-left: 2rem;
 }
-
+.line.l1 {
+    background-image: url("../../images/lines_1.svg");
+    background-size: 578.5px 1247px;
+    position: absolute;
+    width: 578.5px;
+    height: 1247px;
+    left: 57%;
+    top: -26px;
+}
+.line.l2 {
+    background-image: url("../../images/lines_2.svg");
+    background-size: 577px 206px;
+    position: absolute;
+    width: 577px;
+    height: 206px;
+    left: 0%;
+    top: 46%;
+}
 @media (max-width: 600px) {
     /*  */
 }
