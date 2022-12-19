@@ -28,7 +28,7 @@ p, li {
     font-size: 1.3rem;
 }
 section {
-    margin-bottom: 5rem !important;
+    margin-top: 3rem;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     column-gap: 30px;
@@ -343,7 +343,7 @@ input[readonly].readonly-text {
     width: 578.5px;
     height: 1247px;
     left: 57%;
-    top: -26px;
+    top: -6px;
 }
 .line.l2 {
     background-image: url("../../images/lines_2.svg");
