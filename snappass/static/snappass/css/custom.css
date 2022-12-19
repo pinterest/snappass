@@ -183,6 +183,14 @@ input[readonly].readonly-text {
 .input-section {
     grid-template-columns: repeat(16, 2fr);
     column-gap: 0;
+    align-items: center;
+}
+.input-section > .lock-icon {
+    grid-column-start: 2;
+    height: 211px;
+    margin-right: -2rem;
+    margin-bottom: -1rem;
+    background-image: url('../../images/lock_icon.svg');
 }
 .input-section form {
     grid-column: 3/15;
@@ -358,9 +366,6 @@ input[readonly].readonly-text {
     }
 }
 @media (min-width: 1200px) {
-    .margin-left-custom {
-        margin-left: 6rem;
-    }
     .card {
         width: 200px;
         height: 330px;
@@ -379,7 +384,5 @@ input[readonly].readonly-text {
     }
 }
 @media (min-width: 1400px) {
-    .margin-left-custom {
-        margin-left: 10rem;
-    }
+    /* */
 }
