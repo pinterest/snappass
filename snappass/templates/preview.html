@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container preview">
+  <div class="line l3"></div>
   <section class="header-section preview">
     {% include 'info_header.html' %}
   </section>
@@ -14,7 +15,8 @@
     </button>
   </section>
 
-  <section>
+  <section class="secret-info-section">
+    <div class="line l2"></div>
     {% include 'secret_info_list.html' %}
   </section>
 
