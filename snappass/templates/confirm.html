@@ -2,7 +2,9 @@
 
 {% block content %}
 <div class="container">
-  <section class="header-section confirm mt-5">
+  <div class="line l3"></div>
+  <div class="line l4"></div>
+  <section class="header-section confirm">
     <h2 class="fst-italic"><span class="text-green fw-bold">Share</span> your secret</h2>
   </section>
 
@@ -21,7 +23,8 @@
     </div>
   </section>
   
-  <section>
+  <section class="secret-info-section">
+    <div class="line l2"></div>
     {% include 'secret_info_list.html' %}
   </section>
 </div>

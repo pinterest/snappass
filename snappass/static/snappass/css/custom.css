@@ -16,6 +16,9 @@ html {
     position: relative;
     min-height: 100%;
 }
+.container {
+    padding: 1.5rem;
+}
 h2 {
     font-weight: 500;
     font-size: 3rem;
@@ -92,15 +95,6 @@ input[readonly].readonly-text {
     border-radius: 10px;
 }
 
-/* .secret-input::before {
-    content: '';
-    background-size: 294px 174px;
-    height: 171px;
-    width:212px;
-    margin-left: -13rem;
-    margin-top: -1rem;
-    background-image: url('../../images/lock_icon.svg');
-} */
 .lock-icon {
     content: '';
     background-size: cover;
@@ -182,6 +176,7 @@ input[readonly].readonly-text {
 }
 .input-section {
     grid-template-columns: repeat(16, 2fr);
+    grid-template-rows: 1fr 1fr;
     column-gap: 0;
     align-items: center;
 }
@@ -336,23 +331,8 @@ input[readonly].readonly-text {
 .margin-left-custom {
     margin-left: 2rem;
 }
-.line.l1 {
-    background-image: url("../../images/lines_1.svg");
-    background-size: 578.5px 1247px;
-    position: absolute;
-    width: 578.5px;
-    height: 1247px;
-    left: 57%;
-    top: -6px;
-}
-.line.l2 {
-    background-image: url("../../images/lines_2.svg");
-    background-size: 577px 206px;
-    position: absolute;
-    width: 577px;
-    height: 206px;
-    left: 0%;
-    top: 46%;
+.line {
+    z-index: -1;
 }
 @media (max-width: 600px) {
     /*  */
@@ -383,6 +363,15 @@ input[readonly].readonly-text {
     }
 }
 @media (min-width: 1200px) {
+    .container.main {
+        background-image: url("../../images/lines_1.svg");
+        background-size: 578.5px 1247px;
+        background-repeat: no-repeat;
+        background-position: 110% -50%;
+    }
+    .container.main .info-cards-section {
+        margin-top: -7rem;
+    }
     .card {
         width: 200px;
         height: 330px;
@@ -399,7 +388,42 @@ input[readonly].readonly-text {
         width: 128px;
         margin-top: -4rem;
     }
+    .header-section.confirm {
+        margin-top: -61rem;
+    }
+    .line.l2 {
+        grid-row-start: 2;
+        grid-column: 1/3;
+        background-image: url("../../images/lines_2.svg");
+        background-size: 577px 206px;
+        width: 577px;
+        height: 206px;
+        margin-top: -8rem;
+        margin-left: -3.5rem;
+    }
+    .secret-info-section .line.l2{
+        margin-top: -15rem;
+        margin-left: -3rem;
+    }
+    .line.l3 {
+        background-image: url("../../images/lines_3.svg");
+        background-size: 573px 400px;
+        width: 538px;
+        height: 400px;
+        margin-top: -2rem;
+        margin-left: -12rem;
+    }
+    .line.l4 {
+        background-image: url("../../images/lines_4.svg");
+        background-size: 750px 1357.6px;
+        width: 750px;
+        height: 1357.6px;
+        margin-top: -37rem;
+        margin-left: 28rem;
+    }
 }
 @media (min-width: 1400px) {
-    /* */
+    .container.main {
+        background-position: 105% -50%;
+    }
 }
