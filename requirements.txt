@@ -1,5 +1,5 @@
 cryptography==39.0.2
-Flask==2.1.2
+Flask==2.2.5
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.1
