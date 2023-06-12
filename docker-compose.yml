@@ -20,5 +20,7 @@ services:
             - "6379:6379"
         volumes:
             - redis_data:/data
+        healthcheck:
+            test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 volumes:
     redis_data:
