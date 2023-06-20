@@ -1,5 +1,5 @@
 coverage==7.2.7
-fakeredis==2.14.1
+fakeredis==2.15.0
 flake8==6.0.0
 freezegun==1.2.1
 pytest==7.3.1
