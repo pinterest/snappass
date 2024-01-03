@@ -1,7 +1,7 @@
 coverage==7.2.7
 fakeredis==2.20.0
 flake8==6.0.0
-freezegun==1.2.1
+freezegun==1.4.0
 pytest==7.4.4
 pytest-cov==4.1.0
 tox==4.11.3
