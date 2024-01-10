@@ -16,7 +16,6 @@ URL_PREFIX = os.environ.get('URL_PREFIX', None)
 HOST_OVERRIDE = os.environ.get('HOST_OVERRIDE', None)
 TOKEN_SEPARATOR = '~'
 
-
 # Initialize Flask Application
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
@@ -28,6 +27,7 @@ app.config.update(
 # Initialize Redis
 if os.environ.get('MOCK_REDIS'):
     from fakeredis import FakeStrictRedis
+
     redis_client = FakeStrictRedis()
 elif os.environ.get('REDIS_URL'):
     redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
@@ -39,7 +39,8 @@ else:
         host=redis_host, port=redis_port, db=redis_db)
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
-TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400, 'hour': 3600}
+TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,
+                   'hour': 3600}
 
 
 def check_redis_alive(fn):
@@ -54,6 +55,7 @@ def check_redis_alive(fn):
                 sys.exit(0)
             else:
                 return abort(500)
+
     return inner
 
 
@@ -136,22 +138,35 @@ def empty(value):
         return True
 
 
-def clean_input():
+def clean_input(password=None, ttl=None):
     """
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if empty(request.form.get('password', '')):
+    if empty(password):
         abort(400)
-
-    if empty(request.form.get('ttl', '')):
+    if empty(ttl):
         abort(400)
-
-    time_period = request.form['ttl'].lower()
+    time_period = ttl.lower()
     if time_period not in TIME_CONVERSION:
         abort(400)
+    return ttl,
 
-    return TIME_CONVERSION[time_period], request.form['password']
+
+def set_base_url(req):
+    if NO_SSL:
+        if HOST_OVERRIDE:
+            base_url = f'http://{HOST_OVERRIDE}/'
+        else:
+            base_url = req.url_root
+    else:
+        if HOST_OVERRIDE:
+            base_url = f'https://{HOST_OVERRIDE}/'
+        else:
+            base_url = req.url_root.replace("http://", "https://")
+    if URL_PREFIX:
+        base_url = base_url + URL_PREFIX.strip("/") + "/"
+    return base_url
 
 
 @app.route('/', methods=['GET'])
@@ -161,26 +176,33 @@ def index():
 
 @app.route('/', methods=['POST'])
 def handle_password():
-    ttl, password = clean_input()
-    token = set_password(password, ttl)
-
-    if NO_SSL:
-        if HOST_OVERRIDE:
-            base_url = f'http://{HOST_OVERRIDE}/'
+    password = request.form.get('password')
+    ttl = request.form.get('ttl')
+    if clean_input(password, ttl):
+        ttl = TIME_CONVERSION[ttl.lower()]
+        token = set_password(password, ttl)
+        base_url = set_base_url(request)
+        link = base_url + quote_plus(token)
+        if request.accept_mimetypes.accept_json and not \
+           request.accept_mimetypes.accept_html:
+            return jsonify(link=link, ttl=ttl)
         else:
-            base_url = request.url_root
+            return render_template('confirm.html', password_link=link)
     else:
-        if HOST_OVERRIDE:
-            base_url = f'https://{HOST_OVERRIDE}/'
-        else:
-            base_url = request.url_root.replace("http://", "https://")
-    if URL_PREFIX:
-        base_url = base_url + URL_PREFIX.strip("/") + "/"
-    link = base_url + quote_plus(token)
-    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        abort(500)
+
+
+@app.route('/api/set_password/<string:password>', methods=['POST'])
+@app.route('/api/set_password/<string:password>/<string:ttl>', methods=['POST'])
+def api_handle_password(password: str, ttl: str = 'two weeks'):
+    if clean_input(password, ttl):
+        ttl = TIME_CONVERSION[ttl.lower()]
+        token = set_password(password, ttl)
+        base_url = set_base_url(request)
+        link = base_url + quote_plus(token)
         return jsonify(link=link, ttl=ttl)
     else:
-        return render_template('confirm.html', password_link=link)
+        abort(500)
 
 
 @app.route('/<password_key>', methods=['GET'])
