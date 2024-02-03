@@ -108,6 +108,7 @@ class SnapPassRoutesTestCase(TestCase):
 
     def test_health_check(self):
         response = self.app.get('/_/_/health')
+        self.assertEqual('200 OK', response.status)
         self.assertEqual('{}', response.get_data(as_text=True).strip())
 
     def test_preview_password(self):
