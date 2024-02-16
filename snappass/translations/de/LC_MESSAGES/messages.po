@@ -1,4 +1,4 @@
-# Dutch translations for PROJECT.
+# German translations for PROJECT.
 # Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-02-16 10:38+0100\n"
-"PO-Revision-Date: 2024-02-14 21:16+0100\n"
-"Last-Translator: \n"
-"Language: nl\n"
-"Language-Team: nl <LL@li.org>\n"
+"PO-Revision-Date: 2024-02-16 09:29+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,35 +20,33 @@ msgstr ""
 
 #: snappass/templates/base.html:2
 msgid "en"
-msgstr "nl"
+msgstr "de"
 
 #: snappass/templates/base.html:4
 msgid "Snappass - Share Secrets"
-msgstr "Snappass - Deel Wachtwoorden"
+msgstr ""
 
 #: snappass/templates/base.html:16
 msgid "Share Secret"
-msgstr "Stel wachtwoord in"
+msgstr ""
 
 #: snappass/templates/confirm.html:6
 msgid "Share Secret Link"
-msgstr "Deel wachtwoord link"
+msgstr ""
 
 #: snappass/templates/confirm.html:7
 msgid ""
 "The secret has been temporarily saved. Send the following URL to your "
 "intended recipient."
 msgstr ""
-"Het wachtwoord is tijdelijk opgeslagen. Deel de volgende URL aan de "
-"bedoelde ontvanger."
 
 #: snappass/templates/confirm.html:14
 msgid "Copy to clipboard"
-msgstr "Kopieer naar het klembord"
+msgstr ""
 
 #: snappass/templates/expired.html:6
 msgid "Secret not found"
-msgstr "Wachtwoord niet gevonden"
+msgstr ""
 
 #: snappass/templates/expired.html:7
 msgid ""
@@ -56,32 +54,28 @@ msgid ""
 " URL never contained a secret, or because it expired or was revealed "
 "earlier."
 msgstr ""
-"De gevraagde URL is niet gevonden op de server. Dat kan omdat deze geen "
-"wachtwoord bevat, het is verlopen of het al eerder getoond is."
 
 #: snappass/templates/expired.html:8
 msgid ""
 "If this URL was sent to you by someone, make sure to check your spelling "
 "or ask the person who sent it to you to send a new secret."
 msgstr ""
-"Als deze URL naar u is toegestuurd, controleer de spelling of vraag de "
-"verzender om een nieuw wachtwoord link te versturen."
 
 #: snappass/templates/preview.html:7
 msgid "Secret"
-msgstr "Wachtwoord"
+msgstr ""
 
 #: snappass/templates/preview.html:9
 msgid "You can only reveal the secret once!"
-msgstr "Het wachtwoord wordt slechts eenmaal getoond!"
+msgstr ""
 
 #: snappass/templates/preview.html:12
 msgid "Reveal secret"
-msgstr "Onthul wachtwoord"
+msgstr ""
 
 #: snappass/templates/set_password.html:6
 msgid "Set Secret"
-msgstr "Stel wachtwoord in"
+msgstr ""
 
 #: snappass/templates/set_password.html:12
 msgid ""
@@ -89,28 +83,24 @@ msgid ""
 "single or multi-line secret, its expiration time, and click Generate URL."
 " Share the one-time use URL with your intended recipient."
 msgstr ""
-"We stellen je in staat om wachtwoorden op een veilige, tijdelijke manier "
-"te delen. Voer een enkel- of meerregelig wachwoord in, stel de vervaltijd"
-" in, en klik op 'URL genereren'. Deel de eenmalig te gebruiken URL met de"
-" beoogde ontvanger."
 
 #: snappass/templates/set_password.html:18
 msgid "Two Weeks"
-msgstr "Twee weken"
+msgstr ""
 
 #: snappass/templates/set_password.html:19
 msgid "Week"
-msgstr "Week"
+msgstr ""
 
 #: snappass/templates/set_password.html:20
 msgid "Day"
-msgstr "Dag"
+msgstr ""
 
 #: snappass/templates/set_password.html:21
 msgid "Hour"
-msgstr "Uur"
+msgstr ""
 
 #: snappass/templates/set_password.html:26
 msgid "Generate URL"
-msgstr "URL genereren"
+msgstr ""
 
