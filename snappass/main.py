@@ -41,6 +41,8 @@ REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,
                    'hour': 3600}
+DEFAULT_API_TTL = 1209600
+MAX_TTL = DEFAULT_API_TTL
 
 
 def check_redis_alive(fn):
@@ -138,7 +140,7 @@ def empty(value):
         return True
 
 
-def clean_input(password=None, ttl=None):
+def clean_input(password: str = None, ttl: [str,int]=None):
     """
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
@@ -147,10 +149,14 @@ def clean_input(password=None, ttl=None):
         abort(400)
     if empty(ttl):
         abort(400)
-    time_period = ttl.lower()
-    if time_period not in TIME_CONVERSION:
-        abort(400)
-    return ttl,
+    if isinstance(ttl, str):
+        time_period = ttl.lower()
+        if time_period not in TIME_CONVERSION:
+            abort(400)
+    else:
+        if ttl < 0 or ttl > MAX_TTL:
+            abort(400)
+    return True
 
 
 def set_base_url(req):
@@ -192,11 +198,11 @@ def handle_password():
         abort(500)
 
 
-@app.route('/api/set_password/<string:password>', methods=['POST'])
-@app.route('/api/set_password/<string:password>/<string:ttl>', methods=['POST'])
-def api_handle_password(password: str, ttl: str = 'two weeks'):
+@app.route('/api/set_password/', methods=['POST'])
+def api_handle_password():
+    password = request.json.get('password')
+    ttl = request.json.get('ttl', DEFAULT_API_TTL)
     if clean_input(password, ttl):
-        ttl = TIME_CONVERSION[ttl.lower()]
         token = set_password(password, ttl)
         base_url = set_base_url(request)
         link = base_url + quote_plus(token)

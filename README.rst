@@ -107,7 +107,7 @@ To create a password, send a POST request to ``/api/set_password`` like so:
 
 ::
 
-    $ curl -X POST -H "Content-Type: application/json"  http://localhost:5000/api/set_password/my_password
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar"}' http://localhost:5000/api/set_password/
 
 This will return a JSON response with the password link:
 
@@ -122,9 +122,13 @@ the default TTL is 2 weeks (1209600 seconds), but you can override it by adding 
 
 ::
 
-    $ curl -X POST -H "Content-Type: application/json"  http://localhost:5000/api/set_password/my_password/week
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/set_password/
 
-Depending on the environment you are running it, you might want to expose the ``/api`` endpoint to your internal network only, and put the web interface behind authentication.
+Notes:
+
+- When using the API, you can specify any ttl, as long as it is lower than the default.
+- The password is passed in the body of the request rather than in the URL. This is to prevent the password from being logged in the server logs.
+- Depending on the environment you are running it, you might want to expose the ``/api`` endpoint to your internal network only, and put the web interface behind authentication.
 
 Docker
 ------
