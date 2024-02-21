@@ -51,6 +51,6 @@ htmlcov/
 venv/
 ENV/
 
-# Translatio catalogs
+# Translation catalogs
 *.mo
 *.pot
