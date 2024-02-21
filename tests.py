@@ -106,6 +106,11 @@ class SnapPassRoutesTestCase(TestCase):
         snappass.app.config['TESTING'] = True
         self.app = snappass.app.test_client()
 
+    def test_health_check(self):
+        response = self.app.get('/_/_/health')
+        self.assertEqual('200 OK', response.status)
+        self.assertEqual('{}', response.get_data(as_text=True).strip())
+
     def test_preview_password(self):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
