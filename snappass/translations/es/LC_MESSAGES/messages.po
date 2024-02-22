@@ -1,13 +1,13 @@
-# Spanish translations for PROJECT.
+# Spanish translations for SNAPPASS.
 # Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# systeembeheerder <systeembeheerder@users.noreply.github.com>, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-16 10:38+0100\n"
+"POT-Creation-Date: 2024-02-22 11:01+0100\n"
 "PO-Revision-Date: 2024-02-16 09:29+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -24,29 +24,31 @@ msgstr "es"
 
 #: snappass/templates/base.html:4
 msgid "Snappass - Share Secrets"
-msgstr ""
+msgstr "Snappass - Compartir secretos"
 
 #: snappass/templates/base.html:16
 msgid "Share Secret"
-msgstr ""
+msgstr "Compartir secretos"
 
 #: snappass/templates/confirm.html:6
 msgid "Share Secret Link"
-msgstr ""
+msgstr "Compartir enlace secreto"
 
 #: snappass/templates/confirm.html:7
 msgid ""
 "The secret has been temporarily saved. Send the following URL to your "
 "intended recipient."
 msgstr ""
+"El secreto se ha guardado temporalmente. Envíe la siguiente URL a "
+"sudestinatario previsto."
 
-#: snappass/templates/confirm.html:14
+#: snappass/templates/confirm.html:14 snappass/templates/password.html:14
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Copiar en el portapapeles"
 
 #: snappass/templates/expired.html:6
 msgid "Secret not found"
-msgstr ""
+msgstr "Secreto no encontrado"
 
 #: snappass/templates/expired.html:7
 msgid ""
@@ -54,28 +56,45 @@ msgid ""
 " URL never contained a secret, or because it expired or was revealed "
 "earlier."
 msgstr ""
+"La URL solicitada no se encontró en el servidor. Esto podría deberse a "
+"estoLa URL nunca contenía un secreto, o porque caducó o fue revelado "
+"Antes."
 
 #: snappass/templates/expired.html:8
 msgid ""
 "If this URL was sent to you by someone, make sure to check your spelling "
 "or ask the person who sent it to you to send a new secret."
 msgstr ""
+"Si alguien te envió esta URL, asegúrate de revisar tu ortografíaO pídele "
+"a la persona que te lo envió que te envíe un nuevo secreto."
 
-#: snappass/templates/preview.html:7
+#: snappass/templates/password.html:6 snappass/templates/preview.html:7
 msgid "Secret"
+msgstr "Secreto"
+
+#: snappass/templates/password.html:7
+msgid "Save the following secret to a secure location."
+msgstr "Guarda el siguiente secreto en un lugar seguro."
+
+#: snappass/templates/password.html:21
+msgid ""
+"The secret has now been permanently deleted from the system, and the URL "
+"will no longer work. Refresh this page to verify."
 msgstr ""
+"El secreto ahora se ha eliminado permanentemente del sistema, y la URL Ya"
+" no funcionará. Actualiza esta página para verificarlo."
 
 #: snappass/templates/preview.html:9
 msgid "You can only reveal the secret once!"
-msgstr ""
+msgstr "¡Solo puedes revelar el secreto una vez!"
 
 #: snappass/templates/preview.html:12
 msgid "Reveal secret"
-msgstr ""
+msgstr "Revelar secreto"
 
 #: snappass/templates/set_password.html:6
 msgid "Set Secret"
-msgstr ""
+msgstr "Establecer secreto"
 
 #: snappass/templates/set_password.html:12
 msgid ""
@@ -83,24 +102,28 @@ msgid ""
 "single or multi-line secret, its expiration time, and click Generate URL."
 " Share the one-time use URL with your intended recipient."
 msgstr ""
+"SnapPass te permite compartir secretos de forma segura y efímera. "
+"Introduzca un secreto de una o varias líneas, su tiempo de caducidad y "
+"haga clic en Generar URL.Comparta la URL de un solo uso con el "
+"destinatario previsto\""
 
 #: snappass/templates/set_password.html:18
 msgid "Two Weeks"
-msgstr ""
+msgstr "Dos semanas"
 
 #: snappass/templates/set_password.html:19
 msgid "Week"
-msgstr ""
+msgstr "Semana"
 
 #: snappass/templates/set_password.html:20
 msgid "Day"
-msgstr ""
+msgstr "Día"
 
 #: snappass/templates/set_password.html:21
 msgid "Hour"
-msgstr ""
+msgstr "Hora"
 
 #: snappass/templates/set_password.html:26
 msgid "Generate URL"
-msgstr ""
+msgstr "Generar URL"
 

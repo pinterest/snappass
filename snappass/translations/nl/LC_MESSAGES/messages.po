@@ -1,13 +1,13 @@
-# Dutch translations for PROJECT.
+# Dutch translations for SNAPPASS.
 # Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# systeembeheerder <systeembeheerder@users.noreply.github.com>, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-16 10:38+0100\n"
+"POT-Creation-Date: 2024-02-22 11:01+0100\n"
 "PO-Revision-Date: 2024-02-14 21:16+0100\n"
 "Last-Translator: \n"
 "Language: nl\n"
@@ -42,7 +42,7 @@ msgstr ""
 "Het wachtwoord is tijdelijk opgeslagen. Deel de volgende URL aan de "
 "bedoelde ontvanger."
 
-#: snappass/templates/confirm.html:14
+#: snappass/templates/confirm.html:14 snappass/templates/password.html:14
 msgid "Copy to clipboard"
 msgstr "Kopieer naar het klembord"
 
@@ -67,9 +67,21 @@ msgstr ""
 "Als deze URL naar u is toegestuurd, controleer de spelling of vraag de "
 "verzender om een nieuw wachtwoord link te versturen."
 
-#: snappass/templates/preview.html:7
+#: snappass/templates/password.html:6 snappass/templates/preview.html:7
 msgid "Secret"
 msgstr "Wachtwoord"
+
+#: snappass/templates/password.html:7
+msgid "Save the following secret to a secure location."
+msgstr "Bewaar het wachtwoord op een veilige plek."
+
+#: snappass/templates/password.html:21
+msgid ""
+"The secret has now been permanently deleted from the system, and the URL "
+"will no longer work. Refresh this page to verify."
+msgstr ""
+"Het wachtwoord is permanent verwijderd van het systeem, de URL werkt niet"
+" meer. Herlaad deze pagina ter verificatie"
 
 #: snappass/templates/preview.html:9
 msgid "You can only reveal the secret once!"
