@@ -17,6 +17,7 @@ URL_PREFIX = os.environ.get('URL_PREFIX', None)
 HOST_OVERRIDE = os.environ.get('HOST_OVERRIDE', None)
 TOKEN_SEPARATOR = '~'
 
+
 # Initialize Flask Application
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
@@ -28,6 +29,8 @@ app.config.update(
 # Set up Babel
 def get_locale():
     return request.accept_languages.best_match(['en', 'es', 'de', 'nl'])
+
+
 babel = Babel(app, locale_selector=get_locale)
 
 # Initialize Redis
@@ -60,6 +63,7 @@ def check_redis_alive(fn):
             else:
                 return abort(500)
     return inner
+
 
 def encrypt(password):
     """
@@ -215,6 +219,7 @@ def health_check():
 @check_redis_alive
 def main():
     app.run(host='0.0.0.0')
+
 
 if __name__ == '__main__':
     main()
