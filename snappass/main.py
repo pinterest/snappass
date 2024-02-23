@@ -10,6 +10,7 @@ from redis.exceptions import ConnectionError
 from urllib.parse import quote_plus
 from urllib.parse import unquote_plus
 from distutils.util import strtobool
+from flask_babel import Babel
 
 NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
@@ -24,6 +25,14 @@ if os.environ.get('DEBUG'):
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
+
+
+# Set up Babel
+def get_locale():
+    return request.accept_languages.best_match(['en', 'es', 'de', 'nl'])
+
+
+babel = Babel(app, locale_selector=get_locale)
 
 # Initialize Redis
 if os.environ.get('MOCK_REDIS'):

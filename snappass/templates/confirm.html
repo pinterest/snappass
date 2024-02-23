@@ -3,15 +3,15 @@
 {% block content %}
 <div class="container">
   <section>
-    <div class="page-header"><h1>Share Secret Link</h1></div>
-    <p>The secret has been temporarily saved. Send the following URL to your intended recipient.</p>
+    <div class="page-header"><h1>{{ _('Share Secret Link') }}</h1></div>
+    <p>{{ _('The secret has been temporarily saved. Send the following URL to your intended recipient.') }}</p>
     <div class="row">
       <div class="col-sm-6 margin-bottom-10">
         <input type="text" class="form-control" id="password-link" value="{{ password_link }}" readonly="readonly">
       </div>
 
       <div class="col-sm-6">
-        <button title="Copy to clipboard" type="button" class="btn btn-primary copy-clipboard-btn"
+        <button title="{{ _('Copy to clipboard') }}" type="button" class="btn btn-primary copy-clipboard-btn"
               id="copy-clipboard-btn" data-clipboard-target="#password-link"
               data-placement='bottom'>
           <i class="fa fa-clipboard"></i>
