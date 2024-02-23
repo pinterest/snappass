@@ -1,4 +1,3 @@
-import json
 import re
 import time
 import unittest
@@ -145,7 +144,6 @@ class SnapPassRoutesTestCase(TestCase):
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
 
-
     def test_set_password_json(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
             password = 'my name is my passport. verify me.'
@@ -202,6 +200,7 @@ class SnapPassRoutesTestCase(TestCase):
 
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
+
 
 if __name__ == '__main__':
     unittest.main()
