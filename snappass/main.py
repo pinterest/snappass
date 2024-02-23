@@ -140,23 +140,22 @@ def empty(value):
         return True
 
 
-def clean_input(password: str = None, ttl: [str,int]=None):
+def clean_input():
     """
     Make sure we're not getting bad data from the front end,
     format data to be machine readable
     """
-    if empty(password):
+    if empty(request.form.get('password', '')):
         abort(400)
-    if empty(ttl):
+
+    if empty(request.form.get('ttl', '')):
         abort(400)
-    if isinstance(ttl, str):
-        time_period = ttl.lower()
-        if time_period not in TIME_CONVERSION:
-            abort(400)
-    else:
-        if ttl < 0 or ttl > MAX_TTL:
-            abort(400)
-    return True
+
+    time_period = request.form['ttl'].lower()
+    if time_period not in TIME_CONVERSION:
+        abort(400)
+
+    return TIME_CONVERSION[time_period], request.form['password']
 
 
 def set_base_url(req):
@@ -184,7 +183,7 @@ def index():
 def handle_password():
     password = request.form.get('password')
     ttl = request.form.get('ttl')
-    if clean_input(password, ttl):
+    if clean_input():
         ttl = TIME_CONVERSION[ttl.lower()]
         token = set_password(password, ttl)
         base_url = set_base_url(request)
@@ -201,8 +200,8 @@ def handle_password():
 @app.route('/api/set_password/', methods=['POST'])
 def api_handle_password():
     password = request.json.get('password')
-    ttl = request.json.get('ttl', DEFAULT_API_TTL)
-    if clean_input(password, ttl):
+    ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+    if password and isinstance(ttl, int) and ttl <= MAX_TTL:
         token = set_password(password, ttl)
         base_url = set_base_url(request)
         link = base_url + quote_plus(token)
