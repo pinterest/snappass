@@ -26,6 +26,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
+
 # Set up Babel
 def get_locale():
     return request.accept_languages.best_match(['en', 'es', 'de', 'nl'])
