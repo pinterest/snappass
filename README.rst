@@ -96,6 +96,40 @@ need to change this.
 
 ``HOST_OVERRIDE``: (optional) Used to override the base URL if the app is unaware. Useful when running behind reverse proxies like an identity-aware SSO. Example: ``sub.domain.com``
 
+API
+---
+
+SnapPass also has a simple API that can be used to create passwords links. The advantage of using the API is that
+you can create a password and retrieve the link without having to open the web interface. This is useful if you want to
+embed it in a script or use it in a CI/CD pipeline.
+
+To create a password, send a POST request to ``/api/set_password`` like so:
+
+::
+
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar"}' http://localhost:5000/api/set_password/
+
+This will return a JSON response with the password link:
+
+::
+
+    {
+        "link": "http://127.0.0.1:5000/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        "ttl":1209600
+    }
+
+the default TTL is 2 weeks (1209600 seconds), but you can override it by adding a expiration parameter:
+
+::
+
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/set_password/
+
+Notes:
+
+- When using the API, you can specify any ttl, as long as it is lower than the default.
+- The password is passed in the body of the request rather than in the URL. This is to prevent the password from being logged in the server logs.
+- Depending on the environment you are running it, you might want to expose the ``/api`` endpoint to your internal network only, and put the web interface behind authentication.
+
 Docker
 ------
 
