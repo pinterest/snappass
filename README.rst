@@ -96,6 +96,10 @@ need to change this.
 
 ``HOST_OVERRIDE``: (optional) Used to override the base URL if the app is unaware. Useful when running behind reverse proxies like an identity-aware SSO. Example: ``sub.domain.com``
 
+``BIND_ADDRESS``: (optional) Used to override the default bind address of 0.0.0.0 for flask app Example: ``127.0.0.1``
+
+``PORT``: (optional) Used to override the default port of 5000 Example: ``6000``
+
 API
 ---
 
