@@ -276,23 +276,23 @@ def api_v2_set_password():
     link = urljoin(base_url, request.path + quote_plus(token))
     return jsonify(link=link, ttl=ttl)
 
-@app.route('/api/v2/passwords/<password_key>', methods=['HEAD'])
-def api_v2_check_password(password_key):
-    password_key = unquote_plus(password_key)
-    if not password_exists(password_key):
+@app.route('/api/v2/passwords/<token>', methods=['HEAD'])
+def api_v2_check_password(token):
+    token = unquote_plus(token)
+    if not password_exists(token):
         # Return NotFound, to indicate that password does not exists (anymore or at all)
         return ('', 404)
     else:
         # Return OK, to indicate that password still exists
         return ('', 200)
 
-@app.route('/api/v2/passwords/<password_key>', methods=['GET'])
-def api_v2_retrieve_password(password_key):
-    password_key = unquote_plus(password_key)
-    password = get_password(password_key)
+@app.route('/api/v2/passwords/<token>', methods=['GET'])
+def api_v2_retrieve_password(token):
+    token = unquote_plus(token)
+    password = get_password(token)
     if not password:
         # Return NotFound, to indicate that password does not exists (anymore or at all)
-        return as_not_found_problem(request, "get-password-error", "The password doesn't exist.", [{ "name": "password_key"}])
+        return as_not_found_problem(request, "get-password-error", "The password doesn't exist.", [{ "name": "token"}])
     else:
         # Return OK and the password in JSON message
         return jsonify(password=password)
