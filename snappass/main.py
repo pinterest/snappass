@@ -217,6 +217,47 @@ def api_handle_password():
         return jsonify(link=link, ttl=ttl)
     else:
         abort(500)
+        
+@app.route('/api/v2/passwords/', methods=['POST'])
+def api_v2_set_password():
+    password = request.json.get('password')
+    ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+    if not password:
+        # Add ProblemDetails expliciting issue with Password and/or TTL
+        abort(400)
+        
+    if not isinstance(ttl, int) or ttl > MAX_TTL:
+    else:
+        # Return ProblemDetails expliciting issue
+        abort(400)
+        
+    token = set_password(password, ttl)
+    base_url = set_base_url(request)
+    link = base_url + quote_plus(token)
+    return jsonify(link=link, ttl=ttl)
+
+@app.route('/api/v2/passwords/<password_key>', methods=['HEAD'])
+def api_v2_check_password():
+    password_key = unquote_plus(password_key)
+    if not password_exists(password_key):
+        # Return NotFound, to indicate that password does not exists (anymore or at all)
+        # With ProblemDetails expliciting issue (just password not found)
+        abort(404)
+    else:
+        # Return OK, to indicate that password still exists
+        abort(200)
+
+@app.route('/api/v2/passwords/<password_key>', methods=['GET'])
+def api_v2_retrieve_password():
+    password_key = unquote_plus(password_key)
+    password = get_password(password_key)
+    if not password:
+        # Return NotFound, to indicate that password does not exists (anymore or at all)
+        # With ProblemDetails expliciting issue (just password not found)
+        abort(404)
+    else:
+        # Return OK and the password in JSON message
+        return jsonify(passwork=passwork)
 
 
 @app.route('/<password_key>', methods=['GET'])

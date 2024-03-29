@@ -201,6 +201,149 @@ class SnapPassRoutesTestCase(TestCase):
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
 
+    def test_set_password_api_v2(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/passwords/',
+                headers={'Accept': 'application/json'},
+                json={'password': password, 'ttl': '1209600'},
+            )
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
+
+    def test_set_password_api_v2_default_ttl(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/set_password/',
+                headers={'Accept': 'application/json'},
+                json={'password': password},
+            )
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
+
+    def test_set_password_api_v2_no_password(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            rv = self.app.post(
+                '/api/set_password/',
+                headers={'Accept': 'application/json'},
+                json={'password': None},
+            )
+
+            self.assertEqual(rv.status, 400)
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+
+            # TODO : Search for ProblemDetails propreties about Password
+            
+    def test_set_password_api_v2_too_big_ttl(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/passwords/',
+                headers={'Accept': 'application/json'},
+                json={'password': password, 'ttl': '1209600000'},
+            )
+
+            self.assertEqual(rv.status, 400)
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+
+            # TODO : Search for ProblemDetails propreties about TTL
+
+    def test_check_password_api_v2(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/password/',
+                headers={'Accept': 'application/json'},
+                json={'password': password},
+            )
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+            
+            rvc = self.app.head('/api/v2/password/' + quote(key))
+            self.assertEqual(rv.status, 200)
+
+    def test_check_password_api_v2_bad_keys(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/password/',
+                headers={'Accept': 'application/json'},
+                json={'password': password},
+            )
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+            
+            rvc = self.app.head('/api/v2/password/' + quote(key + key))
+            self.assertEqual(rv.status, 404)
+
+            # TODO : Search for ProblemDetails propreties about Password
+
+    def test_retrieve_password_api_v2(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/password/',
+                headers={'Accept': 'application/json'},
+                json={'password': password},
+            )
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+            
+            rvc = self.app.get('/api/v2/password/' + quote(key))
+            self.assertEqual(rv.status, 200)
+
+            json_content_retrieved = rvc.get_json()
+            retrieved_password = json_content['password']
+            self.assertEqual(retrieved_password, password)
+
+    def test_retrieve_password_api_v2_bad_keys(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/password/',
+                headers={'Accept': 'application/json'},
+                json={'password': password},
+            )
+
+            json_content = rv.get_json()
+            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
+            key = unquote(key)
+            
+            rvc = self.app.head('/api/v2/password/' + quote(key + key))
+            self.assertEqual(rv.status, 404)
+
+            # TODO : Search for ProblemDetails propreties about Password
+
 
 if __name__ == '__main__':
     unittest.main()
