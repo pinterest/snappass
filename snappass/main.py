@@ -100,6 +100,35 @@ def parse_token(token):
         decryption_key = None
 
     return storage_key, decryption_key
+    
+def as_validation_problem(request, problem_type, problem_title, invalid_params):
+    base_url = set_base_url(request)
+
+    problem = {
+        "type": base_url + problem_type,
+        "title": problem_title,
+        "invalid-params": invalid_params
+    }
+    return as_problem_response(problem)
+
+def as_not_found_problem(request, problem_type, problem_title, invalid_params):
+    base_url = set_base_url(request)
+
+    problem = {
+        "type": base_url + problem_type,
+        "title": problem_title,
+        "invalid-params": invalid_params
+    }
+    return as_problem_response(problem, 404)
+
+
+def as_problem_response(problem, status_code=None):
+    if not isinstance(status_code, int) or not status_code:
+        status_code = 400
+
+    response = make_response(jsonify(problem), status_code)
+    response.headers['Content-Type'] = 'application/problem+json'
+    return response
 
 
 @check_redis_alive
@@ -222,14 +251,25 @@ def api_handle_password():
 def api_v2_set_password():
     password = request.json.get('password')
     ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+    
+    invalid_params = []
+
     if not password:
-        # Add ProblemDetails expliciting issue with Password and/or TTL
-        abort(400)
-        
+        invalid_params.append({
+            "name": "password",
+            "reason": "The password is required and should not be null or empty."
+        })
+
     if not isinstance(ttl, int) or ttl > MAX_TTL:
-    else:
-        # Return ProblemDetails expliciting issue
-        abort(400)
+        invalid_params.append({
+            "name": "ttl",
+            "reason": "The specified TTL is longer than the maximum supported."
+        })
+
+    if len(invalid_params) > 0:
+        # Return a ProblemDetails expliciting issue with Password and/or TTL
+        return as_validation_problem(request, "set-password-validation-error", "The password and/or the TTL are invalid.", invalid_params)
+
         
     token = set_password(password, ttl)
     base_url = set_base_url(request)
@@ -241,11 +281,10 @@ def api_v2_check_password():
     password_key = unquote_plus(password_key)
     if not password_exists(password_key):
         # Return NotFound, to indicate that password does not exists (anymore or at all)
-        # With ProblemDetails expliciting issue (just password not found)
-        abort(404)
+        return as_not_found_problem(request, "check-password-error", "The password doesn't exists.", [{ "name": "password_key"}])
     else:
         # Return OK, to indicate that password still exists
-        abort(200)
+        return ('', 200)
 
 @app.route('/api/v2/passwords/<password_key>', methods=['GET'])
 def api_v2_retrieve_password():
@@ -253,8 +292,7 @@ def api_v2_retrieve_password():
     password = get_password(password_key)
     if not password:
         # Return NotFound, to indicate that password does not exists (anymore or at all)
-        # With ProblemDetails expliciting issue (just password not found)
-        abort(404)
+        return as_not_found_problem(request, "get-password-error", "The password doesn't exist.", [{ "name": "password_key"}])
     else:
         # Return OK and the password in JSON message
         return jsonify(passwork=passwork)
