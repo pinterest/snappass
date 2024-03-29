@@ -101,7 +101,7 @@ def parse_token(token):
         decryption_key = None
 
     return storage_key, decryption_key
-    
+
 def as_validation_problem(request, problem_type, problem_title, invalid_params):
     base_url = set_base_url(request)
 
@@ -247,12 +247,12 @@ def api_handle_password():
         return jsonify(link=link, ttl=ttl)
     else:
         abort(500)
-        
+
 @app.route('/api/v2/passwords/', methods=['POST'])
 def api_v2_set_password():
     password = request.json.get('password')
     ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
-    
+
     invalid_params = []
 
     if not password:
