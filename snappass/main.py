@@ -248,7 +248,7 @@ def api_handle_password():
     else:
         abort(500)
 
-@app.route('/api/v2/passwords/', methods=['POST'])
+@app.route('/api/v2/passwords', methods=['POST'])
 def api_v2_set_password():
     password = request.json.get('password')
     ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
@@ -272,9 +272,18 @@ def api_v2_set_password():
         return as_validation_problem(request, "set-password-validation-error", "The password and/or the TTL are invalid.", invalid_params)
 
     token = set_password(password, ttl)
+    url_token= quote_plus(token)
     base_url = set_base_url(request)
-    link = urljoin(base_url, request.path + quote_plus(token))
-    return jsonify(link=link, ttl=ttl)
+    link = urljoin(base_url, request.path + "/" + url_token)
+    response_content = {
+        "token": url_token,
+        "links": [{
+            "rel": "self",
+            "href": link
+        }],
+        "ttl": ttl
+    }
+    return jsonify(response_content)
 
 @app.route('/api/v2/passwords/<token>', methods=['HEAD'])
 def api_v2_check_password(token):
