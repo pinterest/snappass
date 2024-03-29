@@ -102,6 +102,7 @@ def parse_token(token):
 
     return storage_key, decryption_key
 
+
 def as_validation_problem(request, problem_type, problem_title, invalid_params):
     base_url = set_base_url(request)
 
@@ -111,6 +112,7 @@ def as_validation_problem(request, problem_type, problem_title, invalid_params):
         "invalid-params": invalid_params
     }
     return as_problem_response(problem)
+
 
 def as_not_found_problem(request, problem_type, problem_title, invalid_params):
     base_url = set_base_url(request)
@@ -248,6 +250,7 @@ def api_handle_password():
     else:
         abort(500)
 
+
 @app.route('/api/v2/passwords', methods=['POST'])
 def api_v2_set_password():
     password = request.json.get('password')
@@ -269,10 +272,15 @@ def api_v2_set_password():
 
     if len(invalid_params) > 0:
         # Return a ProblemDetails expliciting issue with Password and/or TTL
-        return as_validation_problem(request, "set-password-validation-error", "The password and/or the TTL are invalid.", invalid_params)
+        return as_validation_problem(
+            request,
+            "set-password-validation-error",
+            "The password and/or the TTL are invalid.",
+            invalid_params
+        )
 
     token = set_password(password, ttl)
-    url_token= quote_plus(token)
+    url_token = quote_plus(token)
     base_url = set_base_url(request)
     link = urljoin(base_url, request.path + "/" + url_token)
     response_content = {
@@ -285,6 +293,7 @@ def api_v2_set_password():
     }
     return jsonify(response_content)
 
+
 @app.route('/api/v2/passwords/<token>', methods=['HEAD'])
 def api_v2_check_password(token):
     token = unquote_plus(token)
@@ -295,13 +304,19 @@ def api_v2_check_password(token):
         # Return OK, to indicate that password still exists
         return ('', 200)
 
+
 @app.route('/api/v2/passwords/<token>', methods=['GET'])
 def api_v2_retrieve_password(token):
     token = unquote_plus(token)
     password = get_password(token)
     if not password:
         # Return NotFound, to indicate that password does not exists (anymore or at all)
-        return as_not_found_problem(request, "get-password-error", "The password doesn't exist.", [{ "name": "token"}])
+        return as_not_found_problem(
+            request,
+            "get-password-error",
+            "The password doesn't exist.",
+            [{"name": "token"}]
+        )
     else:
         # Return OK and the password in JSON message
         return jsonify(password=password)
