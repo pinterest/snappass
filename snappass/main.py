@@ -5,10 +5,11 @@ import uuid
 import redis
 
 from cryptography.fernet import Fernet
-from flask import abort, Flask, render_template, request, jsonify
+from flask import abort, Flask, render_template, request, jsonify, make_response
 from redis.exceptions import ConnectionError
 from urllib.parse import quote_plus
 from urllib.parse import unquote_plus
+from urllib.parse import urljoin
 from distutils.util import strtobool
 from flask_babel import Babel
 
@@ -270,24 +271,23 @@ def api_v2_set_password():
         # Return a ProblemDetails expliciting issue with Password and/or TTL
         return as_validation_problem(request, "set-password-validation-error", "The password and/or the TTL are invalid.", invalid_params)
 
-        
     token = set_password(password, ttl)
     base_url = set_base_url(request)
-    link = base_url + quote_plus(token)
+    link = urljoin(base_url, request.path + quote_plus(token))
     return jsonify(link=link, ttl=ttl)
 
 @app.route('/api/v2/passwords/<password_key>', methods=['HEAD'])
-def api_v2_check_password():
+def api_v2_check_password(password_key):
     password_key = unquote_plus(password_key)
     if not password_exists(password_key):
         # Return NotFound, to indicate that password does not exists (anymore or at all)
-        return as_not_found_problem(request, "check-password-error", "The password doesn't exists.", [{ "name": "password_key"}])
+        return ('', 404)
     else:
         # Return OK, to indicate that password still exists
         return ('', 200)
 
 @app.route('/api/v2/passwords/<password_key>', methods=['GET'])
-def api_v2_retrieve_password():
+def api_v2_retrieve_password(password_key):
     password_key = unquote_plus(password_key)
     password = get_password(password_key)
     if not password:
@@ -295,7 +295,7 @@ def api_v2_retrieve_password():
         return as_not_found_problem(request, "get-password-error", "The password doesn't exist.", [{ "name": "password_key"}])
     else:
         # Return OK and the password in JSON message
-        return jsonify(passwork=passwork)
+        return jsonify(password=password)
 
 
 @app.route('/<password_key>', methods=['GET'])
