@@ -151,11 +151,13 @@ This will return a JSON response with a token and the password link:
 ::
 
     {
-        "token": "snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
         "token": "snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY=",
         "links": [{
             "rel": "self",
             "href": "http://127.0.0.1:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        },{
+            "rel": "web-view",
+            "href": "http://127.0.0.1:5000/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
         }],
         "ttl":1209600
     }

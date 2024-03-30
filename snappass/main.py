@@ -282,13 +282,16 @@ def api_v2_set_password():
     token = set_password(password, ttl)
     url_token = quote_plus(token)
     base_url = set_base_url(request)
-    link = urljoin(base_url, request.path + "/" + url_token)
+    api_link = urljoin(base_url, request.path + "/" + url_token)
+    web_link = urljoin(base_url, url_token)
     response_content = {
-        "token": url_token,
         "token": token,
         "links": [{
             "rel": "self",
-            "href": link
+            "href": api_link
+        }, {
+            "rel": "web-view",
+            "href": web_link
         }],
         "ttl": ttl
     }
