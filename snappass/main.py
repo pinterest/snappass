@@ -285,6 +285,7 @@ def api_v2_set_password():
     link = urljoin(base_url, request.path + "/" + url_token)
     response_content = {
         "token": url_token,
+        "token": token,
         "links": [{
             "rel": "self",
             "href": link

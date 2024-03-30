@@ -152,6 +152,7 @@ This will return a JSON response with a token and the password link:
 
     {
         "token": "snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        "token": "snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY=",
         "links": [{
             "rel": "self",
             "href": "http://127.0.0.1:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
@@ -187,7 +188,7 @@ Otherwise, the API will return a 404 (Not Found) response like so:
 Check if a password exists
 """"""""""""""""""""""""""
 
-To check if a password exists, send a HEAD request to ``/api/v2/passwords/<password_key>``, where ``<password_key>`` is the token of the API response when a password is created, or simply use the `self` link:
+To check if a password exists, send a HEAD request to ``/api/v2/passwords/<token>``, where ``<token>`` is the token of the API response when a password is created (url encoded), or simply use the `self` link:
 
 ::
 
@@ -233,9 +234,9 @@ To read a password, send a GET request to ``/api/v2/passwords/<password_key>``, 
     $ curl -X GET http://localhost:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D
 
 If :
-- the passwork_key is valid 
+- the token is valid 
 - the password :
-  - exists,
+  - exists
   - has not been read 
   - is not expired
 
