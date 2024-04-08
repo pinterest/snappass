@@ -4,6 +4,7 @@ import unittest
 import uuid
 from unittest import TestCase
 from unittest import mock
+from urllib.parse import quote
 from urllib.parse import unquote
 
 from cryptography.fernet import Fernet
@@ -200,6 +201,156 @@ class SnapPassRoutesTestCase(TestCase):
 
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
+
+    def test_set_password_api_v2(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/passwords',
+                headers={'Accept': 'application/json'},
+                json={'password': password, 'ttl': '1209600'},
+            )
+
+            json_content = rv.get_json()
+            key = unquote(json_content['token'])
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
+
+    def test_set_password_api_v2_default_ttl(self):
+        with freeze_time("2020-05-08 12:00:00") as frozen_time:
+            password = 'my name is my passport. verify me.'
+            rv = self.app.post(
+                '/api/v2/passwords',
+                headers={'Accept': 'application/json'},
+                json={'password': password},
+            )
+
+            json_content = rv.get_json()
+            key = unquote(json_content['token'])
+
+            frozen_time.move_to("2020-05-22 11:59:59")
+            self.assertEqual(snappass.get_password(key), password)
+
+            frozen_time.move_to("2020-05-22 12:00:00")
+            self.assertIsNone(snappass.get_password(key))
+
+    def test_set_password_api_v2_no_password(self):
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': ''},
+        )
+
+        self.assertEqual(rv.status_code, 400)
+
+        json_content = rv.get_json()
+        invalid_params = json_content['invalid-params']
+        self.assertEqual(len(invalid_params), 1)
+        bad_password = invalid_params[0]
+        self.assertEqual(bad_password['name'], 'password')
+
+    def test_set_password_api_v2_too_big_ttl(self):
+        password = 'my name is my passport. verify me.'
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': password, 'ttl': '1209600000'},
+        )
+
+        self.assertEqual(rv.status_code, 400)
+
+        json_content = rv.get_json()
+        invalid_params = json_content['invalid-params']
+        self.assertEqual(len(invalid_params), 1)
+        bad_ttl = invalid_params[0]
+        self.assertEqual(bad_ttl['name'], 'ttl')
+
+    def test_set_password_api_v2_no_password_and_too_big_ttl(self):
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': '', 'ttl': '1209600000'},
+        )
+
+        self.assertEqual(rv.status_code, 400)
+
+        json_content = rv.get_json()
+        invalid_params = json_content['invalid-params']
+        self.assertEqual(len(invalid_params), 2)
+        bad_password = invalid_params[0]
+        self.assertEqual(bad_password['name'], 'password')
+        bad_ttl = invalid_params[1]
+        self.assertEqual(bad_ttl['name'], 'ttl')
+
+    def test_check_password_api_v2(self):
+        password = 'my name is my passport. verify me.'
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': password},
+        )
+
+        json_content = rv.get_json()
+        key = unquote(json_content['token'])
+
+        rvc = self.app.head('/api/v2/passwords/' + quote(key))
+        self.assertEqual(rvc.status_code, 200)
+
+    def test_check_password_api_v2_bad_keys(self):
+        password = 'my name is my passport. verify me.'
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': password},
+        )
+
+        json_content = rv.get_json()
+        key = unquote(json_content['token'])
+
+        rvc = self.app.head('/api/v2/passwords/' + quote(key[::-1]))
+        self.assertEqual(rvc.status_code, 404)
+
+    def test_retrieve_password_api_v2(self):
+        password = 'my name is my passport. verify me.'
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': password},
+        )
+
+        json_content = rv.get_json()
+        key = unquote(json_content['token'])
+
+        rvc = self.app.get('/api/v2/passwords/' + quote(key))
+        self.assertEqual(rv.status_code, 200)
+
+        json_content_retrieved = rvc.get_json()
+        retrieved_password = json_content_retrieved['password']
+        self.assertEqual(retrieved_password, password)
+
+    def test_retrieve_password_api_v2_bad_keys(self):
+        password = 'my name is my passport. verify me.'
+        rv = self.app.post(
+            '/api/v2/passwords',
+            headers={'Accept': 'application/json'},
+            json={'password': password},
+        )
+
+        json_content = rv.get_json()
+        key = unquote(json_content['token'])
+
+        rvc = self.app.get('/api/v2/passwords/' + quote(key[::-1]))
+        self.assertEqual(rvc.status_code, 404)
+
+        json_content_retrieved = rvc.get_json()
+        invalid_params = json_content_retrieved['invalid-params']
+        self.assertEqual(len(invalid_params), 1)
+        bad_token = invalid_params[0]
+        self.assertEqual(bad_token['name'], 'token')
 
 
 if __name__ == '__main__':
