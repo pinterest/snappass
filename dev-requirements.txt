@@ -4,6 +4,6 @@ flake8==7.0.0
 freezegun==1.4.0
 pytest==8.1.0
 pytest-cov==5.0.0
-tox==4.13.0
+tox==4.15.0
 bumpversion==0.6.0
 wheel==0.43.0
