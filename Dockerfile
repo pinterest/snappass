@@ -11,7 +11,7 @@ WORKDIR $APP_DIR
 COPY ["setup.py", "requirements.txt", "MANIFEST.in", "README.rst", "AUTHORS.rst", "$APP_DIR/"]
 COPY ["./snappass", "$APP_DIR/snappass"]
 
-RUN python setup.py install && \
+RUN python setup.py develop && \
     chown -R snappass $APP_DIR && \
     chgrp -R snappass $APP_DIR
 RUN pip install -r requirements.txt
