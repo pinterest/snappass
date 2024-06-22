@@ -2,15 +2,11 @@
 SnapPass
 ========
 
-|pypi| |build|
+|pypi|
 
 .. |pypi| image:: https://img.shields.io/pypi/v/snappass.svg
     :target: https://pypi.python.org/pypi/snappass
     :alt: Latest version released on PyPI
-
-.. |build| image:: https://travis-ci.org/pinterest/snappass.svg
-    :target: https://travis-ci.org/pinterest/snappass
-    :alt: Build status
 
 It's like SnapChat... for passwords.
 
@@ -51,7 +47,7 @@ Requirements
 ------------
 
 * `Redis`_
-* Python 2.7+ or 3.5+
+* Python 3.8+
 
 .. _Redis: https://redis.io/
 
@@ -99,6 +95,182 @@ need to change this.
 ``REDIS_PREFIX``: (optional, defaults to ``"snappass"``) prefix used on redis keys to prevent collisions with other potential clients
 
 ``HOST_OVERRIDE``: (optional) Used to override the base URL if the app is unaware. Useful when running behind reverse proxies like an identity-aware SSO. Example: ``sub.domain.com``
+
+APIs
+----
+
+SnapPass has 2 APIs :
+1. A simple API : That can be used to create passwords links, and then share them with users
+2. A more REST-y API : Which facilitate programmatic interactions with SnapPass, without having to parse HTML content when retrieving the password
+
+Simple API
+^^^^^^^^^^
+
+The advantage of using the simple API is that you can create a password and retrieve the link without having to open the web interface. This is useful if you want to embed it in a script or use it in a CI/CD pipeline.
+
+To create a password, send a POST request to ``/api/set_password`` like so:
+
+::
+
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar"}' http://localhost:5000/api/set_password/
+
+This will return a JSON response with the password link:
+
+::
+
+    {
+        "link": "http://127.0.0.1:5000/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        "ttl":1209600
+    }
+
+the default TTL is 2 weeks (1209600 seconds), but you can override it by adding a expiration parameter:
+
+::
+
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/set_password/
+
+
+REST API
+^^^^^^^^
+
+The advantage of using the REST API is that you can fully manage the lifecycle of the password stored in SnapPass without having to interact with any web user interface.
+
+This is useful if you want to embed it in a script,  use it in a CI/CD pipeline or share it between multiple client applications.
+
+Create a password
+"""""""""""""""""
+
+To create a password, send a POST request to ``/api/v2/passwords`` like so:
+
+::
+
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar"}' http://localhost:5000/api/v2/passwords
+
+This will return a JSON response with a token and the password link:
+
+::
+
+    {
+        "token": "snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY=",
+        "links": [{
+            "rel": "self",
+            "href": "http://127.0.0.1:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        },{
+            "rel": "web-view",
+            "href": "http://127.0.0.1:5000/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        }],
+        "ttl":1209600
+    }
+
+The default TTL is 2 weeks (1209600 seconds), but you can override it by adding a expiration parameter:
+
+::
+
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/v2/passwords
+
+If the password is null or empty, and the TTL is larger than the max TTL of the application, the API will return an error like this:
+
+
+Otherwise, the API will return a 404 (Not Found) response like so:
+
+::
+
+    {
+        "invalid-params": [{
+            "name": "password",
+            "reason": "The password is required and should not be null or empty."
+        }, {
+            "name": "ttl",
+            "reason": "The specified TTL is longer than the maximum supported."
+        }],
+        "title": "The password and/or the TTL are invalid.",
+        "type": "https://127.0.0.1:5000/set-password-validation-error"
+    }
+
+Check if a password exists
+""""""""""""""""""""""""""
+
+To check if a password exists, send a HEAD request to ``/api/v2/passwords/<token>``, where ``<token>`` is the token of the API response when a password is created (url encoded), or simply use the `self` link:
+
+::
+
+    $ curl --head http://localhost:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D
+
+If :
+- the passwork_key is valid 
+- the password :
+  - exists,
+  - has not been read 
+  - is not expired
+
+Then the API will return a 200 (OK) response like so:
+
+::
+
+    HTTP/1.1 200 OK
+    Server: Werkzeug/3.0.1 Python/3.12.2
+    Date: Fri, 29 Mar 2024 22:15:54 GMT
+    Content-Type: text/html; charset=utf-8
+    Content-Length: 0
+    Connection: close
+
+Otherwise, the API will return a 404 (Not Found) response like so:
+
+::
+
+    HTTP/1.1 404 NOT FOUND
+    Server: Werkzeug/3.0.1 Python/3.12.2
+    Date: Fri, 29 Mar 2024 22:19:29 GMT
+    Content-Type: text/html; charset=utf-8
+    Content-Length: 0
+    Connection: close
+    
+
+Read a password
+"""""""""""""""
+
+To read a password, send a GET request to ``/api/v2/passwords/<password_key>``, where ``<password_key>`` is the token of the API response when a password is created, or simply use the `self` link:
+
+::
+
+    $ curl -X GET http://localhost:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D
+
+If :
+- the token is valid 
+- the password :
+  - exists
+  - has not been read 
+  - is not expired
+
+Then the API will return a 200 (OK) with a JSON response containing the password :
+
+::
+
+    {
+        "password": "foobar"
+    }
+
+Otherwise, the API will return a 404 (Not Found) response like so:
+
+::
+
+    {
+        "invalid-params": [{
+            "name": "token"
+        }],
+        "title": "The password doesn't exist.",
+        "type": "https://127.0.0.1:5000/get-password-error"
+    }
+
+Notes on APIs
+^^^^^^^^^^^^^
+
+Notes:
+
+- When using the APIs, you can specify any ttl, as long as it is lower than the default.
+- The password is passed in the body of the request rather than in the URL. This is to prevent the password from being logged in the server logs.
+- Depending on the environment you are running it, you might want to expose the ``/api`` endpoint to your internal network only, and put the web interface behind authentication.
+
 
 Docker
 ------

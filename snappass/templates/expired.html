@@ -3,9 +3,9 @@
 {% block content %}
 <div class="container">
   <section>
-    <div class="page-header"><h1>Secret not found</h1></div>
-    <p class="lead">The requested URL was not found on the server. This could be because this URL never contained a secret, or because it expired or was revealed earlier.</p>
-    <p class="lead">If this URL was sent to you by someone, make sure to check your spelling or ask the person who sent it to you to send a new secret.</p>
+    <div class="page-header"><h1>{{ _('Secret not found') }}</h1></div>
+    <p class="lead">{{ _('The requested URL was not found on the server. This could be because this URL never contained a secret, or because it expired or was revealed earlier.') }}</p>
+    <p class="lead">{{ _('If this URL was sent to you by someone, make sure to check your spelling or ask the person who sent it to you to send a new secret.') }}</p>
   </section>
 </div>
 {% endblock %}

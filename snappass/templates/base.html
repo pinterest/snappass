@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ _('en') }}">
   <head>
-    <title>Snappass - Share Secrets</title>
+    <title>{{ _('Snappass - Share Secrets') }}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -13,13 +13,13 @@
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/">Share Secret</a>
+          <a class="navbar-brand" href="/">{{ _('Share Secret') }}</a>
         </div>
       </div>
     </nav>
 
     {% block content %}{% endblock %}
-    <script src="{{ config.STATIC_URL }}/jquery/jquery-1.12.4.min.js"></script>
+    <script src="{{ config.STATIC_URL }}/jquery/jquery-3.6.0.min.js"></script>
     <script src="{{ config.STATIC_URL }}/bootstrap/js/bootstrap.min.js"></script>
     {% block js %}{% endblock %}
   </body>

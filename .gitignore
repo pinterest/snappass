@@ -50,3 +50,7 @@ htmlcov/
 # virtualenv
 venv/
 ENV/
+
+# Translation catalogs
+*.mo
+*.pot
