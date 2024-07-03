@@ -23,11 +23,6 @@ spec:
       - name: snappass
         image: pinterest/snappass
         imagePullPolicy: IfNotPresent
-        # command: ["gunicorn"]
-        # args:
-        # - snappass.main:app
-        # - --bind=0.0.0.0:5000
-        # - --workers=4
         env:
         - name: REDIS_HOST
           valueFrom:
