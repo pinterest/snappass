@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snappass
+  namespace: snappass
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.k8s.com/name: snappass
+      app.k8s.com/instance: snappass
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    spec:
+      containers:
+      - name: snappass
+        image: pinterest/snappass
+        imagePullPolicy: IfNotPresent
+        # command: ["gunicorn"]
+        # args:
+        # - snappass.main:app
+        # - --bind=0.0.0.0:5000
+        # - --workers=4
+        env:
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: snappass
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: snappass
+              key: REDIS_PORT
+        - name: NO_SSL
+          valueFrom:
+            configMapKeyRef:
+              name: snappass
+              key: NO_SSL
+        - name: SNAPPASS_REDIS_DB
+          valueFrom:
+            configMapKeyRef:
+              name: snappass
+              key: SNAPPASS_REDIS_DB
+        - name: REDIS_PREFIX
+          valueFrom:
+            configMapKeyRef:
+              name: snappass
+              key: REDIS_PREFIX
+        - name: HOST_OVERRIDE
+          valueFrom:
+            configMapKeyRef:
+              name: snappass
+              key: HOST_OVERRIDE
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: snappass
+              key: SECRET_KEY
+        - name: REDIS_CA_CERTS
+          value: /etc/ssl/redis/redis.pem
+        ports:
+          - name: http
+            containerPort: 5000
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - name: redis-ca-certs
+          mountPath: "/etc/ssl/redis"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      volumes:
+      - name: redis-ca-certs
+        secret:
+          secretName: redis-ca-certs
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: snappass-ksa

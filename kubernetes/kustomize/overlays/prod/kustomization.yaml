@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../../base
+
+patches:
+- patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/command
+      value: ["gunicorn"]
+    - op: add
+      path: /spec/template/spec/containers/0/args
+      value:
+      - snappass.main:app
+      - --bind=0.0.0.0:5000
+      - --workers=4
+  target:
+    kind: Deployment
+    name: snappass
+
+# Add patches for configMap, Secret and Ingress
