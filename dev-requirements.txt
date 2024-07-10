@@ -7,3 +7,4 @@ pytest-cov==5.0.0
 tox==4.13.0
 bumpversion==0.6.0
 wheel==0.43.0
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
