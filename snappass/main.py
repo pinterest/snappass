@@ -11,7 +11,8 @@ from urllib.parse import quote_plus
 from urllib.parse import unquote_plus
 from urllib.parse import urljoin
 from distutils.util import strtobool
-from flask_babel import Babel
+# _ is required to get the Jinja templates translated
+from flask_babel import Babel, _  # noqa: F401
 
 NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
