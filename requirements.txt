@@ -1,4 +1,4 @@
-cryptography==43.0.0
+cryptography==43.0.1
 Flask==3.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.4
