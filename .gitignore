@@ -54,3 +54,6 @@ ENV/
 # Translation catalogs
 *.mo
 *.pot
+
+# Mac Files
+.DS_Store
