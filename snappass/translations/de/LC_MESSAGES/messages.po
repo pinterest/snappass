@@ -24,7 +24,7 @@ msgstr "de"
 
 #: snappass/templates/base.html:4
 msgid "Snappass - Share Secrets"
-msgstr "Snappass - Passwort teilen"
+msgstr "Snappass - Passwörter teilen"
 
 #: snappass/templates/base.html:16
 msgid "Share Secret"
@@ -40,7 +40,7 @@ msgid ""
 "intended recipient."
 msgstr ""
 "Das Passwort wurde vorübergehend gespeichert. Senden Sie die folgende "
-"URL an Ihre gewünschten Empfänger."
+"URL an Ihren gewünschten Empfänger."
 
 #: snappass/templates/confirm.html:14 snappass/templates/password.html:14
 msgid "Copy to clipboard"
@@ -57,8 +57,8 @@ msgid ""
 "earlier."
 msgstr ""
 "Die angeforderte URL wurde auf dem Server nicht gefunden. Dies könnte "
-" daran liegen, dass die URL nie ein Passwort enthielt, das "
-" Passwort abgelaufen ist oder es bereits offengelegt wurde."
+"daran liegen, dass die URL nie ein Passwort enthielt, das "
+"Passwort abgelaufen ist oder es bereits offengelegt wurde."
 
 #: snappass/templates/expired.html:8
 msgid ""
@@ -66,8 +66,8 @@ msgid ""
 "or ask the person who sent it to you to send a new secret."
 msgstr ""
 "Wenn Ihnen diese URL von jemandem gesendet wurde, überprüfen Sie "
-" ob Sie die URL korrekt eingegeben haben oder bitten Sie den/die "
-" Absender/in, Ihnen ein neues Passwort zu senden."
+"ob Sie die URL korrekt eingegeben haben oder bitten Sie den/die "
+"Absender/in, Ihnen ein neues Passwort zu senden."
 
 #: snappass/templates/password.html:6 snappass/templates/preview.html:7
 msgid "Secret"
@@ -104,10 +104,10 @@ msgid ""
 "single or multi-line secret, its expiration time, and click Generate URL."
 " Share the one-time use URL with your intended recipient."
 msgstr ""
-"SnapPass ermöglicht es Ihnen, Passwörter auf sichere, kurzlebige Weise zu"
-" teilen. Geben Sie ein ein- oder mehrzeiliges Passwort ein, legen Sie die"
-" Ablaufzeit fest und klicken Sie auf 'URL generieren'. Teilen Sie die URL"
-" für den einmaligen Gebrauch mit dem beabsichtigten Empfänger."
+"SnapPass ermöglicht es Ihnen, Passwörter auf sichere, kurzlebige Weise zu "
+"teilen. Geben Sie ein ein- oder mehrzeiliges Passwort ein, legen Sie die "
+"Ablaufzeit fest und klicken Sie auf 'URL generieren'. Teilen Sie die URL "
+"für den einmaligen Gebrauch mit dem beabsichtigten Empfänger."
 
 #: snappass/templates/set_password.html:18
 msgid "Two Weeks"
