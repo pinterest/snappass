@@ -5,12 +5,14 @@ import uuid
 import redis
 
 from cryptography.fernet import Fernet
-from flask import abort, Flask, render_template, request, jsonify
+from flask import abort, Flask, render_template, request, jsonify, make_response
 from redis.exceptions import ConnectionError
 from urllib.parse import quote_plus
 from urllib.parse import unquote_plus
+from urllib.parse import urljoin
 from distutils.util import strtobool
-from flask_babel import Babel
+# _ is required to get the Jinja templates translated
+from flask_babel import Babel, _  # noqa: F401
 
 NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
@@ -100,6 +102,37 @@ def parse_token(token):
         decryption_key = None
 
     return storage_key, decryption_key
+
+
+def as_validation_problem(request, problem_type, problem_title, invalid_params):
+    base_url = set_base_url(request)
+
+    problem = {
+        "type": base_url + problem_type,
+        "title": problem_title,
+        "invalid-params": invalid_params
+    }
+    return as_problem_response(problem)
+
+
+def as_not_found_problem(request, problem_type, problem_title, invalid_params):
+    base_url = set_base_url(request)
+
+    problem = {
+        "type": base_url + problem_type,
+        "title": problem_title,
+        "invalid-params": invalid_params
+    }
+    return as_problem_response(problem, 404)
+
+
+def as_problem_response(problem, status_code=None):
+    if not isinstance(status_code, int) or not status_code:
+        status_code = 400
+
+    response = make_response(jsonify(problem), status_code)
+    response.headers['Content-Type'] = 'application/problem+json'
+    return response
 
 
 @check_redis_alive
@@ -219,6 +252,81 @@ def api_handle_password():
         abort(500)
 
 
+@app.route('/api/v2/passwords', methods=['POST'])
+def api_v2_set_password():
+    password = request.json.get('password')
+    ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+
+    invalid_params = []
+
+    if not password:
+        invalid_params.append({
+            "name": "password",
+            "reason": "The password is required and should not be null or empty."
+        })
+
+    if not isinstance(ttl, int) or ttl > MAX_TTL:
+        invalid_params.append({
+            "name": "ttl",
+            "reason": "The specified TTL is longer than the maximum supported."
+        })
+
+    if len(invalid_params) > 0:
+        # Return a ProblemDetails expliciting issue with Password and/or TTL
+        return as_validation_problem(
+            request,
+            "set-password-validation-error",
+            "The password and/or the TTL are invalid.",
+            invalid_params
+        )
+
+    token = set_password(password, ttl)
+    url_token = quote_plus(token)
+    base_url = set_base_url(request)
+    api_link = urljoin(base_url, request.path + "/" + url_token)
+    web_link = urljoin(base_url, url_token)
+    response_content = {
+        "token": token,
+        "links": [{
+            "rel": "self",
+            "href": api_link
+        }, {
+            "rel": "web-view",
+            "href": web_link
+        }],
+        "ttl": ttl
+    }
+    return jsonify(response_content)
+
+
+@app.route('/api/v2/passwords/<token>', methods=['HEAD'])
+def api_v2_check_password(token):
+    token = unquote_plus(token)
+    if not password_exists(token):
+        # Return NotFound, to indicate that password does not exists (anymore or at all)
+        return ('', 404)
+    else:
+        # Return OK, to indicate that password still exists
+        return ('', 200)
+
+
+@app.route('/api/v2/passwords/<token>', methods=['GET'])
+def api_v2_retrieve_password(token):
+    token = unquote_plus(token)
+    password = get_password(token)
+    if not password:
+        # Return NotFound, to indicate that password does not exists (anymore or at all)
+        return as_not_found_problem(
+            request,
+            "get-password-error",
+            "The password doesn't exist.",
+            [{"name": "token"}]
+        )
+    else:
+        # Return OK and the password in JSON message
+        return jsonify(password=password)
+
+
 @app.route('/<password_key>', methods=['GET'])
 def preview_password(password_key):
     password_key = unquote_plus(password_key)
@@ -246,7 +354,8 @@ def health_check():
 
 @check_redis_alive
 def main():
-    app.run(host='0.0.0.0')
+    app.run(host=os.environ.get('SNAPPASS_BIND_ADDRESS', '0.0.0.0'),
+            port=os.environ.get('SNAPPASS_PORT', 5000))
 
 
 if __name__ == '__main__':
