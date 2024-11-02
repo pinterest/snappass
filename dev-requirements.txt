@@ -1,9 +1,9 @@
-coverage==7.4.2
-fakeredis==2.21.1
-flake8==7.0.0
-freezegun==1.4.0
-pytest==8.1.0
-pytest-cov==4.1.0
-tox==4.13.0
+coverage==7.6.0
+fakeredis==2.25.1
+flake8==7.1.1
+freezegun==1.5.1
+pytest==8.3.2
+pytest-cov==5.0.0
+tox==4.23.0
 bumpversion==0.6.0
-wheel==0.42.0
+wheel==0.44.0
