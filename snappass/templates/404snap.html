@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <section>
+    <div class="page-header"><h1>Secret Not Found</h1></div>
+    <p>The secret you requested is not available. This typically indicates that one of the three below conditions has occurred:</p> 
+    <ol>
+         <li>The secret has already been retrieved.</li>
+         <li>The link was corrupted</li>
+         <li>The secret has timed out based on the sender's requested setting of one hour, one day, or one week.</li>
+    </ol>
+  </section>
+  {% if config.ABUSE_MESSAGE %}
+	<div class="alert alert-danger">
+        <p>If there is any indication that an unauthorized party may have retrieved the secret, please rotate the secret and contact {% if config.ABUSE_EMAIL %}<a href="mailto:{{ config.ABUSE_EMAIL }}">{{ config.ABUSE_ORG }}</a>{% else %}{{ config.ABUSE_ORG }}{% endif %} for assistance.</p>
+	</div>
+  {% endif %}
+
+</div>
+{% endblock %}
+

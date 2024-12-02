@@ -23,7 +23,15 @@ TOKEN_SEPARATOR = '~'
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
     app.debug = True
+
+if os.environ.get('ABUSE_ORG') or os.environ.get('ABUSE_EMAIL'):
+    app.config.update(
+        dict(ABUSE_MESSAGE=True,
+            ABUSE_ORG=os.environ.get('ABUSE_ORG', 'Information Security'),
+            ABUSE_EMAIL=os.environ.get('ABUSE_EMAIL', '')))
+
 app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
+
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
@@ -345,6 +353,12 @@ def show_password(password_key):
 
     return render_template('password.html', password=password)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    if request.path.startswith("/snappass"):
+        return render_template('404snap.html'), 404
+    else:
+        return render_template('404.html'), 404
 
 @app.route('/_/_/health', methods=['GET'])
 @check_redis_alive
