@@ -102,7 +102,7 @@ msgid ""
 " Share the one-time use URL with your intended recipient."
 msgstr ""
 "We stellen je in staat om wachtwoorden op een veilige, tijdelijke manier "
-"te delen. Voer een enkel- of meerregelig wachwoord in, stel de vervaltijd"
+"te delen. Voer een enkel- of meerregelig wachtwoord in, stel de vervaltijd"
 " in, en klik op 'URL genereren'. Deel de eenmalig te gebruiken URL met de"
 " beoogde ontvanger."
 
