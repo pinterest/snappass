@@ -10,7 +10,7 @@ compile-translations:
         pybabel compile -d snappass/translations
 
 run: prod compile-translations
-	FLASK_DEBUG=1 FLASK_APP=snappass.main NO_SSL=True venv/bin/flask run
+        FLASK_DEBUG=1 FLASK_APP=snappass.main NO_SSL=True venv/bin/flask run
 
 test:
 	PYTHONPATH=snappass venv/bin/nosetests -s tests
