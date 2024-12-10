@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: snappass
+  namespace: snappass
+data:
+  REDIS_HOST: KUSTOMIZE_HERE
+  REDIS_PORT: KUSTOMIZE_HERE
+  NO_SSL: "False"
+  SNAPPASS_REDIS_DB: "0"
+  REDIS_PREFIX: snappass
+  HOST_OVERRIDE: KUSTOMIZE_HERE

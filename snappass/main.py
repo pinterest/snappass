@@ -18,6 +18,7 @@ NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
 HOST_OVERRIDE = os.environ.get('HOST_OVERRIDE', None)
 TOKEN_SEPARATOR = '~'
+REDIS_CA_CERTS = os.environ.get('REDIS_CA_CERTS', None)  # Path to the CA PEM file
 
 # Initialize Flask Application
 app = Flask(__name__)
@@ -46,8 +47,23 @@ else:
     redis_host = os.environ.get('REDIS_HOST', 'localhost')
     redis_port = os.environ.get('REDIS_PORT', 6379)
     redis_db = os.environ.get('SNAPPASS_REDIS_DB', 0)
-    redis_client = redis.StrictRedis(
-        host=redis_host, port=redis_port, db=redis_db)
+
+    # Use SSL/TLS if CA certs are provided
+    if REDIS_CA_CERTS:
+        redis_client = redis.StrictRedis(
+            host=redis_host,
+            port=redis_port,
+            db=redis_db,
+            ssl=True,
+            ssl_ca_certs=REDIS_CA_CERTS
+        )
+    else:
+        redis_client = redis.StrictRedis(
+            host=redis_host,
+            port=redis_port,
+            db=redis_db
+        )
+
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,

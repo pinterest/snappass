@@ -1,0 +1,22 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: snappass-ingress
+  namespace: snappass
+spec:
+  ingressClassName: nginx-ingress
+  rules:
+  - host: KUSTOMIZE_HERE
+    http:
+      paths:
+      - backend:
+          service:
+            name: snappass-http
+            port:
+              name: snappass-http
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - KUSTOMIZE_HERE
