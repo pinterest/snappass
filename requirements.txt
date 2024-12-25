@@ -1,7 +1,7 @@
 cryptography==43.0.1
 Flask==3.0.0
 itsdangerous==2.2.0
-Jinja2==3.1.4
+Jinja2==3.1.5
 MarkupSafe==2.1.1
 redis==5.1.1
 Werkzeug==3.0.6
