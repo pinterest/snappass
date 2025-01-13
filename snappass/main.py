@@ -30,7 +30,8 @@ app.config.update(
 
 # Set up Babel
 def get_locale():
-    return request.accept_languages.best_match(['en', 'es', 'de', 'nl', 'fr'])
+    return request.accept_languages.best_match(
+        ['en', 'es', 'de', 'nl', 'fr', 'pl'])
 
 
 babel = Babel(app, locale_selector=get_locale)
