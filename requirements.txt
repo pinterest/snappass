@@ -5,4 +5,6 @@ Jinja2==3.1.4
 MarkupSafe==2.1.1
 redis==5.1.1
 Werkzeug==3.0.6
-flask-babel
+flask-babel==4.0.0
+setuptools==78.1.0
+waitress==3.0.2
