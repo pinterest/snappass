@@ -10,6 +10,7 @@ from redis.exceptions import ConnectionError
 from urllib.parse import quote_plus
 from urllib.parse import unquote_plus
 from urllib.parse import urljoin
+from urllib.parse import urlsplit
 from distutils.util import strtobool
 # _ is required to get the Jinja templates translated
 from flask_babel import Babel, _  # noqa: F401
@@ -17,6 +18,8 @@ from flask_babel import Babel, _  # noqa: F401
 NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
 URL_PREFIX = os.environ.get('URL_PREFIX', None)
 HOST_OVERRIDE = os.environ.get('HOST_OVERRIDE', None)
+APP_BASE_URL = os.environ.get('APP_BASE_URL', None)
+TRUSTED_HOSTS = os.environ.get('TRUSTED_HOSTS', None)
 TOKEN_SEPARATOR = '~'
 
 # Initialize Flask Application
@@ -54,6 +57,29 @@ TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,
                    'hour': 3600}
 DEFAULT_API_TTL = 1209600
 MAX_TTL = DEFAULT_API_TTL
+
+
+def _normalize_base_url(base_url):
+    return base_url.rstrip('/') + '/'
+
+
+def _get_trusted_hosts():
+    if TRUSTED_HOSTS:
+        return {
+            host.strip().lower().rstrip('.')
+            for host in TRUSTED_HOSTS.split(',')
+            if host.strip()
+        }
+    return {'localhost', '127.0.0.1', '::1'}
+
+
+def _request_has_trusted_host(req):
+    parsed = urlsplit('//' + req.host)
+    hostname = parsed.hostname
+    if not hostname:
+        return False
+    normalized_hostname = hostname.lower().rstrip('.')
+    return normalized_hostname in _get_trusted_hosts()
 
 
 def check_redis_alive(fn):
@@ -201,16 +227,24 @@ def clean_input():
 
 
 def set_base_url(req):
-    if NO_SSL:
-        if HOST_OVERRIDE:
-            base_url = f'http://{HOST_OVERRIDE}/'
-        else:
-            base_url = req.url_root
+    if APP_BASE_URL:
+        base_url = _normalize_base_url(APP_BASE_URL)
     else:
-        if HOST_OVERRIDE:
-            base_url = f'https://{HOST_OVERRIDE}/'
+        if NO_SSL:
+            if HOST_OVERRIDE:
+                base_url = f'http://{HOST_OVERRIDE}/'
+            else:
+                if not _request_has_trusted_host(req):
+                    abort(400)
+                base_url = req.url_root
         else:
-            base_url = req.url_root.replace("http://", "https://")
+            if HOST_OVERRIDE:
+                base_url = f'https://{HOST_OVERRIDE}/'
+            else:
+                if not _request_has_trusted_host(req):
+                    abort(400)
+                base_url = req.url_root.replace("http://", "https://")
+    base_url = _normalize_base_url(base_url)
     if URL_PREFIX:
         base_url = base_url + URL_PREFIX.strip("/") + "/"
     return base_url

@@ -106,6 +106,18 @@ class SnapPassRoutesTestCase(TestCase):
     def setUp(self):
         snappass.app.config['TESTING'] = True
         self.app = snappass.app.test_client()
+        self.original_url_prefix = snappass.URL_PREFIX
+        self.original_host_override = snappass.HOST_OVERRIDE
+        self.original_app_base_url = snappass.APP_BASE_URL
+        self.original_trusted_hosts = snappass.TRUSTED_HOSTS
+        self.original_no_ssl = snappass.NO_SSL
+
+    def tearDown(self):
+        snappass.URL_PREFIX = self.original_url_prefix
+        snappass.HOST_OVERRIDE = self.original_host_override
+        snappass.APP_BASE_URL = self.original_app_base_url
+        snappass.TRUSTED_HOSTS = self.original_trusted_hosts
+        snappass.NO_SSL = self.original_no_ssl
 
     def test_health_check(self):
         response = self.app.get('/_/_/health')
@@ -201,6 +213,27 @@ class SnapPassRoutesTestCase(TestCase):
 
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
+
+    def test_rejects_untrusted_host_header(self):
+        rv = self.app.post(
+            '/api/set_password/',
+            headers={'Host': 'evil.com', 'Accept': 'application/json'},
+            json={'password': 'my secret', 'ttl': '1209600'},
+        )
+
+        self.assertEqual(rv.status_code, 400)
+
+    def test_uses_app_base_url_with_untrusted_host_header(self):
+        snappass.APP_BASE_URL = 'https://snappass.example.org'
+        rv = self.app.post(
+            '/api/set_password/',
+            headers={'Host': 'evil.com', 'Accept': 'application/json'},
+            json={'password': 'my secret', 'ttl': '1209600'},
+        )
+
+        self.assertEqual(rv.status_code, 200)
+        json_content = rv.get_json()
+        self.assertTrue(json_content['link'].startswith('https://snappass.example.org/'))
 
     def test_set_password_api_v2(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
