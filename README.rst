@@ -100,6 +100,15 @@ need to change this.
 
 ``TRUSTED_HOSTS``: (optional) Comma-separated allowlist of hostnames accepted from inbound Host headers when ``APP_BASE_URL`` and ``HOST_OVERRIDE`` are not set. Defaults to ``localhost,127.0.0.1,::1``.
 
+Host Header Security
+^^^^^^^^^^^^^^^^^^^^
+
+SnapPass generates security-sensitive links (for password retrieval). To prevent host header injection in generated links:
+
+- Prefer setting ``APP_BASE_URL`` in production.
+- If ``APP_BASE_URL`` is not set, configure ``TRUSTED_HOSTS`` to the exact hostnames you expect.
+- Requests with an untrusted ``Host`` header are rejected with ``400 Bad Request`` when SnapPass must derive the base URL from the request.
+
 ``SNAPPASS_BIND_ADDRESS``: (optional) Used to override the default bind address of 0.0.0.0 for flask app Example: ``127.0.0.1``
 
 ``SNAPPASS_PORT``: (optional) Used to override the default port of 5000 Example: ``6000``
