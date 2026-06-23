@@ -182,7 +182,7 @@ def get_password(token):
 
 @check_redis_alive
 def password_exists(token):
-    storage_key, _ = parse_token(token)
+    storage_key, decryption_key = parse_token(token)
     if not is_valid_storage_key(storage_key):
         return False
 
