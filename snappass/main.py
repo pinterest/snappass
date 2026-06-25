@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import uuid
 
@@ -55,6 +56,11 @@ TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,
                    'hour': 3600}
 DEFAULT_API_TTL = 1209600
 MAX_TTL = DEFAULT_API_TTL
+STORAGE_KEY_PATTERN = re.compile(r'^' + re.escape(REDIS_PREFIX) + r'[0-9a-f]{32}$')
+
+
+def is_valid_storage_key(storage_key):
+    return bool(STORAGE_KEY_PATTERN.fullmatch(storage_key))
 
 
 def _request_has_trusted_host(req):
@@ -174,6 +180,9 @@ def get_password(token):
     If not, the password is simply returned as is.
     """
     storage_key, decryption_key = parse_token(token)
+    if not is_valid_storage_key(storage_key):
+        return None
+
     password = redis_client.get(storage_key)
     redis_client.delete(storage_key)
 
@@ -188,6 +197,9 @@ def get_password(token):
 @check_redis_alive
 def password_exists(token):
     storage_key, decryption_key = parse_token(token)
+    if not is_valid_storage_key(storage_key):
+        return False
+
     return redis_client.exists(storage_key)
 
 

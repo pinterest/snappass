@@ -59,10 +59,20 @@ class SnapPassTestCase(TestCase):
 
     def test_unencrypted_passwords_still_work(self):
         unencrypted_password = "trustevery1"
-        storage_key = uuid.uuid4().hex
+        storage_key = snappass.REDIS_PREFIX + uuid.uuid4().hex
         snappass.redis_client.setex(storage_key, 30, unencrypted_password)
         retrieved_password = snappass.get_password(storage_key)
         self.assertEqual(unencrypted_password, retrieved_password)
+
+    def test_get_password_rejects_non_snappass_storage_key(self):
+        snappass.redis_client.setex("session:42", 30, "sensitive-data")
+        retrieved_password = snappass.get_password("session:42")
+        self.assertIsNone(retrieved_password)
+        self.assertEqual("sensitive-data", snappass.redis_client.get("session:42").decode('utf-8'))
+
+    def test_password_exists_rejects_non_snappass_storage_key(self):
+        snappass.redis_client.setex("session:42", 30, "sensitive-data")
+        self.assertFalse(snappass.password_exists("session:42"))
 
     def test_password_is_decoded(self):
         password = "correct horse battery staple"
@@ -347,6 +357,11 @@ class SnapPassRoutesTestCase(TestCase):
         rvc = self.app.head('/api/v2/passwords/' + quote(key[::-1]))
         self.assertEqual(rvc.status_code, 404)
 
+    def test_check_password_api_v2_non_snappass_keys(self):
+        snappass.redis_client.setex("session:42", 30, "sensitive-data")
+        rvc = self.app.head('/api/v2/passwords/' + quote("session:42"))
+        self.assertEqual(rvc.status_code, 404)
+
     def test_retrieve_password_api_v2(self):
         password = 'my name is my passport. verify me.'
         rv = self.app.post(
@@ -384,6 +399,12 @@ class SnapPassRoutesTestCase(TestCase):
         self.assertEqual(len(invalid_params), 1)
         bad_token = invalid_params[0]
         self.assertEqual(bad_token['name'], 'token')
+
+    def test_retrieve_password_api_v2_non_snappass_keys(self):
+        snappass.redis_client.setex("session:42", 30, "sensitive-data")
+        rvc = self.app.get('/api/v2/passwords/' + quote("session:42"))
+        self.assertEqual(rvc.status_code, 404)
+        self.assertEqual("sensitive-data", snappass.redis_client.get("session:42").decode('utf-8'))
 
 
 if __name__ == '__main__':
