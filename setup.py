@@ -7,7 +7,7 @@ setup(
     long_description=(open('README.rst').read() + '\n\n' +
                       open('AUTHORS.rst').read()),
     url='http://github.com/Pinterest/snappass/',
-    install_requires=['Flask', 'redis', 'cryptography'],
+    install_requires=['Flask', 'redis', 'cryptography', 'flask-babel'],
     license='MIT',
     author='Dave Dash',
     author_email='dd+github@davedash.com',
