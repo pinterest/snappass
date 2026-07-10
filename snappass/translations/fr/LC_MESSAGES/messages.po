@@ -118,10 +118,14 @@ msgid "Day"
 msgstr "Un jour"
 
 #: snappass/templates/set_password.html:21
+msgid "Eight Hours"
+msgstr "Huit heures"
+
+#: snappass/templates/set_password.html:22
 msgid "Hour"
 msgstr "Une heure"
 
-#: snappass/templates/set_password.html:26
+#: snappass/templates/set_password.html:27
 msgid "Generate URL"
 msgstr "Générer l'URL"
 

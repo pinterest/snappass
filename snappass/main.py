@@ -52,7 +52,7 @@ else:
 REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
 
 TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,
-                   'hour': 3600}
+                   'eight hours': 28800, 'hour': 3600}
 DEFAULT_API_TTL = 1209600
 MAX_TTL = DEFAULT_API_TTL
 
