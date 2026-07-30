@@ -1,68 +1,65 @@
 import os
-import sys
-import uuid
+import typing
 
-import redis
-
-from cryptography.fernet import Fernet
-from flask import abort, Flask, render_template, request, jsonify, make_response
-from redis.exceptions import ConnectionError
-from urllib.parse import quote_plus
-from urllib.parse import unquote_plus
-from urllib.parse import urljoin
-from urllib.parse import urlsplit
-from distutils.util import strtobool
+from flask import (
+    abort, Flask, render_template, request, jsonify, make_response,
+    Response, Request
+)
+from urllib.parse import quote_plus, unquote_plus, urljoin, urlsplit
+from snappass.storage import (
+    check_redis_alive,
+    get_password,
+    password_exists,
+    set_password,
+)
 # _ is required to get the Jinja templates translated
-from flask_babel import Babel, _  # noqa: F401
+from flask_babel import Babel, _  # type: ignore # noqa: F401
 
-NO_SSL = bool(strtobool(os.environ.get('NO_SSL', 'False')))
-URL_PREFIX = os.environ.get('URL_PREFIX', None)
-HOST_OVERRIDE = os.environ.get('HOST_OVERRIDE', None)
-TOKEN_SEPARATOR = '~'
+_no_ssl_env = os.environ.get('NO_SSL', 'False').lower()
+NO_SSL: bool = _no_ssl_env in ('true', '1', 't', 'y', 'yes')
+URL_PREFIX: typing.Optional[str] = os.environ.get('URL_PREFIX', None)
+HOST_OVERRIDE: typing.Optional[str] = os.environ.get('HOST_OVERRIDE', None)
 
 # Initialize Flask Application
 app = Flask(__name__)
 if os.environ.get('DEBUG'):
     app.debug = True
-app.secret_key = os.environ.get('SECRET_KEY', 'Secret Key')
+secret_key = os.environ.get('SECRET_KEY')
+if not secret_key or not secret_key.strip('"\' '):
+    raise ValueError(
+        "Error: SECRET_KEY environment variable is not set. "
+        "It is required for securely signing session cookies."
+    )
+app.secret_key = secret_key
+app.config['MAX_CONTENT_LENGTH'] = 512 * 1024
 app.config.update(
     dict(STATIC_URL=os.environ.get('STATIC_URL', 'static')))
 
 
 # Set up Babel
-def get_locale():
+def get_locale() -> typing.Optional[str]:
     return request.accept_languages.best_match(['en', 'es', 'de', 'nl', 'fr'])
 
 
 babel = Babel(app, locale_selector=get_locale)
 
-# Initialize Redis
-if os.environ.get('MOCK_REDIS'):
-    from fakeredis import FakeStrictRedis
 
-    redis_client = FakeStrictRedis()
-elif os.environ.get('REDIS_URL'):
-    redis_client = redis.StrictRedis.from_url(os.environ.get('REDIS_URL'))
-else:
-    redis_host = os.environ.get('REDIS_HOST', 'localhost')
-    redis_port = os.environ.get('REDIS_PORT', 6379)
-    redis_db = os.environ.get('SNAPPASS_REDIS_DB', 0)
-    redis_client = redis.StrictRedis(
-        host=redis_host, port=redis_port, db=redis_db)
-REDIS_PREFIX = os.environ.get('REDIS_PREFIX', 'snappass')
-
-TIME_CONVERSION = {'two weeks': 1209600, 'week': 604800, 'day': 86400,
-                   'hour': 3600}
-DEFAULT_API_TTL = 1209600
-MAX_TTL = DEFAULT_API_TTL
+TIME_CONVERSION: typing.Dict[str, int] = {
+    'two weeks': 1209600,
+    'week': 604800,
+    'day': 86400,
+    'hour': 3600
+}
+DEFAULT_API_TTL: int = 1209600
+MAX_TTL: int = DEFAULT_API_TTL
 
 
-def _request_has_trusted_host(req):
+def _request_has_trusted_host(req: Request) -> bool:
     # When HOST_OVERRIDE is not configured the base URL is derived from the
     # request's Host header, which a client can spoof. Only loopback hosts are
     # trusted for that fallback (local/dev use); production should set
     # HOST_OVERRIDE to its canonical hostname.
-    parsed = urlsplit('//' + req.host)
+    parsed = urlsplit(f'//{req.host}')
     hostname = parsed.hostname
     if not hostname:
         return False
@@ -70,77 +67,42 @@ def _request_has_trusted_host(req):
     return normalized_hostname in {'localhost', '127.0.0.1', '::1'}
 
 
-def check_redis_alive(fn):
-    def inner(*args, **kwargs):
-        try:
-            if fn.__name__ == 'main':
-                redis_client.ping()
-            return fn(*args, **kwargs)
-        except ConnectionError as e:
-            print('Failed to connect to redis! %s' % e.message)
-            if fn.__name__ == 'main':
-                sys.exit(0)
-            else:
-                return abort(500)
-
-    return inner
-
-
-def encrypt(password):
-    """
-    Take a password string, encrypt it with Fernet symmetric encryption,
-    and return the result (bytes), with the decryption key (bytes)
-    """
-    encryption_key = Fernet.generate_key()
-    fernet = Fernet(encryption_key)
-    encrypted_password = fernet.encrypt(password.encode('utf-8'))
-    return encrypted_password, encryption_key
-
-
-def decrypt(password, decryption_key):
-    """
-    Decrypt a password (bytes) using the provided key (bytes),
-    and return the plain-text password (bytes).
-    """
-    fernet = Fernet(decryption_key)
-    return fernet.decrypt(password)
-
-
-def parse_token(token):
-    token_fragments = token.split(TOKEN_SEPARATOR, 1)  # Split once, not more.
-    storage_key = token_fragments[0]
-
-    try:
-        decryption_key = token_fragments[1].encode('utf-8')
-    except IndexError:
-        decryption_key = None
-
-    return storage_key, decryption_key
-
-
-def as_validation_problem(request, problem_type, problem_title, invalid_params):
-    base_url = set_base_url(request)
+def as_validation_problem(
+    req: Request,
+    problem_type: str,
+    problem_title: str,
+    invalid_params: typing.List[typing.Dict[str, str]]
+) -> Response:
+    base_url = set_base_url(req)
 
     problem = {
-        "type": base_url + problem_type,
+        "type": f"{base_url}{problem_type}",
         "title": problem_title,
         "invalid-params": invalid_params
     }
     return as_problem_response(problem)
 
 
-def as_not_found_problem(request, problem_type, problem_title, invalid_params):
-    base_url = set_base_url(request)
+def as_not_found_problem(
+    req: Request,
+    problem_type: str,
+    problem_title: str,
+    invalid_params: typing.List[typing.Dict[str, str]]
+) -> Response:
+    base_url = set_base_url(req)
 
     problem = {
-        "type": base_url + problem_type,
+        "type": f"{base_url}{problem_type}",
         "title": problem_title,
         "invalid-params": invalid_params
     }
     return as_problem_response(problem, 404)
 
 
-def as_problem_response(problem, status_code=None):
+def as_problem_response(
+    problem: typing.Dict[str, typing.Any],
+    status_code: typing.Optional[int] = None
+) -> Response:
     if not isinstance(status_code, int) or not status_code:
         status_code = 400
 
@@ -149,72 +111,11 @@ def as_problem_response(problem, status_code=None):
     return response
 
 
-@check_redis_alive
-def set_password(password, ttl):
-    """
-    Encrypt and store the password for the specified lifetime.
-
-    Returns a token comprised of the key where the encrypted password
-    is stored, and the decryption key.
-    """
-    storage_key = REDIS_PREFIX + uuid.uuid4().hex
-    encrypted_password, encryption_key = encrypt(password)
-    redis_client.setex(storage_key, ttl, encrypted_password)
-    encryption_key = encryption_key.decode('utf-8')
-    token = TOKEN_SEPARATOR.join([storage_key, encryption_key])
-    return token
+def empty(value: typing.Optional[str]) -> bool:
+    return not value
 
 
-@check_redis_alive
-def get_password(token):
-    """
-    From a given token, return the initial password.
-
-    If the token is tilde-separated, we decrypt the password fetched from Redis.
-    If not, the password is simply returned as is.
-    """
-    storage_key, decryption_key = parse_token(token)
-    password = redis_client.get(storage_key)
-    redis_client.delete(storage_key)
-
-    if password is not None:
-
-        if decryption_key is not None:
-            password = decrypt(password, decryption_key)
-
-        return password.decode('utf-8')
-
-
-@check_redis_alive
-def password_exists(token):
-    storage_key, decryption_key = parse_token(token)
-    return redis_client.exists(storage_key)
-
-
-def empty(value):
-    if not value:
-        return True
-
-
-def clean_input():
-    """
-    Make sure we're not getting bad data from the front end,
-    format data to be machine readable
-    """
-    if empty(request.form.get('password', '')):
-        abort(400)
-
-    if empty(request.form.get('ttl', '')):
-        abort(400)
-
-    time_period = request.form['ttl'].lower()
-    if time_period not in TIME_CONVERSION:
-        abort(400)
-
-    return TIME_CONVERSION[time_period], request.form['password']
-
-
-def set_base_url(req):
+def set_base_url(req: Request) -> str:
     scheme = 'http' if NO_SSL else 'https'
     if HOST_OVERRIDE:
         base_url = f'{scheme}://{HOST_OVERRIDE}/'
@@ -225,48 +126,64 @@ def set_base_url(req):
         if not NO_SSL:
             base_url = base_url.replace("http://", "https://")
     if URL_PREFIX:
-        base_url = base_url + URL_PREFIX.strip("/") + "/"
+        base_url = f"{base_url}{URL_PREFIX.strip('/')}/"
     return base_url
 
 
 @app.route('/', methods=['GET'])
-def index():
+def index() -> str:
     return render_template('set_password.html')
 
 
 @app.route('/', methods=['POST'])
-def handle_password():
+def handle_password() -> typing.Union[Response, str, typing.Tuple[str, int]]:
     password = request.form.get('password')
     ttl = request.form.get('ttl')
-    if clean_input():
-        ttl = TIME_CONVERSION[ttl.lower()]
-        token = set_password(password, ttl)
-        base_url = set_base_url(request)
-        link = base_url + quote_plus(token)
-        if request.accept_mimetypes.accept_json and not \
-           request.accept_mimetypes.accept_html:
-            return jsonify(link=link, ttl=ttl)
+
+    if password and len(password) > 384 * 1024:
+        error_msg = _('The secret is too long. The maximum allowed size is 256kb.')
+        if request.accept_mimetypes.accept_json:
+            return make_response(jsonify(error=error_msg), 400)
         else:
+            abort(400)
+    if password and ttl and not empty(password) and not empty(ttl):
+        ttl_val = TIME_CONVERSION.get(ttl.lower())
+        if not ttl_val:
+            abort(400)
+        token = set_password(password, ttl_val)
+        base_url = set_base_url(request)
+        link = f"{base_url}{quote_plus(token)}"
+
+        # We merge confirm.html into set_password.html via AJAX,
+        # so this endpoint should always return JSON for clients using AJAX.
+        if request.accept_mimetypes.accept_json:
+            return jsonify(link=link, ttl=ttl_val)
+        else:
+            # Fallback if someone submits form without JS
             return render_template('confirm.html', password_link=link)
     else:
         abort(500)
 
 
 @app.route('/api/set_password/', methods=['POST'])
-def api_handle_password():
+def api_handle_password() -> Response:
     password = request.json.get('password')
     ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+
+    if password and len(password) > 384 * 1024:
+        error_msg = _('The secret is too long. The maximum allowed size is 256kb.')
+        return make_response(jsonify(error=error_msg), 400)
     if password and isinstance(ttl, int) and ttl <= MAX_TTL:
         token = set_password(password, ttl)
         base_url = set_base_url(request)
-        link = base_url + quote_plus(token)
+        link = f"{base_url}{quote_plus(token)}"
         return jsonify(link=link, ttl=ttl)
     else:
         abort(500)
 
 
 @app.route('/api/v2/passwords', methods=['POST'])
-def api_v2_set_password():
+def api_v2_set_password() -> Response:
     password = request.json.get('password')
     ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
 
@@ -275,7 +192,12 @@ def api_v2_set_password():
     if not password:
         invalid_params.append({
             "name": "password",
-            "reason": "The password is required and should not be null or empty."
+            "reason": "The password is required and must not be empty."
+        })
+    elif len(password) > 384 * 1024:
+        invalid_params.append({
+            "name": "password",
+            "reason": _("The secret is too long. The maximum allowed size is 256kb.")
         })
 
     if not isinstance(ttl, int) or ttl > MAX_TTL:
@@ -285,7 +207,6 @@ def api_v2_set_password():
         })
 
     if len(invalid_params) > 0:
-        # Return a ProblemDetails expliciting issue with Password and/or TTL
         return as_validation_problem(
             request,
             "set-password-validation-error",
@@ -296,8 +217,9 @@ def api_v2_set_password():
     token = set_password(password, ttl)
     url_token = quote_plus(token)
     base_url = set_base_url(request)
-    api_link = urljoin(base_url, request.path + "/" + url_token)
+    api_link = urljoin(base_url, f"{request.path}/{url_token}")
     web_link = urljoin(base_url, url_token)
+
     response_content = {
         "token": token,
         "links": [{
@@ -313,10 +235,10 @@ def api_v2_set_password():
 
 
 @app.route('/api/v2/passwords/<token>', methods=['HEAD'])
-def api_v2_check_password(token):
+def api_v2_check_password(token: str) -> typing.Tuple[str, int]:
     token = unquote_plus(token)
     if not password_exists(token):
-        # Return NotFound, to indicate that password does not exists (anymore or at all)
+        # Return NotFound, to indicate that password does not exist
         return ('', 404)
     else:
         # Return OK, to indicate that password still exists
@@ -324,11 +246,11 @@ def api_v2_check_password(token):
 
 
 @app.route('/api/v2/passwords/<token>', methods=['GET'])
-def api_v2_retrieve_password(token):
+def api_v2_retrieve_password(token: str) -> Response:
     token = unquote_plus(token)
     password = get_password(token)
     if not password:
-        # Return NotFound, to indicate that password does not exists (anymore or at all)
+        # Return NotFound, to indicate that password does not exist
         return as_not_found_problem(
             request,
             "get-password-error",
@@ -341,7 +263,9 @@ def api_v2_retrieve_password(token):
 
 
 @app.route('/<password_key>', methods=['GET'])
-def preview_password(password_key):
+def preview_password(
+    password_key: str
+) -> typing.Union[str, typing.Tuple[str, int]]:
     password_key = unquote_plus(password_key)
     if not password_exists(password_key):
         return render_template('expired.html'), 404
@@ -350,7 +274,9 @@ def preview_password(password_key):
 
 
 @app.route('/<password_key>', methods=['POST'])
-def show_password(password_key):
+def show_password(
+    password_key: str
+) -> typing.Union[str, typing.Tuple[str, int]]:
     password_key = unquote_plus(password_key)
     password = get_password(password_key)
     if not password:
@@ -361,14 +287,14 @@ def show_password(password_key):
 
 @app.route('/_/_/health', methods=['GET'])
 @check_redis_alive
-def health_check():
+def health_check() -> typing.Dict[typing.Any, typing.Any]:
     return {}
 
 
 @check_redis_alive
-def main():
-    app.run(host=os.environ.get('SNAPPASS_BIND_ADDRESS', '0.0.0.0'),
-            port=os.environ.get('SNAPPASS_PORT', 5000))
+def main() -> None:
+    app.run(host=os.environ.get('SNAPPASS_BIND_ADDRESS', '0.0.0.0'),  # noqa: S104
+            port=int(os.environ.get('SNAPPASS_PORT', 5000)))
 
 
 if __name__ == '__main__':

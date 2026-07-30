@@ -35,19 +35,16 @@ to do.  Enjoy.
 Security
 --------
 
-Passwords are encrypted using `Fernet`_ symmetric encryption, from the `cryptography`_ library.
-A random unique key is generated for each password, and is never stored;
-it is rather sent as part of the password link.
-This means that even if someone has access to the Redis store, the passwords are still safe.
-
-.. _Fernet: https://cryptography.io/en/latest/fernet/
-.. _cryptography: https://cryptography.io/en/latest/
+Passwords are encrypted purely on the client-side using the Web Crypto API (AES-GCM).
+The server only ever receives and stores the encrypted ciphertext and a random IV.
+The encryption key is generated in the browser and transported via the URL hash fragment (``#key``) which is **never** sent to the server.
+This means that even if someone has access to the Redis store or the application logs, the passwords remain completely safe.
 
 Requirements
 ------------
 
-* `Redis`_
-* Python 3.8+
+* `Redis`_ 6.2.0 or newer
+* Python 3.10+
 
 .. _Redis: https://redis.io/
 
@@ -57,6 +54,7 @@ Installation
 ::
 
     $ pip install snappass
+    $ export SECRET_KEY="<your-secret-key-here>"
     $ snappass
     * Running on http://0.0.0.0:5000/
     * Restarting with reloader
@@ -120,18 +118,18 @@ Simple API
 
 The advantage of using the simple API is that you can create a password and retrieve the link without having to open the web interface. This is useful if you want to embed it in a script or use it in a CI/CD pipeline.
 
-To create a password, send a POST request to ``/api/set_password`` like so:
+To create a password, send a POST request to ``/api/set_password`` like so. **Note:** The `password` field must be pre-encrypted and encoded in unpadded Base64URL.
 
 ::
 
-    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar"}' http://localhost:5000/api/set_password/
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "<base64url-encoded-iv-and-ciphertext>"}' http://localhost:5000/api/set_password/
 
 This will return a JSON response with the password link:
 
 ::
 
     {
-        "link": "http://127.0.0.1:5000/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+        "link": "http://127.0.0.1:5000/snappassd7x9aZ...",
         "ttl":1209600
     }
 
@@ -139,7 +137,7 @@ the default TTL is 2 weeks (1209600 seconds), but you can override it by adding 
 
 ::
 
-    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/set_password/
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "<base64url-encoded-iv-and-ciphertext>", "ttl": 3600 }' http://localhost:5000/api/set_password/
 
 
 REST API
@@ -152,24 +150,24 @@ This is useful if you want to embed it in a script,  use it in a CI/CD pipeline 
 Create a password
 """""""""""""""""
 
-To create a password, send a POST request to ``/api/v2/passwords`` like so:
+To create a password, send a POST request to ``/api/v2/passwords`` like so. **Note:** As with the simple API, the payload must be pre-encrypted:
 
 ::
 
-    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar"}' http://localhost:5000/api/v2/passwords
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "<base64url-encoded-iv-and-ciphertext>"}' http://localhost:5000/api/v2/passwords
 
 This will return a JSON response with a token and the password link:
 
 ::
 
     {
-        "token": "snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY=",
+        "token": "snappassd7x9aZ...",
         "links": [{
             "rel": "self",
-            "href": "http://127.0.0.1:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+            "href": "http://127.0.0.1:5000/api/v2/passwords/snappassd7x9aZ..."
         },{
             "rel": "web-view",
-            "href": "http://127.0.0.1:5000/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D",
+            "href": "http://127.0.0.1:5000/snappassd7x9aZ..."
         }],
         "ttl":1209600
     }
@@ -178,7 +176,7 @@ The default TTL is 2 weeks (1209600 seconds), but you can override it by adding 
 
 ::
 
-    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/v2/passwords
+    $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "<base64url-encoded-iv-and-ciphertext>", "ttl": 3600 }' http://localhost:5000/api/v2/passwords
 
 If the password is null or empty, and the TTL is larger than the max TTL of the application, the API will return an error like this:
 
@@ -206,7 +204,7 @@ To check if a password exists, send a HEAD request to ``/api/v2/passwords/<token
 
 ::
 
-    $ curl --head http://localhost:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D
+    $ curl --head http://localhost:5000/api/v2/passwords/snappassd7x9aZ...
 
 If :
 - the passwork_key is valid 
@@ -245,7 +243,7 @@ To read a password, send a GET request to ``/api/v2/passwords/<password_key>``, 
 
 ::
 
-    $ curl -X GET http://localhost:5000/api/v2/passwords/snappassbedf19b161794fd288faec3eba15fa41~hHnILpQ50ZfJc3nurDfHCb_22rBr5gGEya68e_cZOrY%3D
+    $ curl -X GET http://localhost:5000/api/v2/passwords/snappassd7x9aZ...
 
 If :
 - the token is valid 
@@ -259,7 +257,7 @@ Then the API will return a 200 (OK) with a JSON response containing the password
 ::
 
     {
-        "password": "foobar"
+        "password": "<base64url-encoded-iv-and-ciphertext>"
     }
 
 Otherwise, the API will return a 404 (Not Found) response like so:
@@ -279,6 +277,7 @@ Notes on APIs
 
 Notes:
 
+- **Breaking Change in 1.7.0:** The backend no longer handles encryption. The ``password`` field sent to any API endpoint MUST be pre-encrypted by the client using AES-128-GCM. The payload must consist of a 12-byte IV concatenated with the ciphertext, and then encoded using unpadded Base64URL. The encryption key should never be sent to the server, and should instead be appended to the generated link as a URL hash fragment (``#``).
 - When using the APIs, you can specify any ttl, as long as it is lower than the default.
 - The password is passed in the body of the request rather than in the URL. This is to prevent the password from being logged in the server logs.
 - Depending on the environment you are running it, you might want to expose the ``/api`` endpoint to your internal network only, and put the web interface behind authentication.
@@ -296,7 +295,7 @@ Alternatively, you can use `Docker`_ and `Docker Compose`_ to install and run Sn
 
     $ docker-compose up -d
 
-This will pull all dependencies, i.e. Redis and appropriate Python version (3.7), then start up SnapPass and Redis server. SnapPass server is accessible at: http://localhost:5000
+This will pull all dependencies, i.e. Redis and appropriate Python version (3.14), then start up SnapPass and Redis server. SnapPass server is accessible at: http://localhost:5000
 
 Similar Tools
 -------------

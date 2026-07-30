@@ -11,10 +11,6 @@ on:
       - tests.py
       - '**/*.md'
       - '**/*.rst'
-      - 'snappass/static/bootstrap/**'
-      - 'snappass/static/clipboardjs/**'
-      - 'snappass/static/fontawesome/**'
-      - 'snappass/static/jquery/**'
 
 jobs:
   analyze:

@@ -11,10 +11,8 @@
       </div>
 
       <div class="col-sm-6">
-        <button title="{{ _('Copy to clipboard') }}" type="button" class="btn btn-primary copy-clipboard-btn"
-              id="copy-clipboard-btn" data-clipboard-target="#password-link"
-              data-placement='bottom'>
-          <i class="fa fa-clipboard"></i>
+        <button type="button" id="copy-clipboard-btn" class="btn btn-primary" title="{{ _('Copy to clipboard') }}" aria-label="{{ _('Copy to clipboard') }}" data-text-copied="{{ _('Copied!') }}" data-error-copy="{{ _('Failed to copy to clipboard.') }}">
+          {{ _('Copy') }}
         </button>
       </div>
     </div>
@@ -23,6 +21,10 @@
 {% endblock %}
 
 {% block js %}
-<script src="{{ config.STATIC_URL }}/clipboardjs/clipboard.min.js"></script>
-<script src="{{ config.STATIC_URL }}/snappass/scripts/clipboard_button.js"></script>
+<script type="module">
+  import { setupClipboard, $ } from '{{ config.STATIC_URL }}/snappass/scripts/utils.js';
+  document.addEventListener('DOMContentLoaded', () => {
+    setupClipboard('#copy-clipboard-btn', () => $('#password-link').value);
+  });
+</script>
 {% endblock %}

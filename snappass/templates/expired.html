@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <section>
-    <div class="page-header"><h1>{{ _('Secret not found') }}</h1></div>
-    <p class="lead">{{ _('The requested URL was not found on the server. This could be because this URL never contained a secret, or because it expired or was revealed earlier.') }}</p>
-    <p class="lead">{{ _('If this URL was sent to you by someone, make sure to check your spelling or ask the person who sent it to you to send a new secret.') }}</p>
-  </section>
-</div>
+<section aria-labelledby="page-title">
+  <header>
+    <h1 id="page-title">{{ _('Secret Not Found') }}</h1>
+  </header>
+  
+  <div class="alert" role="alert">
+    <p>
+      {{ _('The secret you are looking for has either expired, has already been viewed, or never existed.') }}
+    </p>
+  </div>
+  
+  <p>
+    <a href="/">{{ _('Return to SnapPass home') }}</a>
+  </p>
+</section>
 {% endblock %}

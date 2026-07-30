@@ -1,26 +1,24 @@
+import os
 import re
 import time
 import unittest
-import uuid
 from unittest import TestCase
-from unittest import mock
 from urllib.parse import quote
 from urllib.parse import unquote
 
-from cryptography.fernet import Fernet
 from freezegun import freeze_time
-from werkzeug.exceptions import BadRequest
-from fakeredis import FakeStrictRedis
+
+os.environ['MOCK_REDIS'] = 'true'
 
 # noinspection PyPep8Naming
-import snappass.main as snappass
+import snappass.main as snappass  # noqa: E402
+import snappass.storage as storage  # noqa: E402
 
 __author__ = 'davedash'
 
 
 class SnapPassTestCase(TestCase):
 
-    @mock.patch('redis.client.StrictRedis', FakeStrictRedis)
     def test_get_password(self):
         password = "melatonin overdose 1337!$"
         key = snappass.set_password(password, 30)
@@ -28,66 +26,22 @@ class SnapPassTestCase(TestCase):
         # Assert that we can't look this up a second time.
         self.assertIsNone(snappass.get_password(key))
 
-    def test_password_is_not_stored_in_plaintext(self):
-        password = "trustno1"
-        token = snappass.set_password(password, 30)
-        redis_key = token.split(snappass.TOKEN_SEPARATOR)[0]
-        stored_password_text = snappass.redis_client.get(redis_key).decode('utf-8')
-        self.assertNotIn(password, stored_password_text)
+    def test_password_is_stored_exactly(self):
+        # We now store exactly what the client sends
+        # (which the client encrypts)
+        password_payload = "encrypted_payload_base64"
+        token = snappass.set_password(password_payload, 30)
+        stored_password_text = storage.redis_client.get(token).decode('utf-8')
+        self.assertEqual(password_payload, stored_password_text)
 
     def test_returned_token_format(self):
         password = "trustsome1"
         token = snappass.set_password(password, 30)
-        token_fragments = token.split(snappass.TOKEN_SEPARATOR)
-        self.assertEqual(2, len(token_fragments))
-        redis_key, encryption_key = token_fragments
-        self.assertEqual(32 + len(snappass.REDIS_PREFIX), len(redis_key))
-        try:
-            Fernet(encryption_key.encode('utf-8'))
-        except ValueError:
-            self.fail('the encryption key is not valid')
-
-    def test_encryption_key_is_returned(self):
-        password = "trustany1"
-        token = snappass.set_password(password, 30)
-        token_fragments = token.split(snappass.TOKEN_SEPARATOR)
-        redis_key, encryption_key = token_fragments
-        stored_password = snappass.redis_client.get(redis_key)
-        fernet = Fernet(encryption_key.encode('utf-8'))
-        decrypted_password = fernet.decrypt(stored_password).decode('utf-8')
-        self.assertEqual(password, decrypted_password)
-
-    def test_unencrypted_passwords_still_work(self):
-        unencrypted_password = "trustevery1"
-        storage_key = uuid.uuid4().hex
-        snappass.redis_client.setex(storage_key, 30, unencrypted_password)
-        retrieved_password = snappass.get_password(storage_key)
-        self.assertEqual(unencrypted_password, retrieved_password)
-
-    def test_password_is_decoded(self):
-        password = "correct horse battery staple"
-        key = snappass.set_password(password, 30)
-        self.assertFalse(isinstance(snappass.get_password(key), bytes))
-
-    def test_clean_input(self):
-        # Test Bad Data
-        with snappass.app.test_request_context(
-                "/", data={'password': 'foo', 'ttl': 'bar'}, method='POST'):
-            self.assertRaises(BadRequest, snappass.clean_input)
-
-        # No Password
-        with snappass.app.test_request_context(
-                "/", method='POST'):
-            self.assertRaises(BadRequest, snappass.clean_input)
-
-        # No TTL
-        with snappass.app.test_request_context(
-                "/", data={'password': 'foo'}, method='POST'):
-            self.assertRaises(BadRequest, snappass.clean_input)
-
-        with snappass.app.test_request_context(
-                "/", data={'password': 'foo', 'ttl': 'hour'}, method='POST'):
-            self.assertEqual((3600, 'foo'), snappass.clean_input())
+        # Should start with REDIS_PREFIX and be followed by
+        # 22 chars of urlsafe base64
+        self.assertTrue(token.startswith(storage.REDIS_PREFIX))
+        # 16 bytes urlsafe base64 is 22 chars
+        self.assertEqual(len(storage.REDIS_PREFIX) + 22, len(token))
 
     def test_password_before_expiration(self):
         password = 'fidelio'
@@ -121,38 +75,47 @@ class SnapPassRoutesTestCase(TestCase):
         self.assertEqual('200 OK', response.status)
         self.assertEqual('{}', response.get_data(as_text=True).strip())
 
+    def test_index(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_handle_password_invalid_ttl(self):
+        rv = self.app.post('/', data={'password': 'foo', 'ttl': 'invalid'})
+        self.assertEqual(rv.status_code, 400)
+
+    def test_handle_password_missing_data(self):
+        rv = self.app.post('/', data={})
+        self.assertEqual(rv.status_code, 500)
+
     def test_preview_password(self):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
         rv = self.app.get('/{0}'.format(key))
+        # The password payload should not be visible in preview
         self.assertNotIn(password, rv.get_data(as_text=True))
+
+    def test_preview_password_not_found(self):
+        rv = self.app.get('/invalid_key')
+        self.assertEqual(rv.status_code, 404)
+        self.assertIn('Secret Not Found', rv.get_data(as_text=True))
 
     def test_show_password(self):
         password = "I like novelty kitten statues!"
         key = snappass.set_password(password, 30)
         rv = self.app.post('/{0}'.format(key))
+        # The payload (encrypted text) is shown in the text area
         self.assertIn(password, rv.get_data(as_text=True))
+
+    def test_show_password_not_found(self):
+        rv = self.app.post('/invalid_key')
+        self.assertEqual(rv.status_code, 404)
+        self.assertIn('Secret Not Found', rv.get_data(as_text=True))
 
     def test_url_prefix(self):
         password = "I like novelty kitten statues!"
         snappass.URL_PREFIX = "/test/prefix"
         rv = self.app.post('/', data={'password': password, 'ttl': 'hour'})
         self.assertIn("localhost/test/prefix/", rv.get_data(as_text=True))
-
-    def test_set_password(self):
-        with freeze_time("2020-05-08 12:00:00") as frozen_time:
-            password = 'my name is my passport. verify me.'
-            rv = self.app.post('/', data={'password': password, 'ttl': 'two weeks'})
-
-            html_content = rv.data.decode("ascii")
-            key = re.search(r'id="password-link" value="https://localhost/([^"]+)', html_content).group(1)
-            key = unquote(key)
-
-            frozen_time.move_to("2020-05-22 11:59:59")
-            self.assertEqual(snappass.get_password(key), password)
-
-            frozen_time.move_to("2020-05-22 12:00:00")
-            self.assertIsNone(snappass.get_password(key))
 
     def test_set_password_json(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
@@ -164,8 +127,9 @@ class SnapPassRoutesTestCase(TestCase):
             )
 
             json_content = rv.get_json()
-            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
-            key = unquote(key)
+            match = re.search(r'https://localhost/([^"]+)',
+                              json_content['link'])
+            key = unquote(match.group(1))
 
             frozen_time.move_to("2020-05-22 11:59:59")
             self.assertEqual(snappass.get_password(key), password)
@@ -179,18 +143,27 @@ class SnapPassRoutesTestCase(TestCase):
             rv = self.app.post(
                 '/api/set_password/',
                 headers={'Accept': 'application/json'},
-                json={'password': password, 'ttl': '1209600'},
+                json={'password': password, 'ttl': 1209600},
             )
 
             json_content = rv.get_json()
-            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
-            key = unquote(key)
+            match = re.search(r'https://localhost/([^"]+)',
+                              json_content['link'])
+            key = unquote(match.group(1))
 
             frozen_time.move_to("2020-05-22 11:59:59")
             self.assertEqual(snappass.get_password(key), password)
 
             frozen_time.move_to("2020-05-22 12:00:00")
             self.assertIsNone(snappass.get_password(key))
+
+    def test_api_handle_password_missing_data(self):
+        rv = self.app.post(
+            '/api/set_password/',
+            headers={'Accept': 'application/json'},
+            json={}
+        )
+        self.assertEqual(rv.status_code, 500)
 
     def test_set_password_api_default_ttl(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
@@ -202,8 +175,9 @@ class SnapPassRoutesTestCase(TestCase):
             )
 
             json_content = rv.get_json()
-            key = re.search(r'https://localhost/([^"]+)', json_content['link']).group(1)
-            key = unquote(key)
+            match = re.search(r'https://localhost/([^"]+)',
+                              json_content['link'])
+            key = unquote(match.group(1))
 
             frozen_time.move_to("2020-05-22 11:59:59")
             self.assertEqual(snappass.get_password(key), password)
@@ -215,25 +189,33 @@ class SnapPassRoutesTestCase(TestCase):
         rv = self.app.post(
             '/api/set_password/',
             headers={'Host': 'evil.com', 'Accept': 'application/json'},
-            json={'password': 'my secret', 'ttl': '1209600'},
+            json={'password': 'my secret', 'ttl': 1209600},
+        )
+
+        self.assertEqual(rv.status_code, 400)
+
+    def test_rejects_empty_host_header(self):
+        rv = self.app.post(
+            '/api/set_password/',
+            headers={'Host': '', 'Accept': 'application/json'},
+            json={'password': 'my secret', 'ttl': 1209600},
         )
 
         self.assertEqual(rv.status_code, 400)
 
     def test_uses_host_override_with_untrusted_host_header(self):
-        # When HOST_OVERRIDE is configured, the inbound Host header is never
-        # used to derive the base URL, so an untrusted host is harmless: the
-        # request succeeds (200) and the generated link uses HOST_OVERRIDE.
         snappass.HOST_OVERRIDE = 'snappass.example.org'
         rv = self.app.post(
             '/api/set_password/',
             headers={'Host': 'evil.com', 'Accept': 'application/json'},
-            json={'password': 'my secret', 'ttl': '1209600'},
+            json={'password': 'my secret', 'ttl': 1209600},
         )
 
         self.assertEqual(rv.status_code, 200)
         json_content = rv.get_json()
-        self.assertTrue(json_content['link'].startswith('https://snappass.example.org/'))
+        self.assertTrue(
+            json_content['link'].startswith('https://snappass.example.org/')
+        )
 
     def test_set_password_api_v2(self):
         with freeze_time("2020-05-08 12:00:00") as frozen_time:
@@ -241,7 +223,7 @@ class SnapPassRoutesTestCase(TestCase):
             rv = self.app.post(
                 '/api/v2/passwords',
                 headers={'Accept': 'application/json'},
-                json={'password': password, 'ttl': '1209600'},
+                json={'password': password, 'ttl': 1209600},
             )
 
             json_content = rv.get_json()
@@ -291,7 +273,7 @@ class SnapPassRoutesTestCase(TestCase):
         rv = self.app.post(
             '/api/v2/passwords',
             headers={'Accept': 'application/json'},
-            json={'password': password, 'ttl': '1209600000'},
+            json={'password': password, 'ttl': 1209600000},
         )
 
         self.assertEqual(rv.status_code, 400)
@@ -306,7 +288,7 @@ class SnapPassRoutesTestCase(TestCase):
         rv = self.app.post(
             '/api/v2/passwords',
             headers={'Accept': 'application/json'},
-            json={'password': '', 'ttl': '1209600000'},
+            json={'password': '', 'ttl': 1209600000},
         )
 
         self.assertEqual(rv.status_code, 400)

@@ -1,3 +1,19 @@
+Version 1.7.0
+-------------
+* **BREAKING:** Migrate encryption to client-side (browser) using AES-GCM and Web Crypto API.
+  The server only stores encrypted data and never sees the password.
+* **BREAKING:** APIs now expect pre-encrypted secrets.
+* Remove `cryptography` python dependency.
+* Removed external JavaScript dependencies (jQuery, Bootstrap JS, Clipboard.js) 
+  in favor of modern vanilla browser APIs.
+* Security: Integrated Trivy and Hadolint into the Docker build pipeline.
+* Security: Upgraded base Docker image to `python:3.14-slim-trixie` and added `pip-audit` to CI pipelines.
+* Modernization: Consolidated all dependencies into `pyproject.toml` (removed legacy requirements.txt).
+* Modernization: Enforced Python 3.10+ as the minimum supported version.
+* Modernization: Bumped Flask to 3.1+, Flask-Babel to 4.0+, and redis-py to 5.0+.
+* Modernization: Configured `bumpversion` to handle automated version releases.
+* Fix: Extracted Redis database logic into a dedicated `storage.py` abstraction layer.
+
 Version 1.6.0
 -------------
 * Drop support for officially unsupported Python versions (< Python 3.7)

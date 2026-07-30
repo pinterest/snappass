@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <section>
-    <div class="page-header">
-      <h1>{{ _('Secret') }}</h1>
+<section aria-labelledby="page-title">
+  <header>
+    <h1 id="page-title">{{ _('Secret') }}</h1>
+    <p class="alert">{{ _('You can only reveal the secret once! After that, it is permanently deleted.') }}</p>
+  </header>
+  
+  <form id="revealSecretForm" method="post" action="">
+    <div class="button-group">
+      <button type="submit" id="revealSecret">{{ _('Reveal secret') }}</button>
     </div>
-    <p class="lead">{{ _('You can only reveal the secret once!') }}</p>
-    <div class="row">
-      <div class="col-sm-6 margin-bottom-10">
-        <button id="revealSecret" type="button" class="btn-lg btn-primary">{{ _('Reveal secret') }}</button>
-      </div>
-    </div>
-  </section>
-</div>
+  </form>
+</section>
 {% endblock %}
 
 {% block js %}
-<script src="{{ config.STATIC_URL }}/clipboardjs/clipboard.min.js"></script>
-<script src="{{ config.STATIC_URL }}/snappass/scripts/clipboard_button.js"></script>
-<script src="{{ config.STATIC_URL }}/snappass/scripts/preview.js"></script>
+<script>
+  // We want to preserve the hash when the form submits. 
+  // By default, forms submitting to the same path drop the hash in some browsers, 
+  // so we dynamically set the action to include the hash.
+  document.getElementById('revealSecretForm').addEventListener('submit', function(e) {
+    this.action = window.location.pathname + window.location.hash;
+  });
+</script>
 {% endblock %}

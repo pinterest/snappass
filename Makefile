@@ -1,13 +1,13 @@
 .PHONY: dev prod run test
 
-dev: dev-requirements.txt
-	pip install -r dev-requirements.txt
+dev:
+	pip install .[dev]
 
-prod: requirements.txt
-	pip install -r requirements.txt
+prod:
+	pip install .
 
 run: prod
-	FLASK_DEBUG=1 FLASK_APP=snappass.main NO_SSL=True venv/bin/flask run
+	FLASK_DEBUG=1 FLASK_APP=snappass.main NO_SSL=True flask run
 
 test:
-	PYTHONPATH=snappass venv/bin/nosetests -s tests
+	tox

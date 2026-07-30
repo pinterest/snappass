@@ -70,13 +70,12 @@ Here's how to set up ``snappass`` for local development.
 
     $ git clone git@github.com:your_name_here/snappass.git
 
-3. Install your local copy into a ``virtualenv``. Assuming you have
-   ``virtualenvwrapper`` installed, this is how you set up your fork for local
-   development::
+3. Install your local copy into a ``virtualenv``. It is recommended to use standard ``venv``::
 
-    $ mkvirtualenv snappass
+    $ python -m venv venv
+    $ source venv/bin/activate
     $ cd snappass/
-    $ python setup.py develop
+    $ pip install -e .
     $ make dev
 
 4. Create a branch for local development::
@@ -92,29 +91,19 @@ Here's how to set up ``snappass`` for local development.
 
   You now have a running instance on localhost:5000/
 
-6. Please add some tests to tests.py and run tests::
+6. Please add some tests to tests.py. When you're done making changes, check that your changes pass all tests and security linters (Ruff, Pip-Audit, etc.)::
 
     $ make test
 
-7. When you're done making changes, check that your changes pass the tests and
-   flake8::
+   (Tox will automatically run all linting, security scans, and tests with coverage output.)
 
-    $ flake8 snappass tests.py setup.py
-    $ tox
-
-8. Check that the test coverage hasn't dropped::
-
-    $ coverage run --source snappass tests.py
-    $ coverage report -m
-    $ coverage html
-
-9. Commit your changes and push your branch to GitHub::
+7. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-10. Submit a pull request through the GitHub website.
+8. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
@@ -126,3 +115,23 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work on all supported Python versions.
+
+Releasing a New Version
+-----------------------
+
+This project uses `bumpversion <https://github.com/peritus/bumpversion>`_ to manage releases.
+The `.bumpversion.cfg` file is configured to automatically update the version strings in both `pyproject.toml` and `snappass/__init__.py`, create a new git commit, and generate a git tag.
+
+When you are ready to make a release, ensure you are on the main branch with a clean working directory, and run one of the following commands depending on the type of release (major, minor, or patch):
+
+::
+
+    $ bumpversion patch  # (e.g. 1.7.0 -> 1.7.1)
+    $ bumpversion minor  # (e.g. 1.7.0 -> 1.8.0)
+    $ bumpversion major  # (e.g. 1.7.0 -> 2.0.0)
+
+Then, push the commit and the tags to GitHub:
+
+::
+
+    $ git push origin master --tags

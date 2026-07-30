@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.14-slim-trixie
 
 ENV APP_DIR=/usr/src/snappass
 
@@ -8,14 +8,12 @@ RUN groupadd -r snappass && \
 
 WORKDIR $APP_DIR
 
-COPY ["setup.py", "requirements.txt", "MANIFEST.in", "README.rst", "AUTHORS.rst", "$APP_DIR/"]
+COPY ["pyproject.toml", "README.rst", "AUTHORS.rst", "LICENSE", "$APP_DIR/"]
 COPY ["./snappass", "$APP_DIR/snappass"]
 
-RUN pip install -r requirements.txt
-
-RUN pybabel compile -d snappass/translations
-
-RUN python setup.py install && \
+RUN pip install --no-cache-dir . && \
+    pybabel compile -d snappass/translations && \
+    pip install --no-cache-dir . && \
     chown -R snappass $APP_DIR && \
     chgrp -R snappass $APP_DIR
 

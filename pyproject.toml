@@ -1,0 +1,51 @@
+[build-system]
+requires = ["flit_core>=3.2"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "snappass"
+version = "1.7.0"
+description = "It's like SnapChat... for Passwords."
+readme = "README.rst"
+authors = [
+    {name = "Pinterest", email = "joec@pinterest.com"}
+]
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "Flask>=3.1.0",
+    "redis>=5.0.0",
+    "Flask-Babel>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/pinterest/snappass"
+
+[project.scripts]
+snappass = "snappass.main:main"
+
+[tool.ruff.lint]
+select = ["E", "F", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests.py" = ["S105", "S101"]
+
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.15.2",
+    "fakeredis>=2.26.0",
+    "ruff>=0.16.0",
+    "pip-audit>=2.10.1",
+    "freezegun>=1.5.5",
+    "pytest>=9.0.3",
+    "pytest-cov==5.0.0",
+    "tox>=4.58.0",
+    "bumpversion==0.6.0",
+    "wheel>=0.46.2",
+    "mypy>=2.3.0"
+]

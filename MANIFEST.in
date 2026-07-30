@@ -1,4 +1,0 @@
-include *.rst LICENSE
-recursive-include snappass/static *
-recursive-include snappass/templates *
-recursive-include snappass/translations *
