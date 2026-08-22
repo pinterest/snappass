@@ -174,8 +174,9 @@ def get_password(token):
     If not, the password is simply returned as is.
     """
     storage_key, decryption_key = parse_token(token)
-    password = redis_client.get(storage_key)
-    redis_client.delete(storage_key)
+    # Atomically get and delete so two clients cannot both read the secret
+    # (requires Redis 6.2+ / redis-py getdel).
+    password = redis_client.getdel(storage_key)
 
     if password is not None:
 
