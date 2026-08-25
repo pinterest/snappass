@@ -28,6 +28,25 @@ class SnapPassTestCase(TestCase):
         # Assert that we can't look this up a second time.
         self.assertIsNone(snappass.get_password(key))
 
+    def test_get_password_uses_atomic_getdel(self):
+        # A separate GET then DELETE leaves a window where two concurrent
+        # requests can both read the password before either delete runs.
+        # GETDEL does both in one atomic call, so assert that's what's used
+        # instead of a GET/DELETE pair.
+        password = "atomic party"
+        key = snappass.set_password(password, 30)
+        storage_key, _ = snappass.parse_token(key)
+
+        with mock.patch.object(
+            snappass.redis_client, 'getdel', wraps=snappass.redis_client.getdel
+        ) as mock_getdel, mock.patch.object(
+            snappass.redis_client, 'delete', wraps=snappass.redis_client.delete
+        ) as mock_delete:
+            self.assertEqual(password, snappass.get_password(key))
+
+        mock_getdel.assert_called_once_with(storage_key)
+        mock_delete.assert_not_called()
+
     def test_password_is_not_stored_in_plaintext(self):
         password = "trustno1"
         token = snappass.set_password(password, 30)
