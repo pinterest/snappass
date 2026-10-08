@@ -2,6 +2,8 @@ import re
 import time
 import unittest
 import uuid
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 from unittest import TestCase
 from unittest import mock
 from urllib.parse import quote
@@ -27,6 +29,37 @@ class SnapPassTestCase(TestCase):
         self.assertEqual(password, snappass.get_password(key))
         # Assert that we can't look this up a second time.
         self.assertIsNone(snappass.get_password(key))
+
+    def test_concurrent_get_password_discloses_secret_once(self):
+        password = 'one-time secret'
+        start = Barrier(2, timeout=10)
+        reads = Barrier(2, timeout=10)
+        original_get = snappass.redis_client.get
+
+        def overlapping_get(*args, **kwargs):
+            value = original_get(*args, **kwargs)
+            # Force standalone GETs to finish before either caller can DELETE.
+            reads.wait()
+            return value
+
+        def retrieve(token):
+            start.wait()
+            return snappass.get_password(token)
+
+        for encrypted in (True, False):
+            with self.subTest(encrypted=encrypted):
+                if encrypted:
+                    token = snappass.set_password(password, 30)
+                else:
+                    token = uuid.uuid4().hex
+                    snappass.redis_client.setex(token, 30, password)
+
+                with mock.patch.object(snappass.redis_client, 'get', side_effect=overlapping_get):
+                    with ThreadPoolExecutor(max_workers=2) as executor:
+                        results = list(executor.map(retrieve, [token, token]))
+
+                self.assertCountEqual(results, [password, None])
+                self.assertFalse(snappass.password_exists(token))
 
     def test_password_is_not_stored_in_plaintext(self):
         password = "trustno1"

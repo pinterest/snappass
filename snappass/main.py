@@ -174,8 +174,11 @@ def get_password(token):
     If not, the password is simply returned as is.
     """
     storage_key, decryption_key = parse_token(token)
-    password = redis_client.get(storage_key)
-    redis_client.delete(storage_key)
+    # Consume the secret atomically on Redis versions predating GETDEL.
+    with redis_client.pipeline(transaction=True) as pipe:
+        pipe.get(storage_key)
+        pipe.delete(storage_key)
+        password = pipe.execute()[0]
 
     if password is not None:
 
