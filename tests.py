@@ -352,6 +352,44 @@ class SnapPassRoutesTestCase(TestCase):
         bad_ttl = invalid_params[1]
         self.assertEqual(bad_ttl['name'], 'ttl')
 
+    def test_set_password_api_v2_rejects_invalid_ttl(self):
+        invalid_ttls = [None, '', 'not-a-number', [], {}, 0, -1, '0', '-1']
+        for ttl in invalid_ttls:
+            with self.subTest(ttl=ttl):
+                with mock.patch.object(snappass, 'set_password') as store_password:
+                    response = self.app.post(
+                        '/api/v2/passwords',
+                        json={'password': 'my secret', 'ttl': ttl},
+                    )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.mimetype, 'application/problem+json')
+                invalid_params = response.get_json()['invalid-params']
+                self.assertEqual([param['name'] for param in invalid_params], ['ttl'])
+                store_password.assert_not_called()
+
+    def test_set_password_api_v2_combines_invalid_password_and_ttl(self):
+        response = self.app.post(
+            '/api/v2/passwords', json={'password': '', 'ttl': None},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        invalid_params = response.get_json()['invalid-params']
+        self.assertEqual([param['name'] for param in invalid_params], ['password', 'ttl'])
+
+    def test_set_password_api_v2_accepts_ttl_boundaries(self):
+        for ttl in (1, '1', snappass.MAX_TTL, str(snappass.MAX_TTL)):
+            with self.subTest(ttl=ttl):
+                response = self.app.post(
+                    '/api/v2/passwords',
+                    json={'password': 'my secret', 'ttl': ttl},
+                )
+
+                self.assertEqual(response.status_code, 200)
+                result = response.get_json()
+                self.assertEqual(result['ttl'], int(ttl))
+                self.assertEqual(snappass.get_password(result['token']), 'my secret')
+
     def test_check_password_api_v2(self):
         password = 'my name is my passport. verify me.'
         rv = self.app.post(

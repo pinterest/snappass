@@ -271,7 +271,10 @@ def api_handle_password():
 @app.route('/api/v2/passwords', methods=['POST'])
 def api_v2_set_password():
     password = request.json.get('password')
-    ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+    try:
+        ttl = int(request.json.get('ttl', DEFAULT_API_TTL))
+    except (TypeError, ValueError, OverflowError):
+        ttl = None
 
     invalid_params = []
 
@@ -281,7 +284,12 @@ def api_v2_set_password():
             "reason": "The password is required and should not be null or empty."
         })
 
-    if not isinstance(ttl, int) or ttl > MAX_TTL:
+    if ttl is None or ttl <= 0:
+        invalid_params.append({
+            "name": "ttl",
+            "reason": "The specified TTL must be a positive integer."
+        })
+    elif ttl > MAX_TTL:
         invalid_params.append({
             "name": "ttl",
             "reason": "The specified TTL is longer than the maximum supported."
