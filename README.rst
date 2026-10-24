@@ -180,10 +180,12 @@ The default TTL is 2 weeks (1209600 seconds), but you can override it by adding 
 
     $ curl -X POST -H "Content-Type: application/json"  -d '{"password": "foobar", "ttl": 3600 }' http://localhost:5000/api/v2/passwords
 
-If the password is null or empty, and the TTL is larger than the max TTL of the application, the API will return an error like this:
+The TTL must be a positive integer no greater than the application's maximum.
+Null, non-numeric, zero, and negative TTL values return HTTP 400 with an
+``application/problem+json`` response identifying ``ttl`` in ``invalid-params``.
 
-
-Otherwise, the API will return a 404 (Not Found) response like so:
+If the password is null or empty and the TTL exceeds the maximum, the API returns
+HTTP 400 with both validation errors:
 
 ::
 
