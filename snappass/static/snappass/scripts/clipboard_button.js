@@ -1,7 +1,7 @@
 (function(){
 
     var targetButtonSelector = '#copy-clipboard-btn'
-    var clipboard = new Clipboard(targetButtonSelector);
+    var clipboard = new ClipboardJS(targetButtonSelector);
 
     var copyError = function(e) {
         var key;

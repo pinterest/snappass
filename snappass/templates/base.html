@@ -19,8 +19,9 @@
     </nav>
 
     {% block content %}{% endblock %}
-    <script src="{{ config.STATIC_URL }}/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{{ config.STATIC_URL }}/jquery/jquery-3.7.1.slim.min.js"></script>
     <script src="{{ config.STATIC_URL }}/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ config.STATIC_URL }}/clipboardjs/clipboard.2.0.11.min.js"></script>
     {% block js %}{% endblock %}
   </body>
 </html>

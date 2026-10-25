@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.13-slim
 
 ENV APP_DIR=/usr/src/snappass
 
@@ -24,4 +24,4 @@ USER snappass
 # Default Flask port
 EXPOSE 5000
 
-CMD ["snappass"]
+CMD ["waitress-serve", "--listen=*:5000", "snappass.main:app"]
