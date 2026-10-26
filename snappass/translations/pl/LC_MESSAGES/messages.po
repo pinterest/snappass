@@ -1,0 +1,130 @@
+# Polish translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-01-13 19:06+0100\n"
+"PO-Revision-Date: 2025-01-13 19:06+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: pl\n"
+"Language-Team: pl <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: snappass/templates/base.html:2
+msgid "en"
+msgstr "pl"
+
+#: snappass/templates/base.html:4
+msgid "Snappass - Share Secrets"
+msgstr "Snappass - Udostępniaj Sekrety"
+
+#: snappass/templates/base.html:16
+msgid "Share Secret"
+msgstr "Udostępnij Sekret"
+
+#: snappass/templates/confirm.html:6
+msgid "Share Secret Link"
+msgstr "Udostępnij link do Sekretu"
+
+#: snappass/templates/confirm.html:7
+msgid ""
+"The secret has been temporarily saved. Send the following URL to your "
+"intended recipient."
+msgstr ""
+"Sekret został tymczasowo zapisany. Wyślij poniższy adres URL do"
+" zamierzonego odbiorcy."
+
+#: snappass/templates/confirm.html:14 snappass/templates/password.html:14
+msgid "Copy to clipboard"
+msgstr "Kopiuj do schowka"
+
+#: snappass/templates/expired.html:6
+msgid "Secret not found"
+msgstr "Sekret nie został znaleziony"
+
+#: snappass/templates/expired.html:7
+msgid ""
+"The requested URL was not found on the server. This could be because this"
+" URL never contained a secret, or because it expired or was revealed "
+"earlier."
+msgstr ""
+"Żądany adres URL nie został znaleziony na serwerze. Może to wynikać z"
+" faktu, że adres ten nigdy nie zawierał sekretu, lub sekret wygasł"
+" albo został wcześniej ujawniony już wcześniej."
+
+#: snappass/templates/expired.html:8
+msgid ""
+"If this URL was sent to you by someone, make sure to check your spelling "
+"or ask the person who sent it to you to send a new secret."
+msgstr ""
+"Jeśli ten adres URL został do Ciebie przez kogoś przesłany, upewnij się,"
+" że został poprawnie wprowadzony lub poproś nadawcę o przesłanie nowego"
+" sekretu."
+
+#: snappass/templates/password.html:6 snappass/templates/preview.html:7
+msgid "Secret"
+msgstr "Sekret"
+
+#: snappass/templates/password.html:7
+msgid "Save the following secret to a secure location."
+msgstr "Zapisz poniższy sekret w bezpiecznym miejscu."
+
+#: snappass/templates/password.html:21
+msgid ""
+"The secret has now been permanently deleted from the system, and the URL "
+"will no longer work. Refresh this page to verify."
+msgstr ""
+"Sekret został trwale usunięty z systemu a ten adres URL nie będzie"
+" już działać. Odśwież stronę, aby to potwierdzić."
+
+#: snappass/templates/preview.html:9
+msgid "You can only reveal the secret once!"
+msgstr "Sekret można ujawnić tylko raz!"
+
+#: snappass/templates/preview.html:12
+msgid "Reveal secret"
+msgstr "Ujawnij Sekret"
+
+#: snappass/templates/set_password.html:6
+msgid "Set Secret"
+msgstr "Ustaw Sekret"
+
+#: snappass/templates/set_password.html:12
+msgid ""
+"SnapPass allows you to share secrets in a secure, ephemeral way. Input a "
+"single or multi-line secret, its expiration time, and click Generate URL."
+" Share the one-time use URL with your intended recipient."
+msgstr ""
+"SnapPass pozwala na udostępnianie sekretów w sposób bezpieczny i tymczasowy." 
+" Wprowadź pojedynczy lub wieloliniowy sekret, określ czas wygaśnięcia i "
+"kliknij Generuj URL. Udostępnij jednorazowy adres URL zamierzonemu odbiorcy."
+
+#: snappass/templates/set_password.html:18
+msgid "Two Weeks"
+msgstr "Dwa tygodnie"
+
+#: snappass/templates/set_password.html:19
+msgid "Week"
+msgstr "Tydzień"
+
+#: snappass/templates/set_password.html:20
+msgid "Day"
+msgstr "Dzień"
+
+#: snappass/templates/set_password.html:21
+msgid "Hour"
+msgstr "Godzina"
+
+#: snappass/templates/set_password.html:26
+msgid "Generate URL"
+msgstr "Generuj URL"
+
